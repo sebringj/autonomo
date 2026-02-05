@@ -67,6 +67,14 @@ public class CustomActionsRegistry {
         if removed { notifyChange() }
     }
     
+    /// Clear all registered custom actions
+    public func clear() {
+        lock.lock()
+        actions.removeAll()
+        lock.unlock()
+        notifyChange()
+    }
+    
     /// Execute a custom action
     public func execute(_ name: String, value: String? = nil) -> ActionResult {
         lock.lock()
