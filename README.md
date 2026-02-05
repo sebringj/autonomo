@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="logo.jpeg" alt="Autonomo" width="200" />
+</p>
+
 # Autonomo
 
 > **MCP Server for AI-Powered Application Testing**
