@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("AI-powered application testing - C# integration")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("0.1.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.1.0+98e8736e094d6156e416bf924f48268d54027ec7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.1.0+eab51859b860f8ff3c47df0c51ca7a0c3cf48a57")]
 [assembly: System.Reflection.AssemblyProductAttribute("Autonomo.CSharp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Autonomo.CSharp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("0.1.0.0")]

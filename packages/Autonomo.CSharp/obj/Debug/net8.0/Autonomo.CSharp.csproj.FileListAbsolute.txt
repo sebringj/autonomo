@@ -3,3 +3,10 @@
 /Users/jasonsebring/Development/Projects/autonomo/packages/Autonomo.CSharp/obj/Debug/net8.0/Autonomo.CSharp.AssemblyInfo.cs
 /Users/jasonsebring/Development/Projects/autonomo/packages/Autonomo.CSharp/obj/Debug/net8.0/Autonomo.CSharp.csproj.CoreCompileInputs.cache
 /Users/jasonsebring/Development/Projects/autonomo/packages/Autonomo.CSharp/obj/Debug/net8.0/Autonomo.CSharp.sourcelink.json
+/Users/jasonsebring/Development/Projects/autonomo/packages/Autonomo.CSharp/bin/Debug/net8.0/Autonomo.CSharp.deps.json
+/Users/jasonsebring/Development/Projects/autonomo/packages/Autonomo.CSharp/bin/Debug/net8.0/Autonomo.CSharp.dll
+/Users/jasonsebring/Development/Projects/autonomo/packages/Autonomo.CSharp/bin/Debug/net8.0/Autonomo.CSharp.pdb
+/Users/jasonsebring/Development/Projects/autonomo/packages/Autonomo.CSharp/obj/Debug/net8.0/Autonomo.CSharp.dll
+/Users/jasonsebring/Development/Projects/autonomo/packages/Autonomo.CSharp/obj/Debug/net8.0/refint/Autonomo.CSharp.dll
+/Users/jasonsebring/Development/Projects/autonomo/packages/Autonomo.CSharp/obj/Debug/net8.0/Autonomo.CSharp.pdb
+/Users/jasonsebring/Development/Projects/autonomo/packages/Autonomo.CSharp/obj/Debug/net8.0/ref/Autonomo.CSharp.dll
