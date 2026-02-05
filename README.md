@@ -247,21 +247,23 @@ autonomo/
 
 ## Platform Support
 
-**Official SDKs** (fully implemented with test suites):
+**SDKs** (implemented with test suites, not yet published):
 
 | Platform | Package | Status |
 |----------|---------|--------|
-| TypeScript/JS Core | `@autonomo/core` | ✅ Done |
-| MCP Server | `@autonomo/mcp-server` | ✅ Done |
-| React | `@autonomo/react` | ✅ Done |
-| React Native | `@autonomo/react-native` | ✅ Done |
-| Swift/iOS | `autonomo-swift` | ✅ Done |
-| Kotlin/Android | `autonomo-kotlin` | ✅ Done |
-| Flutter/Dart | `autonomo_flutter` | ✅ Done |
-| Python | `autonomo-python` | ✅ Done |
-| Ruby | `autonomo-ruby` | ✅ Done |
-| C#/.NET | `Autonomo.CSharp` | ✅ Done |
-| CLI | `autonomo-cli` | ✅ Done |
+| TypeScript/JS Core | `@autonomo/core` | ✅ Implemented |
+| MCP Server | `@autonomo/mcp-server` | ✅ Implemented |
+| React | `@autonomo/react` | ✅ Implemented |
+| React Native | `@autonomo/react-native` | ✅ Implemented |
+| Swift/iOS | `autonomo-swift` | ✅ Implemented |
+| Kotlin/Android | `autonomo-kotlin` | ✅ Implemented |
+| Flutter/Dart | `autonomo_flutter` | ✅ Implemented |
+| Python | `autonomo-python` | ✅ Implemented |
+| Ruby | `autonomo-ruby` | ✅ Implemented |
+| C#/.NET | `Autonomo.CSharp` | ✅ Implemented |
+| CLI | `autonomo-cli` | ✅ Implemented |
+
+> **Note:** Packages are implemented and tested but not yet published to package registries (npm, PyPI, etc.). Install from source for now.
 
 **JS/TS Frameworks** (use `@autonomo/core` with thin lifecycle wrapper):
 
