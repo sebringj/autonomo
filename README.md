@@ -482,6 +482,7 @@ Autonomo provides packages for multiple platforms and languages:
 | [autonomo-cli](./packages/autonomo-cli) | CLI | `npm install -g autonomo-cli` |
 | [autonomo_flutter](./packages/autonomo_flutter) | Flutter / Dart | `flutter pub add autonomo_flutter` |
 | [autonomo-python](./packages/autonomo-python) | Python | `pip install autonomo` |
+| [autonomo-ruby](./packages/autonomo-ruby) | Ruby | `gem install autonomo` |
 | [Autonomo.CSharp](./packages/Autonomo.CSharp) | C# / .NET | `dotnet add package Autonomo.CSharp` |
 
 **Note:** `@autonomo/core` is the base JS/TS package - use it for vanilla JavaScript, Node.js, web components, Electron, or any framework without a dedicated package. The React and React Native packages are thin wrappers around core.
