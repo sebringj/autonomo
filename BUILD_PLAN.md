@@ -274,18 +274,32 @@ Keep them tiny:
 | @autonomo/react | < 5KB |
 | @autonomo/react-native | < 5KB |
 | @autonomo/mcp-server | < 20KB |
+| autonomo_flutter | < 15KB |
+| autonomo-python | < 10KB |
+| autonomo-ruby | < 10KB |
+| Autonomo.CSharp | < 15KB |
+| autonomo-swift | < 15KB |
+| autonomo-kotlin | < 15KB |
 
-No heavy dependencies. Pure TypeScript.
+No heavy dependencies. Pure implementations in each language.
 
 ---
 
 ## MVP Scope (4 weeks)
 
-**In scope:**
-- MCP server with 4 tools
+**✅ Completed:**
+- MCP server with tools
 - React + React Native packages
 - CLI for init and status
-- 5 framework guides
+- Flutter/Dart package
+- Python package
+- Ruby package
+- C#/.NET package
+- Swift/iOS/macOS package
+- Kotlin/JVM/Android package
+
+**In scope:**
+- Framework guides
 - Basic docs site
 
 **Out of scope (later):**
@@ -293,7 +307,6 @@ No heavy dependencies. Pure TypeScript.
 - Cloud sync
 - Analytics/dashboards
 - Enterprise features
-- Native mobile SDKs (Swift/Kotlin)
 
 ---
 
