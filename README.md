@@ -469,6 +469,21 @@ DETECT ──► ACT ──► DETECT ──► ACT ──► DETECT ──► .
 | **Error reporting** | AI can diagnose failures |
 | **Platform agnostic** | Same commands for web/mobile/desktop |
 
+## Packages
+
+Autonomo provides packages for multiple platforms and languages:
+
+| Package | Platform | Install |
+|---------|----------|---------|
+| [@autonomo/core](./packages/@autonomo/core) | TypeScript (core) | `npm install @autonomo/core` |
+| [@autonomo/mcp-server](./packages/@autonomo/mcp-server) | MCP Server | `npm install @autonomo/mcp-server` |
+| [@autonomo/react](./packages/@autonomo/react) | React | `npm install @autonomo/react` |
+| [@autonomo/react-native](./packages/@autonomo/react-native) | React Native / Expo | `npm install @autonomo/react-native` |
+| [autonomo-cli](./packages/autonomo-cli) | CLI | `npm install -g autonomo-cli` |
+| [autonomo_flutter](./packages/autonomo_flutter) | Flutter / Dart | `flutter pub add autonomo_flutter` |
+| [autonomo-python](./packages/autonomo-python) | Python | `pip install autonomo` |
+| [Autonomo.CSharp](./packages/Autonomo.CSharp) | C# / .NET | `dotnet add package Autonomo.CSharp` |
+
 ## Documentation
 
 - [MCP_INTEGRATION.md](./MCP_INTEGRATION.md) - **Start here** - How Autonomo works with AI tools

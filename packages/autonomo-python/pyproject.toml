@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "autonomo"
+version = "0.1.0"
+description = "AI-powered application testing - Python integration"
+readme = "README.md"
+license = {text = "SEE LICENSE IN LICENSE.md"}
+requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+keywords = ["ai", "testing", "automation", "mcp", "copilot", "claude"]
+
+[project.urls]
+Homepage = "https://github.com/sebringj/autonomo"
+Repository = "https://github.com/sebringj/autonomo"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["autonomo*"]

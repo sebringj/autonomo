@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Autonomo</RootNamespace>
+    <Version>0.1.0</Version>
+    <Authors>sebringj</Authors>
+    <Description>AI-powered application testing - C# integration</Description>
+    <PackageProjectUrl>https://github.com/sebringj/autonomo</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/sebringj/autonomo</RepositoryUrl>
+    <PackageTags>ai;testing;automation;mcp;copilot;claude</PackageTags>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE.md" Pack="true" PackagePath=""/>
+  </ItemGroup>
+
+</Project>
