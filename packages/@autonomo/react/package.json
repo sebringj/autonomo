@@ -1,0 +1,40 @@
+{
+  "name": "@autonomo/react",
+  "version": "0.1.0",
+  "description": "React hooks and components for Autonomo integration",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@autonomo/core": "workspace:*",
+    "react": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "react": "^18.2.0",
+    "typescript": "^5.4.0"
+  },
+  "keywords": [
+    "react",
+    "autonomo",
+    "ai",
+    "testing"
+  ],
+  "author": "",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sebringj/autonomo.git"
+  }
+}
