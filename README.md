@@ -475,7 +475,7 @@ Autonomo provides packages for multiple platforms and languages:
 
 | Package | Platform | Install |
 |---------|----------|---------|
-| [@autonomo/core](./packages/@autonomo/core) | TypeScript (core) | `npm install @autonomo/core` |
+| [@autonomo/core](./packages/@autonomo/core) | **JavaScript / TypeScript** | `npm install @autonomo/core` |
 | [@autonomo/mcp-server](./packages/@autonomo/mcp-server) | MCP Server | `npm install @autonomo/mcp-server` |
 | [@autonomo/react](./packages/@autonomo/react) | React | `npm install @autonomo/react` |
 | [@autonomo/react-native](./packages/@autonomo/react-native) | React Native / Expo | `npm install @autonomo/react-native` |
@@ -483,6 +483,8 @@ Autonomo provides packages for multiple platforms and languages:
 | [autonomo_flutter](./packages/autonomo_flutter) | Flutter / Dart | `flutter pub add autonomo_flutter` |
 | [autonomo-python](./packages/autonomo-python) | Python | `pip install autonomo` |
 | [Autonomo.CSharp](./packages/Autonomo.CSharp) | C# / .NET | `dotnet add package Autonomo.CSharp` |
+
+**Note:** `@autonomo/core` is the base JS/TS package - use it for vanilla JavaScript, Node.js, web components, Electron, or any framework without a dedicated package. The React and React Native packages are thin wrappers around core.
 
 ## Documentation
 
