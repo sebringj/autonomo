@@ -247,7 +247,7 @@ autonomo/
 
 ## Platform Support
 
-**SDKs** (implemented with test suites, not yet published):
+**SDKs** (implemented with test suites):
 
 | Platform | Package | Status |
 |----------|---------|--------|
@@ -263,7 +263,33 @@ autonomo/
 | C#/.NET | `Autonomo.CSharp` | ✅ Implemented |
 | CLI | `autonomo-cli` | ✅ Implemented |
 
-> **Note:** Packages are implemented and tested but not yet published to package registries (npm, PyPI, etc.). Install from source for now.
+### Installation
+
+**npm (install from GitHub):**
+```bash
+# Core
+npm install github:sebringj/autonomo#packages/@autonomo/core
+
+# React
+npm install github:sebringj/autonomo#packages/@autonomo/react
+
+# React Native
+npm install github:sebringj/autonomo#packages/@autonomo/react-native
+
+# MCP Server
+npm install github:sebringj/autonomo#packages/@autonomo/mcp-server
+```
+
+**Python:**
+```bash
+pip install git+https://github.com/sebringj/autonomo.git#subdirectory=packages/autonomo-python
+```
+
+**Ruby:**
+```ruby
+# Gemfile
+gem 'autonomo', git: 'https://github.com/sebringj/autonomo.git', glob: 'packages/autonomo-ruby/*.gemspec'
+```
 
 **JS/TS Frameworks** (use `@autonomo/core` with thin lifecycle wrapper):
 
