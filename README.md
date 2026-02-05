@@ -484,6 +484,8 @@ Autonomo provides packages for multiple platforms and languages:
 | [autonomo-python](./packages/autonomo-python) | Python | `pip install autonomo` |
 | [autonomo-ruby](./packages/autonomo-ruby) | Ruby | `gem install autonomo` |
 | [Autonomo.CSharp](./packages/Autonomo.CSharp) | C# / .NET | `dotnet add package Autonomo.CSharp` |
+| [autonomo-swift](./packages/autonomo-swift) | Swift / iOS / macOS | Swift Package Manager |
+| [autonomo-kotlin](./packages/autonomo-kotlin) | Kotlin / JVM / Android | `implementation("com.autonomo:autonomo:0.1.0")` |
 
 **Note:** `@autonomo/core` is the base JS/TS package - use it for vanilla JavaScript, Node.js, web components, Electron, or any framework without a dedicated package. The React and React Native packages are thin wrappers around core.
 
