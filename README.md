@@ -14,39 +14,39 @@ Autonomo is a **local MCP server** that enables AI coding assistants to directly
 
 **After every action, the LLM gets a unified snapshot of what happened across all levels:**
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │  LLM sends command: {"action": "press", "target": "Submit"}     │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                    UNIFIED SNAPSHOT RETURNED                     │
+│                    UNIFIED SNAPSHOT RETURNED                    │
 ├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  UI State:                                                       │
-│    screen: "confirmation"                                        │
+│                                                                 │
+│  UI State:                                                      │
+│    screen: "confirmation"                                       │
 │    elements: ["Order.Number", "Order.Details", "Home.Button"]   │
-│                                                                  │
-│  App State:                                                      │
+│                                                                 │
+│  App State:                                                     │
 │    orderId: "ORD-12345"                                         │
 │    cartCleared: true                                            │
-│                                                                  │
-│  Network:                                                        │
+│                                                                 │
+│  Network:                                                       │
 │    POST /api/orders → 201 (245ms)                               │
 │    response: { id: "ORD-12345", status: "confirmed" }           │
-│                                                                  │
-│  Errors:                                                         │
-│    [] (none)                                                     │
-│                                                                  │
-│  Console:                                                        │
-│    ["Order created successfully"]                                │
-│                                                                  │
+│                                                                 │
+│  Errors:                                                        │
+│    [] (none)                                                    │
+│                                                                 │
+│  Console:                                                       │
+│    ["Order created successfully"]                               │
+│                                                                 │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│  LLM can now:                                                    │
+│  LLM can now:                                                   │
 │    • Verify the action worked                                   │
 │    • See exactly what failed if it didn't                       │
 │    • Iterate with the next command                              │
@@ -88,22 +88,22 @@ This **dramatically reduces hallucinations** because the LLM can't claim success
 
 Autonomo is designed for the **inner development loop** - the tight cycle where you write code, test it, and fix issues:
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
-│                    YOUR LOCAL MACHINE                            │
-│                                                                  │
+│                    YOUR LOCAL MACHINE                           │
+│                                                                 │
 │   ┌─────────────┐     ┌─────────────┐     ┌─────────────┐      │
 │   │   Editor    │     │  Autonomo   │     │  Your App   │      │
 │   │  + AI Tool  │◄───►│   Server    │◄───►│ (localhost) │      │
 │   └─────────────┘     └─────────────┘     └─────────────┘      │
-│         │                                                        │
-│         ▼                                                        │
-│   Write code → Test immediately → See results → Fix → Repeat    │
-│                                                                  │
-│   ════════════════════════════════════════════════════════════  │
-│   100% LOCAL • NO CLOUD • NO LATENCY • NO DATA LEAVING          │
-│   ════════════════════════════════════════════════════════════  │
-│                                                                  │
+│         │                                                       │
+│         ▼                                                       │
+│   Write code → Test immediately → See results → Fix → Repeat   │
+│                                                                 │
+│   ═══════════════════════════════════════════════════════════  │
+│   100% LOCAL • NO CLOUD • NO LATENCY • NO DATA LEAVING         │
+│   ═══════════════════════════════════════════════════════════  │
+│                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -126,33 +126,33 @@ Autonomo is designed for the **inner development loop** - the tight cycle where 
 
 **Autonomo doesn't parse DOM or HTML.** It uses a self-registration pattern:
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
-│                    METADATA REGISTRY PATTERN                     │
+│                    METADATA REGISTRY PATTERN                    │
 ├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
+│                                                                 │
 │  Your UI Framework (any)                                        │
-│       │                                                          │
-│       ▼                                                          │
+│       │                                                         │
+│       ▼                                                         │
 │  ┌─────────────────────────────────────────────────────────┐   │
-│  │  Component mounts → registers with bridge:               │   │
-│  │                                                          │   │
+│  │  Component mounts → registers with bridge:              │   │
+│  │                                                         │   │
 │  │    { id: "Checkout.Submit",                             │   │
-│  │      type: "button",                                     │   │
+│  │      type: "button",                                    │   │
 │  │      onTap: () => handleSubmit() }                      │   │
-│  │                                                          │   │
-│  │  Component unmounts → unregisters                        │   │
+│  │                                                         │   │
+│  │  Component unmounts → unregisters                       │   │
 │  └─────────────────────────────────────────────────────────┘   │
-│       │                                                          │
-│       ▼                                                          │
+│       │                                                         │
+│       ▼                                                         │
 │  ┌─────────────────────────────────────────────────────────┐   │
-│  │  Bridge maintains registry:                              │   │
-│  │                                                          │   │
+│  │  Bridge maintains registry:                             │   │
+│  │                                                         │   │
 │  │    elements: Map<string, { type, handler, value }>      │   │
-│  │                                                          │   │
-│  │  When command arrives → look up handler → invoke         │   │
+│  │                                                         │   │
+│  │  When command arrives → look up handler → invoke        │   │
 │  └─────────────────────────────────────────────────────────┘   │
-│                                                                  │
+│                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -203,26 +203,26 @@ registerScreen("checkout", { cartItems: 3, total: 45.99 });
 
 **Autonomo approach:** Ship **integration guides** (markdown) that AI coding agents use to integrate
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
-│  Developer: "Add Autonomo to my Vue app"                         │
+│  Developer: "Add Autonomo to my Vue app"                        │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │  AI Agent reads: autonomo/guides/vue.md                         │
-│                                                                  │
-│  Contains:                                                       │
+│                                                                 │
+│  Contains:                                                      │
 │    • Vue lifecycle patterns (onMounted, onUnmounted)            │
-│    • Composable template for registration                        │
-│    • Example integration code                                    │
-│    • Testing verification steps                                  │
+│    • Composable template for registration                       │
+│    • Example integration code                                   │
+│    • Testing verification steps                                 │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │  AI Agent writes the integration code tailored to YOUR app      │
-│                                                                  │
+│                                                                 │
 │    • Creates autonomo.ts composable                             │
 │    • Wraps your existing components                             │
 │    • Adds testIDs to key elements                               │
@@ -374,24 +374,24 @@ A **Test Bridge** is a lightweight HTTP interface embedded in an application (de
 2. **Accepts control commands** - Navigate, tap, fill inputs, trigger actions
 3. **Reports results** - Success/failure, errors, timing
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
-│                     LLM / AI Agent                       │
+│                     LLM / AI Agent                      │
 │                  (VS Code + Copilot)                    │
 ├─────────────────────────────────────────────────────────┤
-│                                                          │
+│                                                         │
 │    POST /api/test-command ──────►  Command Queue        │
-│                                         │                │
+│                                         │               │
 │    GET /api/test-result   ◄──────  Result + State       │
-│                                                          │
+│                                                         │
 ├─────────────────────────────────────────────────────────┤
-│                    Running Application                   │
-│                                                          │
+│                    Running Application                  │
+│                                                         │
 │   ┌─────────────┐    ┌─────────────┐    ┌─────────────┐ │
 │   │   Screen    │    │   Elements  │    │   Actions   │ │
 │   │   State     │    │   Registry  │    │   Handlers  │ │
 │   └─────────────┘    └─────────────┘    └─────────────┘ │
-│                                                          │
+│                                                         │
 └─────────────────────────────────────────────────────────┘
 ```
 
