@@ -247,12 +247,26 @@ autonomo/
 
 ## Platform Support
 
-**JS/TS Frameworks** (same core code, thin lifecycle wrapper):
+**Official SDKs** (fully implemented with test suites):
+
+| Platform | Package | Status |
+|----------|---------|--------|
+| TypeScript/JS Core | `@autonomo/core` | ✅ Done |
+| MCP Server | `@autonomo/mcp-server` | ✅ Done |
+| React | `@autonomo/react` | ✅ Done |
+| React Native | `@autonomo/react-native` | ✅ Done |
+| Swift/iOS | `autonomo-swift` | ✅ Done |
+| Kotlin/Android | `autonomo-kotlin` | ✅ Done |
+| Flutter/Dart | `autonomo_flutter` | ✅ Done |
+| Python | `autonomo-python` | ✅ Done |
+| Ruby | `autonomo-ruby` | ✅ Done |
+| C#/.NET | `Autonomo.CSharp` | ✅ Done |
+| CLI | `autonomo-cli` | ✅ Done |
+
+**JS/TS Frameworks** (use `@autonomo/core` with thin lifecycle wrapper):
 
 | Platform | Effort | Notes |
 |----------|--------|-------|
-| React / Preact | ✅ Done | Reference implementation |
-| React Native | ✅ Done | Reference implementation |
 | Vue | ~1 day | Composables for registration |
 | Svelte | ~1 day | Actions/stores pattern |
 | Angular | ~1 day | Directives for registration |
@@ -260,36 +274,15 @@ autonomo/
 | Next.js / Remix | ✅ Works | Uses React impl directly |
 | Vanilla JS | ~hours | Direct registration calls |
 
-**Native Platforms** (same pattern, native HTTP):
-
-| Platform | Effort | Notes |
-|----------|--------|-------|
-| SwiftUI | ~2-3 days | View modifiers + URLSession |
-| UIKit | ~2-3 days | VC lifecycle + URLSession |
-| Jetpack Compose | ~2-3 days | Effects + OkHttp |
-| Android Views | ~2-3 days | Lifecycle + OkHttp |
-| Flutter | ~2-3 days | Widget lifecycle + http package |
-| Qt/QML | ~3-4 days | QML lifecycle + QNetworkAccessManager |
-
-**Backend/API Testing** (simplest - just HTTP, no UI):
-
-| Platform | Effort | Notes |
-|----------|--------|-------|
-| Vue | ~1 day | Composables for registration, same HTTP core |
-| Svelte | ~1 day | Actions/stores pattern |
-| Angular | ~1 day | Directives for registration |
-| Solid | ~1 day | Similar to React hooks |
-| Next.js / Remix | ~hours | React impl works directly |
-| Vanilla JS | ~hours | Direct DOM + fetch |
-
-**Backend/API testing** (even simpler - no UI, just HTTP):
+**Backend/API Testing** (just HTTP, no UI):
 
 | Platform | Effort | Notes |
 |----------|--------|-------|
 | Node.js (Express/Fastify/Koa) | ~hours | Middleware that exposes routes as "elements" |
 | Deno (Fresh/Oak/Hono) | ~hours | Same pattern |
 | Bun | ~hours | Same pattern |
-| Python (Django/Flask/FastAPI) | ~1 day | Decorators to expose endpoints |
+| Go | ~1 day | net/http + middleware |
+| Rust | ~2 days | reqwest + macros |
 
 For backends, "elements" become API endpoints:
 ```json
@@ -302,25 +295,6 @@ For backends, "elements" become API endpoints:
 ```
 
 AI can then test: `{"action": "call", "target": "POST /api/users", "value": {"name": "Test"}}`
-
-The core is **~200 lines of framework-agnostic TypeScript**:
-- HTTP/WebSocket client
-- Command queue processing
-- State reporting
-- Element registry
-
-Framework "integrations" are just thin wrappers (~50 lines) that hook into lifecycle events for auto-registration.
-
-**Non-JS platforms** (need native HTTP integration):
-
-| Platform | Effort | Notes |
-|----------|--------|-------|
-| Flutter | ~2-3 days | Dart HTTP client, widget tree inspection |
-| Swift/iOS | ~1 week | Native URLSession, UIKit/SwiftUI hooks |
-| Kotlin/Android | ~1 week | OkHttp, Compose/View hooks |
-| Python (Django/Flask) | ~1 day | requests + decorators |
-| Go | ~1 day | net/http + middleware |
-| Rust | ~2 days | reqwest + macros |
 
 ## The Problem
 
