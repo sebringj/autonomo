@@ -6,12 +6,12 @@ Or:  python tests/test_autonomo.py
 
 import sys
 import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from autonomo.registry import ElementRegistry, register_tap_handler, register_fill_handler
-from autonomo.actions import CustomActionsRegistry, register_custom_action, ActionResult
-from autonomo.state import StateManager, UserContext
-from autonomo.commands import Commands, execute_command
+from autonomo.registry import registry, register_tap_handler, register_fill_handler
+from autonomo.actions import custom_actions, register_custom_action, ActionResult
+from autonomo.state import state, UserContext
+from autonomo.commands import execute_command
 
 passed = 0
 failed = 0
@@ -36,12 +36,11 @@ def test(name: str):
 print("\n🧪 autonomo-python Test Harness\n")
 
 # Reset singletons
-ElementRegistry._elements.clear()
-CustomActionsRegistry._actions.clear()
+registry.clear()
 
 @test("registry starts empty")
 def _():
-    assert len(ElementRegistry.list()) == 0
+    assert len(registry.list()) == 0
 
 @test("register_tap_handler adds element")
 def _():
@@ -52,16 +51,16 @@ def _():
     
     unregister = register_tap_handler("Test.Button", handler)
     
-    assert ElementRegistry.has("Test.Button")
-    assert "Test.Button" in ElementRegistry.list()
+    assert registry.has("Test.Button")
+    assert "Test.Button" in registry.list()
     
-    # Invoke handler
-    elem = ElementRegistry.get("Test.Button")
-    elem["handler"]()
+    # Invoke handler (takes Optional[str])
+    elem = registry.get("Test.Button")
+    elem.handler(None)
     assert tapped["value"] is True
     
     unregister()
-    assert not ElementRegistry.has("Test.Button")
+    assert not registry.has("Test.Button")
 
 @test("register_fill_handler works with value")
 def _():
@@ -76,10 +75,10 @@ def _():
         get_value=lambda: value["current"]
     )
     
-    elem = ElementRegistry.get("Test.Input")
-    elem["handler"]("test value")
+    elem = registry.get("Test.Input")
+    elem.handler("test value")
     assert value["current"] == "test value"
-    assert elem["get_value"]() == "test value"
+    assert elem.get_value() == "test value"
     
     unregister()
 
@@ -87,44 +86,44 @@ def _():
 def _():
     def my_action(value):
         if value == "fail":
-            return ActionResult.fail("Intentional failure")
-        return ActionResult.ok(f"Got: {value}")
+            return ActionResult(success=False, error="Intentional failure")
+        return ActionResult(success=True, message=f"Got: {value}")
     
     unregister = register_custom_action("testAction", my_action)
     
-    result = CustomActionsRegistry.execute("testAction", "hello")
+    result = custom_actions.execute("testAction", "hello")
     assert result.success is True
     assert "Got: hello" in result.message
     
-    result = CustomActionsRegistry.execute("testAction", "fail")
+    result = custom_actions.execute("testAction", "fail")
     assert result.success is False
     
     unregister()
 
 @test("state manager tracks screen")
 def _():
-    StateManager.set_screen("login")
-    assert StateManager.get_screen() == "login"
+    state.set_screen("login")
+    assert state.get_screen() == "login"
     
-    state = StateManager.get_state()
-    assert state["screen"] == "login"
+    snapshot = state.get_state()
+    assert snapshot.screen == "login"
 
 @test("state manager tracks user")
 def _():
     user = UserContext(id="123", email="test@example.com", role="admin")
-    StateManager.set_user(user)
+    state.set_user(user)
     
-    state = StateManager.get_state()
-    assert state["user"]["id"] == "123"
-    assert state["user"]["email"] == "test@example.com"
+    snapshot = state.get_state()
+    assert snapshot.user.id == "123"
+    assert snapshot.user.email == "test@example.com"
 
 @test("state manager tracks errors")
 def _():
-    StateManager._errors.clear()
-    StateManager.add_error("Test error")
+    state.clear_errors()
+    state.add_error("Test error")
     
-    state = StateManager.get_state()
-    assert "Test error" in state["errors"]
+    snapshot = state.get_state()
+    assert "Test error" in snapshot.errors
 
 @test("commands execute press")
 def _():
@@ -135,7 +134,7 @@ def _():
     assert result.success is True
     assert pressed["value"] is True
     
-    ElementRegistry.unregister("Cmd.Button")
+    registry.unregister("Cmd.Button")
 
 @test("commands execute fill")
 def _():
@@ -146,7 +145,7 @@ def _():
     assert result.success is True
     assert value["current"] == "hello"
     
-    ElementRegistry.unregister("Cmd.Input")
+    registry.unregister("Cmd.Input")
 
 @test("commands return error for missing element")
 def _():

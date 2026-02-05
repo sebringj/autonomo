@@ -40,7 +40,7 @@ module Autonomo
     def initialize
       @actions = {}
       @listeners = []
-      @mutex = Mutex.new
+      @mutex = Monitor.new  # Use Monitor for reentrant locking
     end
 
     # Register a custom action

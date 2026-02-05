@@ -29,11 +29,10 @@ end
 puts "\n🧪 autonomo-ruby Test Harness\n"
 
 # Reset singletons
-Autonomo::ElementRegistry.clear
-Autonomo::CustomActionsRegistry.instance_variable_get(:@actions).clear
+Autonomo::ElementRegistry.instance.clear
 
 test "registry starts empty" do
-  assert Autonomo::ElementRegistry.list.empty?
+  assert Autonomo::ElementRegistry.instance.list.empty?
 end
 
 test "register_tap_handler adds element" do
@@ -41,16 +40,16 @@ test "register_tap_handler adds element" do
   
   unregister = Autonomo.register_tap_handler("Test.Button") { tapped = true }
   
-  assert Autonomo::ElementRegistry.has?("Test.Button")
-  assert Autonomo::ElementRegistry.list.include?("Test.Button")
+  assert Autonomo::ElementRegistry.instance.has?("Test.Button")
+  assert Autonomo::ElementRegistry.instance.list.include?("Test.Button")
   
-  # Invoke handler
-  handler = Autonomo::ElementRegistry.get("Test.Button")
-  handler[:handler].call
+  # Invoke handler (takes value argument)
+  handler = Autonomo::ElementRegistry.instance.get("Test.Button")
+  handler.handler.call(nil)
   assert tapped, "Handler should have been called"
   
   unregister.call
-  assert !Autonomo::ElementRegistry.has?("Test.Button")
+  assert !Autonomo::ElementRegistry.instance.has?("Test.Button")
 end
 
 test "register_fill_handler works with value" do
@@ -61,10 +60,10 @@ test "register_fill_handler works with value" do
     get_value: -> { value }
   ) { |v| value = v }
   
-  handler = Autonomo::ElementRegistry.get("Test.Input")
-  handler[:handler].call("test value")
+  handler = Autonomo::ElementRegistry.instance.get("Test.Input")
+  handler.handler.call("test value")
   assert_equal "test value", value
-  assert_equal "test value", handler[:get_value].call
+  assert_equal "test value", handler.get_value.call
   
   unregister.call
 end
@@ -78,39 +77,39 @@ test "custom actions work" do
     end
   end
   
-  result = Autonomo::CustomActionsRegistry.execute("testAction", "hello")
-  assert result.success?, "Should succeed"
+  result = Autonomo::CustomActionsRegistry.instance.execute("testAction", "hello")
+  assert result.success, "Should succeed"
   assert result.message.include?("Got: hello")
   
-  result = Autonomo::CustomActionsRegistry.execute("testAction", "fail")
-  assert !result.success?, "Should fail"
+  result = Autonomo::CustomActionsRegistry.instance.execute("testAction", "fail")
+  assert !result.success, "Should fail"
   
   unregister.call
 end
 
 test "state manager tracks screen" do
-  Autonomo::StateManager.set_screen("login")
-  assert_equal "login", Autonomo::StateManager.screen
+  Autonomo::StateManager.instance.set_screen("login")
+  assert_equal "login", Autonomo::StateManager.instance.get_screen
   
-  state = Autonomo::StateManager.get_state
-  assert_equal "login", state[:screen]
+  st = Autonomo::StateManager.instance.get_state
+  assert_equal "login", st.screen
 end
 
 test "state manager tracks user" do
   user = Autonomo::UserContext.new(id: "123", email: "test@example.com", role: "admin")
-  Autonomo::StateManager.set_user(user)
+  Autonomo::StateManager.instance.set_user(user)
   
-  state = Autonomo::StateManager.get_state
-  assert_equal "123", state[:user][:id]
-  assert_equal "test@example.com", state[:user][:email]
+  st = Autonomo::StateManager.instance.get_state
+  assert_equal "123", st.user.id
+  assert_equal "test@example.com", st.user.email
 end
 
 test "state manager tracks errors" do
-  Autonomo::StateManager.instance_variable_get(:@errors).clear
-  Autonomo::StateManager.add_error("Test error")
+  Autonomo::StateManager.instance.clear_errors
+  Autonomo::StateManager.instance.add_error("Test error")
   
-  state = Autonomo::StateManager.get_state
-  assert state[:errors].include?("Test error")
+  st = Autonomo::StateManager.instance.get_state
+  assert st.errors.include?("Test error")
 end
 
 test "commands execute press" do
@@ -118,10 +117,10 @@ test "commands execute press" do
   Autonomo.register_tap_handler("Cmd.Button") { pressed = true }
   
   result = Autonomo.execute_command("press", "Cmd.Button")
-  assert result.success?, "Command should succeed"
+  assert result.success, "Command should succeed"
   assert pressed, "Button should be pressed"
   
-  Autonomo::ElementRegistry.unregister("Cmd.Button")
+  Autonomo::ElementRegistry.instance.unregister("Cmd.Button")
 end
 
 test "commands execute fill" do
@@ -129,15 +128,15 @@ test "commands execute fill" do
   Autonomo.register_fill_handler("Cmd.Input") { |v| value = v }
   
   result = Autonomo.execute_command("fill", "Cmd.Input", "hello")
-  assert result.success?, "Command should succeed"
+  assert result.success, "Command should succeed"
   assert_equal "hello", value
   
-  Autonomo::ElementRegistry.unregister("Cmd.Input")
+  Autonomo::ElementRegistry.instance.unregister("Cmd.Input")
 end
 
 test "commands return error for missing element" do
   result = Autonomo.execute_command("press", "Nonexistent.Button")
-  assert !result.success?, "Should fail"
+  assert !result.success, "Should fail"
   assert result.error.downcase.include?("not found")
 end
 

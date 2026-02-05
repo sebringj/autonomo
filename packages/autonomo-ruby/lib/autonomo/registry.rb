@@ -60,7 +60,7 @@ module Autonomo
     def initialize
       @elements = {}
       @listeners = []
-      @mutex = Mutex.new
+      @mutex = Monitor.new  # Use Monitor for reentrant locking
     end
 
     # Register an interactive element

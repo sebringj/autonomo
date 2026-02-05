@@ -100,7 +100,7 @@ module Autonomo
       @render_errors = []
       @network = []
       @listeners = []
-      @mutex = Mutex.new
+      @mutex = Monitor.new  # Use Monitor for reentrant locking
 
       # Forward registry/action changes
       Autonomo.registry.on_change { notify_change }
