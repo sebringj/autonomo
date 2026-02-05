@@ -1,0 +1,11 @@
+{
+  "": {
+    "swift-dependencies": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/AutonomoPackageTests.build/master.swiftdeps"
+  },
+  "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/AutonomoPackageTests.derived/runner.swift": {
+    "dependencies": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/AutonomoPackageTests.build/runner.d",
+    "object": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/AutonomoPackageTests.build/runner.swift.o",
+    "swiftmodule": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/AutonomoPackageTests.build/runner~partial.swiftmodule",
+    "swift-dependencies": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/AutonomoPackageTests.build/runner.swiftdeps"
+  }
+}

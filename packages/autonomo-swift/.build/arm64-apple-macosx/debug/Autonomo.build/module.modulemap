@@ -1,0 +1,4 @@
+module Autonomo {
+    header "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Autonomo-Swift.h"
+    requires objc
+}

@@ -73,6 +73,18 @@ public sealed class CustomActionsRegistry
     }
 
     /// <summary>
+    /// Clear all registered custom actions
+    /// </summary>
+    public void Clear()
+    {
+        lock (_lock)
+        {
+            _actions.Clear();
+            NotifyChange();
+        }
+    }
+
+    /// <summary>
     /// Execute a custom action
     /// </summary>
     public ActionResult Execute(string name, string? value = null)

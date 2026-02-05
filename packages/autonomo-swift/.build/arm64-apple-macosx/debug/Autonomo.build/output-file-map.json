@@ -1,0 +1,35 @@
+{
+  "": {
+    "swift-dependencies": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/master.swiftdeps"
+  },
+  "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/Sources/Autonomo/Actions.swift": {
+    "dependencies": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Actions.d",
+    "object": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Actions.swift.o",
+    "swiftmodule": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Actions~partial.swiftmodule",
+    "swift-dependencies": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Actions.swiftdeps"
+  },
+  "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/Sources/Autonomo/Commands.swift": {
+    "dependencies": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Commands.d",
+    "object": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Commands.swift.o",
+    "swiftmodule": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Commands~partial.swiftmodule",
+    "swift-dependencies": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Commands.swiftdeps"
+  },
+  "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/Sources/Autonomo/Registry.swift": {
+    "dependencies": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Registry.d",
+    "object": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Registry.swift.o",
+    "swiftmodule": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Registry~partial.swiftmodule",
+    "swift-dependencies": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Registry.swiftdeps"
+  },
+  "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/Sources/Autonomo/State.swift": {
+    "dependencies": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/State.d",
+    "object": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/State.swift.o",
+    "swiftmodule": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/State~partial.swiftmodule",
+    "swift-dependencies": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/State.swiftdeps"
+  },
+  "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/Sources/Autonomo/Transport.swift": {
+    "dependencies": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Transport.d",
+    "object": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Transport.swift.o",
+    "swiftmodule": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Transport~partial.swiftmodule",
+    "swift-dependencies": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Transport.swiftdeps"
+  }
+}

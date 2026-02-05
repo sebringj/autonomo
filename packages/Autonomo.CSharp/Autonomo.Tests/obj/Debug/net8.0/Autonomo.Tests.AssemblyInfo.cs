@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Autonomo.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+eab51859b860f8ff3c47df0c51ca7a0c3cf48a57")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+41d7529782667980b9ac57717a7561f17a53402a")]
 [assembly: System.Reflection.AssemblyProductAttribute("Autonomo.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Autonomo.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

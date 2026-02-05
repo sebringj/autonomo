@@ -47,7 +47,7 @@ class Program
 
         // Reset singletons using instance methods
         ElementRegistry.Instance.Clear();
-        // CustomActionsRegistry doesn't have Clear - actions cleaned up via unregister
+        CustomActionsRegistry.Instance.Clear();
 
         Test("registry starts empty", () =>
         {
