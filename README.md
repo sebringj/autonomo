@@ -247,21 +247,21 @@ autonomo/
 
 ## Platform Support
 
-**SDKs** (implemented with test suites):
+**SDKs:**
 
 | Platform | Package | Status |
 |----------|---------|--------|
-| TypeScript/JS Core | `@autonomo/core` | ✅ Implemented |
-| MCP Server | `@autonomo/mcp-server` | ✅ Implemented |
-| React | `@autonomo/react` | ✅ Implemented |
-| React Native | `@autonomo/react-native` | ✅ Implemented |
-| Swift/iOS | `autonomo-swift` | ✅ Implemented |
-| Kotlin/Android | `autonomo-kotlin` | ✅ Implemented |
-| Flutter/Dart | `autonomo_flutter` | ✅ Implemented |
-| Python | `autonomo-python` | ✅ Implemented |
-| Ruby | `autonomo-ruby` | ✅ Implemented |
-| C#/.NET | `Autonomo.CSharp` | ✅ Implemented |
-| CLI | `autonomo-cli` | ✅ Implemented |
+| TypeScript/JS Core | `@autonomo/core` | ✅ Done |
+| MCP Server | `@autonomo/mcp-server` | ✅ Done |
+| React | `@autonomo/react` | ✅ Done |
+| React Native | `@autonomo/react-native` | ✅ Done |
+| Swift/iOS | `autonomo-swift` | 📋 TODO |
+| Kotlin/Android | `autonomo-kotlin` | 📋 TODO |
+| Flutter/Dart | `autonomo_flutter` | 📋 TODO |
+| Python | `autonomo-python` | 📋 TODO |
+| Ruby | `autonomo-ruby` | 📋 TODO |
+| C#/.NET | `Autonomo.CSharp` | 📋 TODO |
+| CLI | `autonomo-cli` | 📋 TODO |
 
 ### Installation
 
@@ -278,17 +278,6 @@ npm install github:sebringj/autonomo#packages/@autonomo/react-native
 
 # MCP Server
 npm install github:sebringj/autonomo#packages/@autonomo/mcp-server
-```
-
-**Python:**
-```bash
-pip install git+https://github.com/sebringj/autonomo.git#subdirectory=packages/autonomo-python
-```
-
-**Ruby:**
-```ruby
-# Gemfile
-gem 'autonomo', git: 'https://github.com/sebringj/autonomo.git', glob: 'packages/autonomo-ruby/*.gemspec'
 ```
 
 **JS/TS Frameworks** (use `@autonomo/core` with thin lifecycle wrapper):
