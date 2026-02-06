@@ -4,7 +4,7 @@
 
 # Autonomo — Verify Fast, Fix Fast
 
-**Pronunciation:** /ɔːˈtɒnəˌmoʊ/ — *aw-TAH-nuh-moh*
+**Pronunciation:** /ɑːˈtɑːnəˌmoʊ/ — *ah-TAH-nuh-moh*
 
 > Works with: GitHub Copilot • Claude Code • Cursor • Windsurf • Any MCP-compatible AI
 
