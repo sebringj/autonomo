@@ -2,7 +2,7 @@
   <img src="logo.jpeg" alt="Autonomo" width="200" />
 </p>
 
-# Autonomo — Efficient AI Validation
+# Autonomo — Verify Fast, Fix Fast
 
 > Works with: GitHub Copilot • Claude Code • Cursor • Windsurf • Any MCP-compatible AI
 
