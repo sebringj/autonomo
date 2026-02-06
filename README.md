@@ -8,7 +8,20 @@
 >
 > Works with: GitHub Copilot • Claude Code • Cursor • Windsurf • Any MCP-compatible AI
 
-Autonomo is a **local MCP server** that enables AI coding assistants to directly interact with and test your running applications. It's not a competing AI tool—it's infrastructure that makes ALL your AI tools better at testing.
+Autonomo enables AI coding assistants to directly interact with and test your running applications.
+
+### Why Autonomo?
+
+| Vision-Based Testing | Autonomo |
+|---------------------|----------|
+| 🐢 ~2-5s per screenshot analysis | ⚡ ~50ms structured response |
+| 💸 1000+ tokens per image | 🪶 ~50 tokens per state report |
+| 🖥️ Different tools per platform | 🌐 One protocol for web, iOS, Android, desktop |
+| 👁️ Only sees pixels on screen | 🔍 Sees app state, network calls, errors, auth |
+| 🎯 Coordinates break on resize | 🏷️ Semantic IDs survive redesigns |
+| 👤 Single device at a time | 👥 **Multi-device**: test User A → User B flows |
+
+**Multi-user testing example**: "On Device A, send a message. On Device B, verify it arrives."
 
 ---
 
