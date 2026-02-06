@@ -41,7 +41,7 @@ npm install -g github:sebringj/autonomo#packages/@autonomo/mcp-server
 
 ### Step 3: Add the Bridge to Your App
 
-**React / React Native:**
+**React / React Native / [more platforms](#other-platforms):**
 ```bash
 npm install github:sebringj/autonomo#packages/@autonomo/react
 # or for React Native:
