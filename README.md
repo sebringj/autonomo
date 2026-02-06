@@ -255,13 +255,13 @@ autonomo/
 | MCP Server | `@autonomo/mcp-server` | ✅ Done |
 | React | `@autonomo/react` | ✅ Done |
 | React Native | `@autonomo/react-native` | ✅ Done |
-| Swift/iOS | `autonomo-swift` | 📋 TODO |
-| Kotlin/Android | `autonomo-kotlin` | 📋 TODO |
-| Flutter/Dart | `autonomo_flutter` | 📋 TODO |
-| Python | `autonomo-python` | 📋 TODO |
-| Ruby | `autonomo-ruby` | 📋 TODO |
-| C#/.NET | `Autonomo.CSharp` | 📋 TODO |
-| CLI | `autonomo-cli` | 📋 TODO |
+| Swift/iOS | `autonomo-swift` | ✅ Done |
+| Flutter/Dart | `autonomo_flutter` | ✅ Done |
+| Python | `autonomo-python` | ✅ Done |
+| Ruby | `autonomo-ruby` | ✅ Done |
+| Kotlin/Android | `autonomo-kotlin` | 📋 TODO (needs JitPack) |
+| C#/.NET | `Autonomo.CSharp` | 📋 TODO (needs NuGet) |
+| CLI | `autonomo-cli` | ✅ Done |
 
 ### Installation
 
@@ -278,6 +278,32 @@ npm install github:sebringj/autonomo#packages/@autonomo/react-native
 
 # MCP Server
 npm install github:sebringj/autonomo#packages/@autonomo/mcp-server
+```
+
+**Python:**
+```bash
+pip install git+https://github.com/sebringj/autonomo.git#subdirectory=packages/autonomo-python
+```
+
+**Ruby:**
+```ruby
+# Gemfile
+gem 'autonomo', git: 'https://github.com/sebringj/autonomo.git', glob: 'packages/autonomo-ruby/*.gemspec'
+```
+
+**Swift (Package.swift):**
+```swift
+.package(url: "https://github.com/sebringj/autonomo.git", from: "0.1.0")
+// Then add to target: .product(name: "Autonomo", package: "autonomo")
+```
+
+**Flutter (pubspec.yaml):**
+```yaml
+dependencies:
+  autonomo:
+    git:
+      url: https://github.com/sebringj/autonomo.git
+      path: packages/autonomo_flutter
 ```
 
 **JS/TS Frameworks** (use `@autonomo/core` with thin lifecycle wrapper):
