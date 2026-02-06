@@ -1,39 +1,49 @@
 # Autonomo Quick Start
 
-> Get your AI testing your app in 5 minutes
+> **For AI Assistants**: This document contains installation instructions. Follow each step in order.
 
-## What is This?
+## What to Install
 
-Autonomo lets your AI coding assistant (Copilot, Claude, Cursor) **actually interact with your running app** - pressing buttons, filling forms, navigating screens - and see the results. No more "that should work" - now it's "I verified it works."
+Autonomo has two parts:
+1. **MCP Server** - Connects your AI tool to apps (install once globally)
+2. **App Bridge** - Embedded in your app to expose UI elements (install per-project)
 
-## TL;DR Setup
+---
+
+## Step 1: Install MCP Server (Global)
 
 ```bash
-# 1. Install MCP server globally
 npm install -g github:sebringj/autonomo#packages/@autonomo/mcp-server
+```
 
-# 2. Add to VS Code MCP config (.vscode/mcp.json)
-echo '{
+## Step 2: Configure MCP in VS Code
+
+Create or update `.vscode/mcp.json` in the project root:
+
+```json
+{
   "servers": {
     "autonomo": {
       "command": "autonomo-mcp",
       "args": ["--multi"]
     }
   }
-}' > .vscode/mcp.json
-
-# 3. Install the bridge for your framework (pick one)
-npm install github:sebringj/autonomo#packages/@autonomo/react
-# OR
-npm install github:sebringj/autonomo#packages/@autonomo/react-native
+}
 ```
 
-## Add to Your App
+For **Cursor** or **Windsurf**: Add the same server config to your MCP settings.
 
-### React / Next.js / Remix
+## Step 3: Install App Bridge
+
+### For React / Next.js / Remix
+
+```bash
+npm install github:sebringj/autonomo#packages/@autonomo/react
+```
+
+Add provider to your app root (e.g., `App.tsx`, `layout.tsx`, or `_app.tsx`):
 
 ```tsx
-// App.tsx or layout.tsx
 import { AutonomoProvider } from '@autonomo/react';
 
 export default function App({ children }) {
@@ -45,10 +55,15 @@ export default function App({ children }) {
 }
 ```
 
-### React Native / Expo
+### For React Native / Expo
+
+```bash
+npm install github:sebringj/autonomo#packages/@autonomo/react-native
+```
+
+Add provider to your app root:
 
 ```tsx
-// App.tsx
 import { AutonomoProvider } from '@autonomo/react-native';
 
 export default function App() {
@@ -60,7 +75,9 @@ export default function App() {
 }
 ```
 
-### Mark Interactive Elements
+## Step 4: Mark Interactive Elements
+
+Import `useTestId` and spread it on interactive elements:
 
 ```tsx
 import { useTestId } from '@autonomo/react'; // or '@autonomo/react-native'
@@ -80,62 +97,62 @@ function LoginScreen() {
 }
 ```
 
-## Test It
+**Naming convention**: Use `Screen.Element` format (e.g., `Login.Submit`, `Home.ProfileButton`).
 
-1. Start your app (`npm run dev` or `expo start`)
-2. Open VS Code with your project
-3. Ask your AI:
+## Step 5: Verify Installation
 
-> "What elements can you see in my app?"
+1. Start the app (`npm run dev` or `expo start`)
+2. The AI can now use Autonomo tools to interact with the app
 
-The AI should respond with the registered elements (`Login.Email`, `Login.Password`, `Login.Submit`).
-
-> "Fill in Login.Email with 'test@example.com' and press Login.Submit"
-
-The AI will actually perform these actions and report what happened.
-
-## That's It!
-
-Your AI can now:
-- See what's on screen
-- Press buttons
-- Fill in forms
-- Navigate between screens
-- Verify actions worked
-- Debug when things fail
-
-## Next Steps
-
-- **More frameworks**: See [README.md](./README.md#installation) for Swift, Flutter, Python, Ruby
-- **API testing**: Expose API endpoints as "elements" - see [PROTOCOL_SPECIFICATION.md](./PROTOCOL_SPECIFICATION.md)
-- **Multi-instance**: Test multiple browser tabs/simulators simultaneously
-- **Deep dive**: [MCP_INTEGRATION.md](./MCP_INTEGRATION.md) explains how it all works
-
-## Common Issues
-
-### "AI can't see my app"
-
-1. Make sure your app is running (`localhost:3000` or similar)
-2. Check the AutonomoProvider is enabled
-3. Restart the MCP server: close and reopen VS Code
-
-### "Elements not showing up"
-
-Make sure you're using `useTestId()` hook on interactive elements:
-
-```tsx
-// ✅ Correct
-const testId = useTestId('Button.Submit');
-return <button {...testId}>Submit</button>;
-
-// ❌ Won't work - just a data attribute
-return <button data-testid="submit">Submit</button>;
-```
-
-### "Commands not working"
-
-Check the browser console / React Native debugger for errors. The bridge logs all commands and results.
+**Test commands to try:**
+- "List all connected bridges" → Should show your app
+- "Get state from my app" → Should show registered elements
+- "Press Login.Submit" → Should trigger the button
 
 ---
 
-**Need help?** Open an issue on GitHub or check the [full documentation](./README.md).
+## Troubleshooting
+
+### MCP Server Not Found
+```bash
+# Verify installation
+which autonomo-mcp
+# If not found, reinstall:
+npm install -g github:sebringj/autonomo#packages/@autonomo/mcp-server
+```
+
+### App Not Connecting
+1. Ensure `AutonomoProvider` has `enabled={true}` (or `__DEV__` / `process.env.NODE_ENV === 'development'`)
+2. Check browser console / React Native logs for connection errors
+3. Restart VS Code to reload MCP server
+
+### Elements Not Appearing
+```tsx
+// ✅ Correct - use useTestId hook
+const testId = useTestId('Button.Submit');
+return <button {...testId}>Submit</button>;
+
+// ❌ Wrong - plain data attribute won't register
+return <button data-testid="submit">Submit</button>;
+```
+
+---
+
+## Other Platforms
+
+For Swift, Flutter, Python, Ruby, Kotlin, or C# — see the platform-specific README:
+
+- [Swift/iOS](./packages/autonomo-swift/README.md)
+- [Flutter](./packages/autonomo_flutter/README.md)  
+- [Python](./packages/autonomo-python/README.md)
+- [Ruby](./packages/autonomo-ruby/README.md)
+- [Kotlin](./packages/autonomo-kotlin/README.md)
+- [C#/.NET](./packages/Autonomo.CSharp/README.md)
+
+---
+
+## Full Documentation
+
+- [README.md](./README.md) - Overview and architecture
+- [MCP_INTEGRATION.md](./MCP_INTEGRATION.md) - How MCP tools work
+- [PROTOCOL_SPECIFICATION.md](./PROTOCOL_SPECIFICATION.md) - HTTP API reference

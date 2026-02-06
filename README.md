@@ -12,77 +12,69 @@ Autonomo is a **local MCP server** that enables AI coding assistants to directly
 
 ---
 
-## ⚡ Quick Start (5 minutes)
+## ⚡ Quick Start
 
-### What You Get
-Your AI assistant (Copilot, Claude, Cursor) gains the ability to **actually run and test** your app—pressing buttons, filling forms, and verifying results—instead of just hoping the code works.
+**Just tell your AI assistant:**
 
-### Step 1: Install the MCP Server
-
-```bash
-npm install -g github:sebringj/autonomo#packages/@autonomo/mcp-server
+```
+Install Autonomo in my project. Read https://github.com/sebringj/autonomo/blob/main/QUICKSTART.md
 ```
 
-### Step 2: Configure Your AI Tool
+Your AI will handle the rest — installing packages, configuring MCP, and adding the bridge to your app.
 
-**VS Code (Copilot/Claude)** - Add to `.vscode/mcp.json`:
-```json
-{
-  "servers": {
-    "autonomo": {
-      "command": "autonomo-mcp",
-      "args": ["--multi"]
-    }
-  }
-}
+### Platform-Specific Prompts
+
+Copy-paste the prompt for your platform:
+
+**React / Next.js / Remix:**
+```
+Install Autonomo for my React app. Read https://github.com/sebringj/autonomo/blob/main/QUICKSTART.md
 ```
 
-**Cursor/Windsurf** - Add to MCP settings (same command: `autonomo-mcp --multi`)
-
-### Step 3: Add the Bridge to Your App
-
-**React / React Native / [more platforms](#other-platforms):**
-```bash
-npm install github:sebringj/autonomo#packages/@autonomo/react
-# or for React Native:
-npm install github:sebringj/autonomo#packages/@autonomo/react-native
+**React Native / Expo:**
+```
+Install Autonomo for my React Native app. Read https://github.com/sebringj/autonomo/blob/main/QUICKSTART.md
 ```
 
-```tsx
-// In your app root (e.g., App.tsx)
-import { AutonomoProvider, useTestId } from '@autonomo/react';
-
-function App() {
-  return (
-    <AutonomoProvider name="my-app" enabled={__DEV__}>
-      <MyApp />
-    </AutonomoProvider>
-  );
-}
-
-// In any component - mark interactive elements
-function LoginButton() {
-  const testId = useTestId('Login.Submit');
-  return <button {...testId} onClick={handleLogin}>Login</button>;
-}
+**Swift / iOS:**
+```
+Install Autonomo for my Swift iOS app. Read https://github.com/sebringj/autonomo/blob/main/packages/autonomo-swift/README.md
 ```
 
-### Step 4: Test It!
+**Flutter:**
+```
+Install Autonomo for my Flutter app. Read https://github.com/sebringj/autonomo/blob/main/packages/autonomo_flutter/README.md
+```
 
-Start your app, then ask your AI:
+**Python:**
+```
+Install Autonomo for my Python app. Read https://github.com/sebringj/autonomo/blob/main/packages/autonomo-python/README.md
+```
 
-> "Press the Login.Submit button and tell me what happens"
+**Ruby:**
+```
+Install Autonomo for my Ruby app. Read https://github.com/sebringj/autonomo/blob/main/packages/autonomo-ruby/README.md
+```
 
-The AI will actually press the button and report the result. 🎉
+**Kotlin / Android:**
+```
+Install Autonomo for my Kotlin app. Read https://github.com/sebringj/autonomo/blob/main/packages/autonomo-kotlin/README.md
+```
 
-### Other Platforms
+**C# / .NET:**
+```
+Install Autonomo for my C# app. Read https://github.com/sebringj/autonomo/blob/main/packages/Autonomo.CSharp/README.md
+```
 
-| Platform | Package | Quick Install |
-|----------|---------|---------------|
-| **Swift/iOS** | `autonomo-swift` | `Package.swift` - see [Installation](#installation) |
-| **Flutter** | `autonomo_flutter` | `pubspec.yaml` - see [Installation](#installation) |
-| **Python** | `autonomo-python` | `pip install git+...` - see [Installation](#installation) |
-| **Ruby** | `autonomo-ruby` | `Gemfile` - see [Installation](#installation) |
+### After Installation
+
+Ask your AI:
+
+> "What elements can you see in my app?"
+
+> "Press the Login button and tell me what happens"
+
+The AI will actually interact with your running app and report results. 🎉
 
 ---
 
