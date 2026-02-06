@@ -260,6 +260,72 @@ export async function createMultiBridgeServer(
         required: ['bridge'],
       },
     },
+
+    // ==========================================
+    // autonomo/cross_bridge_scenario
+    // ==========================================
+    {
+      name: 'autonomo_cross_bridge_scenario',
+      description:
+        'Execute a multi-user/multi-device test scenario across multiple bridges. Each step specifies which bridge to target. Perfect for testing real-time features like chat, notifications, or collaborative editing where User A\'s action should be visible to User B.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          scenario: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                bridge: {
+                  type: 'string',
+                  description: 'Which bridge (device/user) to execute this step on',
+                },
+                action: {
+                  type: 'string',
+                  enum: [
+                    'navigate',
+                    'press',
+                    'fillIn',
+                    'fill',
+                    'submit',
+                    'custom',
+                    'waitFor',
+                    'wait',
+                  ],
+                },
+                target: {
+                  type: 'string',
+                  description: 'Element ID or screen name',
+                },
+                value: {
+                  type: 'string',
+                  description: 'Value for fill actions',
+                },
+                condition: {
+                  type: 'string',
+                  description: 'Condition for waitFor action',
+                },
+                timeout: {
+                  type: 'number',
+                  description: 'Timeout for wait actions',
+                },
+                description: {
+                  type: 'string',
+                  description: 'Human-readable description of this step (e.g., "User A sends message")',
+                },
+              },
+              required: ['bridge', 'action'],
+            },
+            description: 'Array of steps to execute across bridges. Example: [{bridge: "user-a", action: "press", target: "Chat.SendButton"}, {bridge: "user-b", action: "waitFor", condition: "element:Chat.NewMessage"}]',
+          },
+          stopOnError: {
+            type: 'boolean',
+            description: 'Stop execution on first error (default: true)',
+          },
+        },
+        required: ['scenario'],
+      },
+    },
   ];
 
   // Register tool list handler
@@ -447,6 +513,119 @@ export async function createMultiBridgeServer(
                 text: removed
                   ? `✓ Unregistered bridge: ${bridge}`
                   : `✗ Bridge not found: ${bridge}`,
+              },
+            ],
+          };
+        }
+
+        // ==========================================
+        // autonomo/cross_bridge_scenario
+        // ==========================================
+        case 'autonomo_cross_bridge_scenario': {
+          interface CrossBridgeStep {
+            bridge: string;
+            action: 'navigate' | 'press' | 'fillIn' | 'fill' | 'submit' | 'custom' | 'waitFor' | 'wait';
+            target?: string;
+            value?: string;
+            condition?: string;
+            timeout?: number;
+            description?: string;
+          }
+
+          const { scenario, stopOnError = true } = args as {
+            scenario: CrossBridgeStep[];
+            stopOnError?: boolean;
+          };
+
+          const steps: Array<{
+            step: number;
+            bridge: string;
+            action: string;
+            description?: string;
+            success: boolean;
+            duration: number;
+            error?: string;
+          }> = [];
+          const overallStart = Date.now();
+
+          for (let i = 0; i < scenario.length; i++) {
+            const step = scenario[i];
+            const stepStart = Date.now();
+
+            try {
+              // Verify bridge exists
+              if (!registry.hasBridge(step.bridge)) {
+                throw new Error(`Bridge not found: ${step.bridge}`);
+              }
+
+              let success = false;
+              let error: string | undefined;
+
+              if (step.action === 'waitFor') {
+                const result = await registry.waitFor(
+                  step.bridge,
+                  step.condition!,
+                  step.timeout ?? 5000
+                );
+                success = result.success;
+                error = result.error;
+              } else if (step.action === 'wait') {
+                await new Promise((resolve) => setTimeout(resolve, step.timeout ?? 1000));
+                success = true;
+              } else {
+                const result = await registry.sendCommand(
+                  step.bridge,
+                  step.action as 'navigate' | 'press' | 'fillIn' | 'fill' | 'submit' | 'custom',
+                  step.target!,
+                  step.value
+                );
+                success = result.success;
+                error = result.error;
+              }
+
+              const stepDuration = Date.now() - stepStart;
+
+              steps.push({
+                step: i + 1,
+                bridge: step.bridge,
+                action: step.action,
+                description: step.description,
+                success,
+                duration: stepDuration,
+                error,
+              });
+
+              if (!success && stopOnError) {
+                break;
+              }
+            } catch (e) {
+              const stepDuration = Date.now() - stepStart;
+              const errorMsg = e instanceof Error ? e.message : String(e);
+
+              steps.push({
+                step: i + 1,
+                bridge: step.bridge,
+                action: step.action,
+                description: step.description,
+                success: false,
+                duration: stepDuration,
+                error: errorMsg,
+              });
+
+              if (stopOnError) {
+                break;
+              }
+            }
+          }
+
+          const totalDuration = Date.now() - overallStart;
+          const allPassed = steps.every((s) => s.success);
+
+          return {
+            content: [
+              {
+                type: 'text',
+                text: formatCrossBridgeResult(steps, totalDuration, allPassed),
               },
             ],
           };
@@ -647,6 +826,51 @@ function formatScenarioResult(result: any): string {
   if (result.finalState) {
     lines.push('');
     lines.push(`Final screen: ${result.finalState.screen}`);
+  }
+
+  return lines.join('\n');
+}
+
+function formatCrossBridgeResult(
+  steps: Array<{
+    step: number;
+    bridge: string;
+    action: string;
+    description?: string;
+    success: boolean;
+    duration: number;
+    error?: string;
+  }>,
+  totalDuration: number,
+  allPassed: boolean
+): string {
+  const lines: string[] = [];
+
+  if (allPassed) {
+    lines.push(`✓ Cross-bridge scenario completed successfully`);
+  } else {
+    const failedStep = steps.find((s) => !s.success);
+    lines.push(`✗ Cross-bridge scenario failed at step ${failedStep?.step}`);
+  }
+
+  lines.push(`   Total duration: ${totalDuration}ms`);
+  lines.push(`   Steps: ${steps.filter((s) => s.success).length}/${steps.length} passed`);
+  lines.push('');
+  lines.push('Steps:');
+
+  for (const step of steps) {
+    const icon = step.success ? '✓' : '✗';
+    let line = `  ${step.step}. ${icon} [${step.bridge}] ${step.action}`;
+    if (step.description) {
+      line += ` - "${step.description}"`;
+    }
+    line += ` (${step.duration}ms)`;
+    if (step.error) {
+      lines.push(line);
+      lines.push(`      Error: ${step.error}`);
+    } else {
+      lines.push(line);
+    }
   }
 
   return lines.join('\n');
