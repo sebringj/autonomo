@@ -5,8 +5,8 @@
  * 
  * This package provides:
  * - All hooks from @autonomo/react
- * - HTTP server transport for the app
- * - Expo-compatible implementation
+ * - WebSocket MCP client for connecting to Autonomo server
+ * - Expo-compatible host detection for simulators/emulators
  */
 
 // Re-export all React hooks (includes useInstance)
@@ -17,87 +17,326 @@ export {
   createFetchHandler,
 } from '@autonomo/core';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { AppState as RNAppState, Platform } from 'react-native';
 import { handleRequest, getInstance, initInstance, type InstanceInfo } from '@autonomo/core';
 
+// Try to import expo-constants (optional peer dependency)
+let ExpoConstants: { expoConfig?: { hostUri?: string }; manifest?: { debuggerHost?: string } } | null = null;
+try {
+  ExpoConstants = require('expo-constants').default;
+} catch {
+  // expo-constants not available
+}
+
 /**
- * Configuration for the Autonomo bridge
+ * Default Autonomo MCP server port
  */
-export interface BridgeConfig {
-  /** Port to listen on (default: 8080) */
+const DEFAULT_MCP_PORT = 9876;
+
+/**
+ * Get the host machine's IP address for WebSocket connections.
+ * 
+ * In React Native, `localhost` doesn't work from the device/simulator
+ * because it refers to the device itself, not the dev machine.
+ * 
+ * This function detects the correct host by:
+ * 1. Using Expo's debuggerHost/hostUri (extracts IP from Metro bundler)
+ * 2. Falling back to localhost (works on iOS simulator only)
+ * 
+ * @param fallbackHost - Optional fallback host if auto-detection fails
+ * @returns The host address (IP or hostname)
+ */
+export function getDevHost(fallbackHost?: string): string {
+  // Try Expo's hostUri first (newer Expo versions)
+  const hostUri = ExpoConstants?.expoConfig?.hostUri;
+  if (hostUri) {
+    const host = hostUri.split(':')[0];
+    if (host && host !== 'localhost') {
+      return host;
+    }
+  }
+  
+  // Try Expo's debuggerHost (older Expo versions)
+  const debuggerHost = ExpoConstants?.manifest?.debuggerHost;
+  if (debuggerHost) {
+    const host = debuggerHost.split(':')[0];
+    if (host && host !== 'localhost') {
+      return host;
+    }
+  }
+  
+  // Use fallback or localhost
+  return fallbackHost ?? 'localhost';
+}
+
+/**
+ * Get the full WebSocket URL for the Autonomo MCP server
+ * 
+ * @param port - MCP server port (default: 9876)
+ * @param host - Optional host override
+ * @returns WebSocket URL like ws://192.168.1.100:9876
+ */
+export function getMcpServerUrl(port: number = DEFAULT_MCP_PORT, host?: string): string {
+  const resolvedHost = host ?? getDevHost();
+  return `ws://${resolvedHost}:${port}`;
+}
+
+/**
+ * App state for reporting to MCP server
+ */
+export interface AppState {
+  screen: string;
+  elements: Array<{
+    id: string;
+    type: string;
+    label?: string;
+    disabled?: boolean;
+    hint?: string;
+  }>;
+  customActions?: string[];
+  errors?: Array<{ message: string; timestamp: number }>;
+  user?: {
+    id?: string;
+    name?: string;
+    role?: string;
+  } | null;
+}
+
+/**
+ * Command from MCP server
+ */
+export interface McpCommand {
+  commandId: string;
+  action: string;
+  target?: string;
+  value?: string;
+}
+
+/**
+ * Command result to send back to MCP server
+ */
+export interface CommandResult {
+  success: boolean;
+  message?: string;
+  error?: string;
+}
+
+/**
+ * Configuration for the MCP WebSocket client
+ */
+export interface McpClientConfig {
+  /** App name for bridge identification */
+  name: string;
+  /** MCP server port (default: 9876) */
   port?: number;
+  /** MCP server host (auto-detected if not provided) */
+  host?: string;
   /** Only enable in development (default: true) */
   devOnly?: boolean;
-  /** App name for instance identification */
-  appName?: string;
-  /** Called when server starts */
-  onStart?: (url: string, instance: InstanceInfo) => void;
-  /** Called on errors */
+  /** Reconnect delay in ms (default: 5000) */
+  reconnectDelay?: number;
+  /** Enable debug logging */
+  debug?: boolean;
+  /** Get current app state - called when server requests state */
+  getState: () => AppState;
+  /** Handle command from server */
+  onCommand: (command: McpCommand) => Promise<CommandResult>;
+  /** Called when connected */
+  onConnect?: (bridgeId: string) => void;
+  /** Called when disconnected */
+  onDisconnect?: () => void;
+  /** Called on error */
   onError?: (error: Error) => void;
 }
 
 /**
- * Hook to run the Autonomo HTTP bridge
+ * Hook to connect to Autonomo MCP server via WebSocket
  * 
- * Automatically initializes the instance identity if not already done.
- * In React Native, this typically uses a polyfill or native module
- * for running an HTTP server. For Expo, we recommend using
- * expo-server or a WebSocket-based approach.
+ * This hook manages a persistent WebSocket connection to the MCP server,
+ * automatically handling:
+ * - Host detection for Expo (extracts IP from Metro bundler)
+ * - Reconnection on disconnect
+ * - State reporting
+ * - Command handling
+ * 
+ * @example
+ * ```tsx
+ * const { isConnected, bridgeId } = useAutonomoMcp({
+ *   name: 'my-app',
+ *   getState: () => ({
+ *     screen: currentScreen,
+ *     elements: getRegisteredElements(),
+ *   }),
+ *   onCommand: async (cmd) => {
+ *     if (cmd.action === 'tap' && cmd.target) {
+ *       await tapElement(cmd.target);
+ *       return { success: true };
+ *     }
+ *     return { success: false, error: 'Unknown action' };
+ *   },
+ * });
+ * ```
  */
-export function useAutonomoBridge(config: BridgeConfig = {}): {
-  isRunning: boolean;
-  url: string | null;
-  instance: InstanceInfo | null;
-  error: Error | null;
+export function useAutonomoMcp(config: McpClientConfig): {
+  isConnected: boolean;
+  bridgeId: string | null;
+  serverUrl: string;
+  reportState: () => void;
 } {
-  const { port = 8080, devOnly = true, appName, onStart, onError } = config;
-  const [isRunning, setIsRunning] = useState(false);
-  const [url, setUrl] = useState<string | null>(null);
-  const [instance, setInstance] = useState<InstanceInfo | null>(null);
-  const [error, setError] = useState<Error | null>(null);
+  const {
+    name,
+    port = DEFAULT_MCP_PORT,
+    host,
+    devOnly = true,
+    reconnectDelay = 5000,
+    debug = false,
+    getState,
+    onCommand,
+    onConnect,
+    onDisconnect,
+    onError,
+  } = config;
 
-  useEffect(() => {
+  const [isConnected, setIsConnected] = useState(false);
+  const [bridgeId, setBridgeId] = useState<string | null>(null);
+  
+  const wsRef = useRef<WebSocket | null>(null);
+  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const instanceIdRef = useRef<string>(Math.random().toString(36).slice(2, 10));
+  
+  const serverUrl = getMcpServerUrl(port, host);
+
+  // Report state to server
+  const reportState = useCallback(() => {
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      const state = getState();
+      wsRef.current.send(JSON.stringify({
+        type: 'stateUpdate',
+        state,
+      }));
+      if (debug) console.log('[Autonomo] State reported:', state.screen);
+    }
+  }, [getState, debug]);
+
+  // Connect to MCP server
+  const connect = useCallback(() => {
     // Only run in dev mode if devOnly is true
-    if (devOnly && !__DEV__) {
+    if (devOnly && typeof __DEV__ !== 'undefined' && !__DEV__) {
       return;
     }
 
-    // Initialize instance if not already done
-    let inst = getInstance();
-    if (!inst) {
-      inst = initInstance({
-        name: appName ?? 'react-native-app',
-        platform: 'mobile',
-        meta: {
-          os: Platform.OS,
-          version: Platform.Version,
-        },
-      });
+    // Close existing connection
+    if (wsRef.current) {
+      wsRef.current.close();
+      wsRef.current = null;
     }
-    setInstance(inst);
 
-    // Note: Actual server implementation depends on the platform
-    // This is a placeholder - real implementation would use:
-    // - Native HTTP server module
-    // - WebSocket connection to external bridge
-    // - Polling from external test runner
+    if (debug) console.log('[Autonomo] Connecting to MCP at', serverUrl);
 
-    const serverUrl = `http://localhost:${port}`;
-    setUrl(serverUrl);
-    setIsRunning(true);
-    onStart?.(serverUrl, inst);
+    const ws = new WebSocket(serverUrl);
+    wsRef.current = ws;
 
-    console.log(`[Autonomo] Bridge ready at ${serverUrl}`);
-    console.log(`[Autonomo] Instance: ${inst.bridgeId}`);
+    ws.onopen = () => {
+      if (debug) console.log('[Autonomo] MCP connected');
+      
+      // Register with server
+      ws.send(JSON.stringify({
+        type: 'register',
+        name,
+        platform: 'mobile',
+        instanceId: instanceIdRef.current,
+        state: getState(),
+      }));
+    };
+
+    ws.onmessage = async (event) => {
+      if (!event.data) return;
+
+      try {
+        const msg = JSON.parse(event.data as string);
+
+        switch (msg.type) {
+          case 'registered':
+            if (debug) console.log('[Autonomo] Registered as', msg.bridgeId);
+            setBridgeId(msg.bridgeId);
+            setIsConnected(true);
+            onConnect?.(msg.bridgeId);
+            break;
+
+          case 'command': {
+            // Note: MCP server sends 'id', not 'commandId'
+            const commandId = msg.id || msg.commandId;
+            const result = await onCommand({
+              commandId,
+              action: msg.action,
+              target: msg.target,
+              value: msg.value,
+            });
+            
+            // Send result back (server expects type: 'result')
+            ws.send(JSON.stringify({
+              type: 'result',
+              commandId,
+              success: result.success,
+              message: result.message,
+              error: result.error,
+              state: getState(),
+            }));
+            break;
+          }
+
+          case 'getState':
+            ws.send(JSON.stringify({
+              type: 'state',
+              requestId: msg.requestId,
+              state: getState(),
+            }));
+            break;
+
+          case 'ping':
+            ws.send(JSON.stringify({ type: 'pong' }));
+            break;
+        }
+      } catch (e) {
+        if (debug) console.error('[Autonomo] Parse error:', e);
+      }
+    };
+
+    ws.onclose = () => {
+      if (debug) console.log('[Autonomo] MCP disconnected');
+      wsRef.current = null;
+      setIsConnected(false);
+      setBridgeId(null);
+      onDisconnect?.();
+
+      // Reconnect after delay
+      reconnectTimeoutRef.current = setTimeout(() => {
+        connect();
+      }, reconnectDelay);
+    };
+
+    ws.onerror = (error) => {
+      if (debug) console.log('[Autonomo] MCP not available');
+      onError?.(new Error('WebSocket connection failed'));
+    };
+  }, [serverUrl, name, devOnly, reconnectDelay, debug, getState, onCommand, onConnect, onDisconnect, onError]);
+
+  useEffect(() => {
+    connect();
 
     return () => {
-      setIsRunning(false);
-      setUrl(null);
+      if (wsRef.current) {
+        wsRef.current.close();
+        wsRef.current = null;
+      }
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
     };
-  }, [port, devOnly, appName]);
+  }, [connect]);
 
-  return { isRunning, url, instance, error };
+  return { isConnected, bridgeId, serverUrl, reportState };
 }
 
 /**

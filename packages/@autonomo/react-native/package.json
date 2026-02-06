@@ -19,8 +19,14 @@
   "peerDependencies": {
     "@autonomo/core": "workspace:*",
     "@autonomo/react": "workspace:*",
+    "expo-constants": ">=14.0.0",
     "react": "^18.0.0",
     "react-native": "*"
+  },
+  "peerDependenciesMeta": {
+    "expo-constants": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@autonomo/core": "workspace:*",
