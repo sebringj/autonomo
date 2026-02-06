@@ -59,6 +59,7 @@ public struct NetworkRequest {
 public struct AppState {
     public let screen: String
     public let timestamp: Int64
+    public let instance: InstanceInfo?
     public let user: UserContext?
     public let elements: [ElementInfo]
     public let customActions: [String]
@@ -78,6 +79,7 @@ public struct AppState {
             "logs": logs,
             "renderErrors": renderErrors
         ]
+        if let instance = instance { result["instance"] = instance.toDictionary() }
         if let user = user { result["user"] = user.toDictionary() }
         if let data = data, !data.isEmpty { result["data"] = data }
         if let network = network, !network.isEmpty {
@@ -216,6 +218,7 @@ public class StateManager {
         return AppState(
             screen: _screen,
             timestamp: Int64(Date().timeIntervalSince1970 * 1000),
+            instance: InstanceManager.shared.getInstance(),
             user: _user,
             elements: ElementRegistry.shared.getAll(),
             customActions: CustomActionsRegistry.shared.list(),

@@ -44,6 +44,7 @@ data class NetworkRequest(
 data class AppState(
     val screen: String,
     val timestamp: Long,
+    val instance: InstanceInfo?,
     val user: UserContext?,
     val elements: List<ElementInfo>,
     val customActions: List<String>,
@@ -61,6 +62,7 @@ data class AppState(
         put("errors", errors)
         put("logs", logs)
         put("renderErrors", renderErrors)
+        instance?.let { put("instance", it.toMap()) }
         user?.let { put("user", it.toMap()) }
         data?.takeIf { it.isNotEmpty() }?.let { put("data", it) }
         network?.takeIf { it.isNotEmpty() }?.let { put("network", it.map { n -> n.toMap() }) }
@@ -202,6 +204,7 @@ object StateManager {
         AppState(
             screen = screen,
             timestamp = System.currentTimeMillis(),
+            instance = InstanceManager.getInstance(),
             user = user,
             elements = ElementRegistry.getAll(),
             customActions = CustomActionsRegistry.list(),

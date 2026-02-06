@@ -20,6 +20,17 @@ from .state import (
     AppState,
     state,
 )
+from .instance import (
+    Platform,
+    InstanceConfig,
+    InstanceInfo,
+    instance_manager,
+    init_instance,
+    get_instance,
+    require_instance,
+    get_bridge_id,
+    reset_instance,
+)
 from .commands import (
     CommandResult,
     set_navigation_handler,
@@ -57,6 +68,16 @@ __all__ = [
     "NetworkRequest",
     "AppState",
     "state",
+    # Instance
+    "Platform",
+    "InstanceConfig",
+    "InstanceInfo",
+    "instance_manager",
+    "init_instance",
+    "get_instance",
+    "require_instance",
+    "get_bridge_id",
+    "reset_instance",
     # Commands
     "CommandResult",
     "set_navigation_handler",

@@ -59,6 +59,7 @@ public class AppState
 {
     public string Screen { get; init; } = "";
     public long Timestamp { get; init; }
+    public InstanceInfo? Instance { get; init; }
     public UserContext? User { get; init; }
     public List<ElementInfo> Elements { get; init; } = new();
     public List<string> CustomActions { get; init; } = new();
@@ -80,6 +81,7 @@ public class AppState
             ["logs"] = Logs,
             ["renderErrors"] = RenderErrors
         };
+        if (Instance != null) result["instance"] = Instance.ToDictionary();
         if (User != null) result["user"] = User.ToDictionary();
         if (Data != null) result["data"] = Data;
         if (Network != null) result["network"] = Network.Select(n => n.ToDictionary()).ToList();
@@ -265,6 +267,7 @@ public sealed class StateManager
             {
                 Screen = _screen,
                 Timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                Instance = InstanceManager.Instance.GetInstance(),
                 User = _user,
                 Elements = ElementRegistry.Instance.GetAll(),
                 CustomActions = CustomActionsRegistry.Instance.List(),

@@ -6,6 +6,7 @@ library autonomo_flutter;
 
 export 'src/registry.dart';
 export 'src/state.dart';
+export 'src/instance.dart';
 export 'src/commands.dart';
 export 'src/transport.dart';
 export 'src/widgets.dart';

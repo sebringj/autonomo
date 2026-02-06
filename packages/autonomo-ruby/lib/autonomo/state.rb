@@ -45,13 +45,14 @@ module Autonomo
 
   # Complete application state snapshot
   class AppState
-    attr_reader :screen, :timestamp, :user, :elements, :custom_actions,
+    attr_reader :screen, :timestamp, :instance, :user, :elements, :custom_actions,
                 :data, :errors, :logs, :render_errors, :network
 
-    def initialize(screen:, timestamp:, user:, elements:, custom_actions:,
+    def initialize(screen:, timestamp:, instance:, user:, elements:, custom_actions:,
                    data:, errors:, logs:, render_errors:, network:)
       @screen = screen
       @timestamp = timestamp
+      @instance = instance
       @user = user
       @elements = elements
       @custom_actions = custom_actions
@@ -72,6 +73,7 @@ module Autonomo
         logs: @logs,
         renderErrors: @render_errors
       }
+      result[:instance] = @instance.to_h if @instance
       result[:user] = @user.to_h if @user
       result[:data] = @data if @data && !@data.empty?
       result[:network] = @network.map(&:to_h) if @network && !@network.empty?
@@ -203,6 +205,7 @@ module Autonomo
         AppState.new(
           screen: @screen,
           timestamp: (Time.now.to_f * 1000).to_i,
+          instance: Autonomo.get_instance,
           user: @user,
           elements: Autonomo.registry.get_all,
           custom_actions: Autonomo.custom_actions.list,

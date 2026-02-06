@@ -11,6 +11,7 @@ import time
 
 from .registry import registry, ElementInfo
 from .actions import custom_actions
+from .instance import get_instance, InstanceInfo
 
 
 @dataclass
@@ -61,6 +62,7 @@ class AppState:
     """Complete application state snapshot"""
     screen: str
     timestamp: int
+    instance: Optional[InstanceInfo]
     user: Optional[UserContext]
     elements: List[ElementInfo]
     custom_actions: List[str]
@@ -80,6 +82,8 @@ class AppState:
             "logs": self.logs,
             "renderErrors": self.render_errors,
         }
+        if self.instance is not None:
+            result["instance"] = self.instance.to_dict()
         if self.user is not None:
             result["user"] = self.user.to_dict()
         if self.data is not None:
@@ -184,6 +188,7 @@ class StateManager:
         return AppState(
             screen=self._screen,
             timestamp=int(time.time() * 1000),
+            instance=get_instance(),
             user=self._user,
             elements=registry.get_all(),
             custom_actions=custom_actions.list(),

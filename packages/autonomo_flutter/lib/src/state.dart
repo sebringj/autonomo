@@ -5,6 +5,7 @@
 
 import 'registry.dart';
 import 'actions.dart';
+import 'instance.dart';
 
 /// User context information
 class UserContext {
@@ -57,6 +58,7 @@ class NetworkRequest {
 class AppState {
   final String screen;
   final int timestamp;
+  final InstanceInfo? instance;
   final UserContext? user;
   final List<ElementInfo> elements;
   final List<String> customActions;
@@ -69,6 +71,7 @@ class AppState {
   const AppState({
     required this.screen,
     required this.timestamp,
+    this.instance,
     this.user,
     required this.elements,
     required this.customActions,
@@ -82,6 +85,7 @@ class AppState {
   Map<String, dynamic> toJson() => {
         'screen': screen,
         'timestamp': timestamp,
+        if (instance != null) 'instance': instance!.toJson(),
         if (user != null) 'user': user!.toJson(),
         'elements': elements.map((e) => e.toJson()).toList(),
         'customActions': customActions,
@@ -202,6 +206,7 @@ class StateManager {
     return AppState(
       screen: _screen,
       timestamp: DateTime.now().millisecondsSinceEpoch,
+      instance: getInstance(),
       user: _user,
       elements: registry.getAll(),
       customActions: customActions.list(),
