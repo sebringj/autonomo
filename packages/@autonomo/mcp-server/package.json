@@ -21,13 +21,15 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0"
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "ws": "^8.16.0"
   },
   "peerDependencies": {
     "@autonomo/core": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "@types/ws": "^8.5.10",
     "typescript": "^5.4.0"
   },
   "keywords": [

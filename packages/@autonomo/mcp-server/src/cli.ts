@@ -2,18 +2,18 @@
 /**
  * Autonomo MCP Server CLI
  *
- * Single-app mode:
+ * WebSocket mode (RECOMMENDED - apps connect directly):
+ *   autonomo-mcp
+ *   autonomo-mcp --port 9876
+ *
+ * Legacy HTTP mode (apps expose endpoints):
  *   autonomo-mcp --url http://localhost:8080/autonomo
- *
- * Multi-bridge mode (no URL required, register bridges dynamically):
- *   autonomo-mcp --multi
- *
- * Multi-bridge with initial bridges:
- *   autonomo-mcp --multi --bridge http://localhost:3000/autonomo --bridge http://localhost:8081/autonomo
+ *   autonomo-mcp --multi --bridge http://localhost:3000/autonomo
  */
 
 import { startServer } from './index.js';
 import { startMultiBridgeServer, type BridgeConfig } from './multi-bridge.js';
+import { startWSModeServer } from './ws-mode.js';
 
 const args = process.argv.slice(2);
 
@@ -40,14 +40,26 @@ function hasFlag(name: string): boolean {
 }
 
 const isMultiBridge = hasFlag('multi');
+const isHttpMode = hasFlag('http');
 const url = getArg('url') ?? process.env.AUTONOMO_URL;
+const port = parseInt(getArg('port') || '9876', 10);
 const bridgeUrls = getAllArgs('bridge');
 
-if (isMultiBridge) {
-  // Multi-bridge mode
-  console.error('Autonomo MCP Server starting (multi-bridge mode)...');
+// Default to WebSocket mode (simplest)
+if (!isHttpMode && !url && !isMultiBridge) {
+  // WebSocket mode - apps connect directly
+  console.error('Autonomo MCP Server starting (WebSocket mode)...');
+  console.error(`Apps connect to: ws://localhost:${port}`);
+  
+  startWSModeServer({ port }).catch((error) => {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  });
+} else if (isMultiBridge) {
+  // Multi-bridge HTTP mode (legacy)
+  console.error('Autonomo MCP Server starting (multi-bridge HTTP mode)...');
 
-  const bridges: BridgeConfig[] = bridgeUrls.map((bridgeUrl, index) => ({
+  const bridges: BridgeConfig[] = bridgeUrls.map((bridgeUrl) => ({
     url: bridgeUrl,
   }));
 
@@ -61,28 +73,9 @@ if (isMultiBridge) {
     console.error('Failed to start server:', error);
     process.exit(1);
   });
-} else {
-  // Single-app mode (legacy)
-  if (!url) {
-    console.error('Error: Missing app URL');
-    console.error('');
-    console.error('Usage:');
-    console.error('  Single-app mode:');
-    console.error('    autonomo-mcp --url <app-autonomo-url>');
-    console.error('');
-    console.error('  Multi-bridge mode:');
-    console.error('    autonomo-mcp --multi');
-    console.error('    autonomo-mcp --multi --bridge http://localhost:3000/autonomo');
-    console.error('');
-    console.error('Example:');
-    console.error('  autonomo-mcp --url http://localhost:8080/autonomo');
-    console.error('');
-    console.error('Or set AUTONOMO_URL environment variable:');
-    console.error('  AUTONOMO_URL=http://localhost:8080/autonomo autonomo-mcp');
-    process.exit(1);
-  }
-
-  console.error('Autonomo MCP Server starting (single-app mode)...');
+} else if (url) {
+  // Single-app HTTP mode (legacy)
+  console.error('Autonomo MCP Server starting (single-app HTTP mode)...');
   console.error(`App URL: ${url}`);
 
   startServer({ appUrl: url }).catch((error) => {

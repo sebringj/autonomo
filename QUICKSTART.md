@@ -140,6 +140,48 @@ return <button data-testid="submit">Submit</button>;
 
 ## Other Platforms
 
+### Deno Fresh 2.0
+
+See [Deno Fresh Integration Guide](./docs/DENO_FRESH_INTEGRATION.md) for complete instructions.
+
+**Quick version:**
+
+1. Create `islands/AutonomoBridge.tsx` (see guide for full code)
+2. Add to your main route (NOT `_app.tsx` - islands don't hydrate there!):
+
+```tsx
+// routes/dashboard/index.tsx
+import AutonomoBridge from "../../islands/AutonomoBridge.tsx";
+
+const isDev = Deno.env.get("DENO_ENV") !== "production";
+
+export default function Page() {
+  return (
+    <>
+      <YourApp />
+      {isDev && <AutonomoBridge debug />}
+    </>
+  );
+}
+```
+
+3. Configure MCP in `.vscode/mcp.json`:
+```json
+{
+  "servers": {
+    "autonomo": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["node_modules/@autonomo/mcp-server/dist/cli.js"]
+    }
+  }
+}
+```
+
+**Key insight**: Fresh islands in `_app.tsx` are server-rendered only. The bridge must be in actual route components to hydrate and connect via WebSocket.
+
+---
+
 For Swift, Flutter, Python, Ruby, Kotlin, or C# — see the platform-specific README:
 
 - [Swift/iOS](./packages/autonomo-swift/README.md)

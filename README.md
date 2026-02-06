@@ -77,6 +77,11 @@ Install Autonomo for my Kotlin app. Read https://github.com/sebringj/autonomo/bl
 Install Autonomo for my C# app. Read https://github.com/sebringj/autonomo/blob/main/packages/Autonomo.CSharp/README.md
 ```
 
+**Deno Fresh:**
+```
+Install Autonomo for my Deno Fresh app. Read https://github.com/sebringj/autonomo/blob/main/README.md#deno-fresh-integration
+```
+
 ### After Installation
 
 Ask your AI:
@@ -185,6 +190,7 @@ Autonomo is designed for the **inner development loop** - the tight cycle where 
 |----------|--------|----------------|
 | **React Native (Expo)** | ✅ Production-ready | [RemoteTestBridge.tsx](../leaguehub/mobile/src/components/RemoteTestBridge.tsx) |
 | **Web (React/Preact)** | ✅ Production-ready | [WebTestBridge.tsx](../leaguehub/web/islands/WebTestBridge.tsx) |
+| **Deno Fresh** | ✅ Production-ready | [AutonomoBridge.tsx](../leaguehub/web/islands/AutonomoBridge.tsx) |
 
 ## Architecture: Metadata-Based, Not HTML-Based
 
@@ -598,6 +604,211 @@ Autonomo provides packages for multiple platforms and languages:
 | [autonomo-kotlin](./packages/autonomo-kotlin) | Kotlin / JVM / Android | 📋 TODO (needs JitPack) |
 
 **Note:** `@autonomo/core` is the base JS/TS package - use it for vanilla JavaScript, Node.js, web components, Electron, or any framework without a dedicated package. The React and React Native packages are thin wrappers around core.
+
+## Deno Fresh Integration
+
+Deno Fresh uses an **islands architecture** where components only hydrate (run JavaScript) when explicitly included as islands. This requires a specific integration approach.
+
+### Key Insight: Islands Must Be in Route Components
+
+In Fresh, islands in `_app.tsx` are **server-rendered only** and won't hydrate. The Autonomo bridge must be included in actual route components.
+
+### Step 1: Create the AutonomoBridge Island
+
+Create `islands/AutonomoBridge.tsx`:
+
+```tsx
+import { useEffect, useRef, useState, useCallback } from "preact/hooks";
+
+interface Props {
+  name?: string;
+  serverUrl?: string;
+  debug?: boolean;
+}
+
+const DEFAULT_SERVER_URL = "ws://localhost:9876";
+
+export default function AutonomoBridge({ 
+  name = "my-app", 
+  serverUrl = DEFAULT_SERVER_URL,
+  debug = false 
+}: Props) {
+  const wsRef = useRef<WebSocket | null>(null);
+  const [status, setStatus] = useState<"connecting" | "connected" | "error" | "disconnected">("connecting");
+
+  useEffect(() => {
+    const connect = () => {
+      if (debug) console.log("[Autonomo] Connecting to", serverUrl);
+      
+      const ws = new WebSocket(serverUrl);
+      wsRef.current = ws;
+
+      ws.onopen = () => {
+        // Register with server
+        ws.send(JSON.stringify({
+          type: "register",
+          name,
+          platform: "web",
+          instanceId: Math.random().toString(36).slice(2, 10),
+        }));
+      };
+
+      ws.onmessage = (event) => {
+        const msg = JSON.parse(event.data);
+        
+        if (msg.type === "registered") {
+          setStatus("connected");
+          if (debug) console.log("[Autonomo] Connected as", msg.bridgeId);
+          // Report initial state
+          reportState();
+        } else if (msg.type === "command") {
+          handleCommand(msg);
+        }
+      };
+
+      ws.onclose = () => {
+        setStatus("disconnected");
+        // Reconnect after delay
+        setTimeout(connect, 2000);
+      };
+
+      ws.onerror = () => setStatus("error");
+    };
+
+    const reportState = () => {
+      if (wsRef.current?.readyState === WebSocket.OPEN) {
+        // Scan for data-testid elements
+        const elements = Array.from(document.querySelectorAll("[data-testid]"))
+          .map(el => ({
+            id: el.getAttribute("data-testid"),
+            type: el.tagName.toLowerCase(),
+          }));
+
+        wsRef.current.send(JSON.stringify({ 
+          type: "state",
+          screen: window.location.pathname,
+          elements,
+          errors: [],
+        }));
+      }
+    };
+
+    const handleCommand = async (msg: { id: string; action: string; target?: string; value?: string }) => {
+      const { id, action, target, value } = msg;
+      let success = true;
+      let message: string | undefined;
+
+      try {
+        switch (action) {
+          case "navigate":
+            if (target) window.location.href = target;
+            break;
+          case "press":
+          case "tap":
+            const btn = document.querySelector(`[data-testid="${target}"]`) as HTMLElement;
+            btn?.click();
+            message = `Pressed ${target}`;
+            break;
+          case "fillIn":
+          case "fill":
+            const input = document.querySelector(`[data-testid="${target}"]`) as HTMLInputElement;
+            if (input) {
+              input.value = value || "";
+              input.dispatchEvent(new Event("input", { bubbles: true }));
+            }
+            message = `Filled ${target}`;
+            break;
+        }
+      } catch (err) {
+        success = false;
+      }
+
+      // Send result
+      wsRef.current?.send(JSON.stringify({
+        type: "result",
+        commandId: id,
+        success,
+        message,
+        state: { screen: window.location.pathname },
+      }));
+    };
+
+    connect();
+
+    return () => wsRef.current?.close();
+  }, [serverUrl, name, debug]);
+
+  // Debug indicator
+  if (debug) {
+    const colors = {
+      connecting: "#f59e0b",
+      connected: "#10b981", 
+      disconnected: "#6b7280",
+      error: "#ef4444",
+    };
+    return (
+      <div style={{ 
+        position: "fixed", bottom: 8, right: 8, padding: "4px 8px",
+        background: colors[status], color: "white", borderRadius: 4,
+        fontSize: 12, zIndex: 9999, fontFamily: "system-ui",
+      }}>
+        {status === "connected" ? "🟢 AI Connected" : "🟡 Connecting..."}
+      </div>
+    );
+  }
+  return null;
+}
+```
+
+### Step 2: Add to Your Route (Not _app.tsx!)
+
+**Important:** In Fresh, islands in `_app.tsx` don't hydrate. Add the bridge to your main route component:
+
+```tsx
+// routes/dashboard/index.tsx (or your main route)
+import AutonomoBridge from "../../islands/AutonomoBridge.tsx";
+
+const isDev = Deno.env.get("DENO_ENV") !== "production";
+
+export default function DashboardPage() {
+  return (
+    <html lang="en">
+      <body>
+        <YourMainIsland />
+        {isDev && <AutonomoBridge debug />}
+      </body>
+    </html>
+  );
+}
+```
+
+### Step 3: Configure MCP
+
+Add to `.vscode/mcp.json`:
+
+```json
+{
+  "servers": {
+    "autonomo": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["node_modules/@autonomo/mcp-server/dist/cli.js"]
+    }
+  }
+}
+```
+
+### Why This Works
+
+1. **Single Island Pattern**: Fresh apps often use one main island for the entire app to maintain state across "navigations" (which are really just state changes within the island)
+2. **Bridge Stays Connected**: Because there are no full page reloads, the WebSocket connection persists
+3. **Dev Mode Only**: The `isDev` check ensures the bridge is never included in production builds
+
+### Reference Implementation
+
+See the complete working implementation in LeagueHub:
+- [AutonomoBridge.tsx](../leaguehub/web/islands/AutonomoBridge.tsx) - Full bridge with DOM scanning
+- [webTestBridge.ts](../leaguehub/web/lib/webTestBridge.ts) - Utilities for element scanning and commands
 
 ## Documentation
 

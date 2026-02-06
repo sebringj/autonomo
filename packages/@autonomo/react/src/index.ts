@@ -8,6 +8,7 @@ import { useEffect, useRef, useCallback, useState } from 'react';
 import {
   registry,
   state,
+  customActions,
   registerTapHandler,
   registerFillHandler,
   registerToggleHandler,
@@ -222,4 +223,278 @@ export function useInstance(config: InstanceConfig): InstanceInfo | undefined {
   }, []); // Empty deps - only run once
 
   return instance;
+}
+
+// ============================================================
+// WebSocket Mode - Apps connect directly to Autonomo server
+// ============================================================
+
+interface UseAutonomoConfig {
+  /** App name (used for bridge ID) */
+  name: string;
+  /** Platform type */
+  platform?: 'web' | 'mobile' | 'desktop';
+  /** Autonomo WebSocket server URL (default: ws://localhost:9876) */
+  serverUrl?: string;
+  /** Enable debug logging */
+  debug?: boolean;
+}
+
+interface AutonomoConnection {
+  /** Whether connected to the Autonomo server */
+  connected: boolean;
+  /** Bridge ID assigned by server */
+  bridgeId: string | null;
+  /** Send current state to server */
+  reportState: () => void;
+}
+
+/**
+ * Connect to Autonomo WebSocket server (RECOMMENDED)
+ * 
+ * This is the simplest way to integrate - just add this hook and Autonomo works.
+ * No need to set up HTTP endpoints in your app.
+ * 
+ * @example
+ * ```tsx
+ * function App() {
+ *   const { connected } = useAutonomo({ name: 'my-app' });
+ *   
+ *   return (
+ *     <div>
+ *       {connected && <span>🟢 AI Connected</span>}
+ *       <MyApp />
+ *     </div>
+ *   );
+ * }
+ * ```
+ */
+export function useAutonomo(config: UseAutonomoConfig): AutonomoConnection {
+  const { name, platform = 'web', serverUrl = 'ws://localhost:9876', debug = false } = config;
+  
+  const [connected, setConnected] = useState(false);
+  const [bridgeId, setBridgeId] = useState<string | null>(null);
+  const wsRef = useRef<WebSocket | null>(null);
+  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const instanceIdRef = useRef<string>(Math.random().toString(36).slice(2, 10));
+  
+  // Collect current state
+  const collectState = useCallback(() => {
+    const elements = registry.getAll().map(el => ({
+      id: el.id,
+      type: el.type,
+      disabled: el.disabled,
+      value: el.value,
+      hint: el.hint,
+    }));
+    
+    const appState = state.getState();
+    
+    return {
+      screen: appState.screen,
+      elements,
+      customActions: customActions.list(),
+      user: appState.user,
+      data: appState.data,
+      errors: appState.errors,
+      logs: appState.logs,
+    };
+  }, []);
+  
+  // Report state to server
+  const reportState = useCallback(() => {
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      const currentState = collectState();
+      wsRef.current.send(JSON.stringify({ type: 'state', ...currentState }));
+      if (debug) console.log('[Autonomo] State reported:', currentState.screen, currentState.elements.length, 'elements');
+    }
+  }, [collectState, debug]);
+  
+  // Handle incoming command
+  const handleCommand = useCallback(async (msg: any) => {
+    const { id, action, target, value } = msg;
+    if (debug) console.log('[Autonomo] Command received:', action, target);
+    
+    let success = true;
+    let error: string | undefined;
+    let message: string | undefined;
+    
+    try {
+      switch (action) {
+        case 'navigate': {
+          const navHandler = (state as any).navigationHandler;
+          if (navHandler) {
+            await navHandler(target);
+            message = `Navigated to ${target}`;
+          } else {
+            error = 'No navigation handler registered';
+            success = false;
+          }
+          break;
+        }
+        
+        case 'press':
+        case 'tap': {
+          const element = registry.get(target);
+          if (element?.handler) {
+            await element.handler();
+            message = `Pressed ${target}`;
+          } else {
+            error = `Element not found: ${target}`;
+            success = false;
+          }
+          break;
+        }
+        
+        case 'fillIn':
+        case 'fill': {
+          const element = registry.get(target);
+          if (element?.handler) {
+            await element.handler(value);
+            message = `Filled ${target}`;
+          } else {
+            error = `Element not found: ${target}`;
+            success = false;
+          }
+          break;
+        }
+        
+        case 'submit': {
+          const element = registry.get(target);
+          if (element?.onSubmit) {
+            await element.onSubmit();
+            message = `Submitted ${target}`;
+          } else {
+            error = `Element has no submit handler: ${target}`;
+            success = false;
+          }
+          break;
+        }
+        
+        case 'custom': {
+          if (customActions.has(target)) {
+            const result = await customActions.execute(target, value);
+            success = result.success;
+            message = result.message;
+            error = result.error;
+          } else {
+            error = `Custom action not found: ${target}`;
+            success = false;
+          }
+          break;
+        }
+        
+        case 'wait': {
+          const ms = parseInt(target || '1000', 10);
+          await new Promise(r => setTimeout(r, ms));
+          message = `Waited ${ms}ms`;
+          break;
+        }
+        
+        default:
+          error = `Unknown action: ${action}`;
+          success = false;
+      }
+    } catch (err: any) {
+      success = false;
+      error = err.message || String(err);
+    }
+    
+    // Wait a tick for state to update
+    await new Promise(r => setTimeout(r, 50));
+    
+    // Send result with updated state
+    const currentState = collectState();
+    wsRef.current?.send(JSON.stringify({
+      type: 'result',
+      commandId: id,
+      success,
+      message,
+      error,
+      state: currentState,
+    }));
+  }, [collectState, debug]);
+  
+  // Connect to server
+  useEffect(() => {
+    let ws: WebSocket;
+    
+    const connect = () => {
+      if (debug) console.log('[Autonomo] Connecting to', serverUrl);
+      
+      ws = new WebSocket(serverUrl);
+      wsRef.current = ws;
+      
+      ws.onopen = () => {
+        if (debug) console.log('[Autonomo] Connected');
+        
+        // Register with server
+        ws.send(JSON.stringify({
+          type: 'register',
+          name,
+          platform,
+          instanceId: instanceIdRef.current,
+        }));
+      };
+      
+      ws.onmessage = (event) => {
+        try {
+          const msg = JSON.parse(event.data);
+          
+          switch (msg.type) {
+            case 'registered':
+              setBridgeId(msg.bridgeId);
+              setConnected(true);
+              if (debug) console.log('[Autonomo] Registered as', msg.bridgeId);
+              // Send initial state
+              reportState();
+              break;
+              
+            case 'command':
+              handleCommand(msg);
+              break;
+              
+            case 'ping':
+              ws.send(JSON.stringify({ type: 'pong' }));
+              break;
+          }
+        } catch (err) {
+          console.error('[Autonomo] Message parse error:', err);
+        }
+      };
+      
+      ws.onclose = () => {
+        if (debug) console.log('[Autonomo] Disconnected');
+        setConnected(false);
+        setBridgeId(null);
+        
+        // Reconnect after delay
+        reconnectTimeoutRef.current = setTimeout(connect, 2000);
+      };
+      
+      ws.onerror = (err) => {
+        if (debug) console.error('[Autonomo] WebSocket error:', err);
+      };
+    };
+    
+    connect();
+    
+    return () => {
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
+      ws?.close();
+    };
+  }, [serverUrl, name, platform, debug, handleCommand, reportState]);
+  
+  // Auto-report state on registry/state changes
+  useEffect(() => {
+    const unsubscribe = state.onChange(() => {
+      reportState();
+    });
+    
+    return () => unsubscribe();
+  }, [reportState]);
+  
+  return { connected, bridgeId, reportState };
 }
