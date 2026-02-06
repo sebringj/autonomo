@@ -8,6 +8,7 @@
 import type { ElementInfo } from './registry.js';
 import { registry } from './registry.js';
 import { customActions } from './actions.js';
+import { getInstance, type InstanceInfo } from './instance.js';
 
 export interface UserContext {
   id?: string;
@@ -21,6 +22,8 @@ export interface AppState {
   screen: string;
   /** Timestamp of this state snapshot */
   timestamp: number;
+  /** Instance identity (if initialized) */
+  instance?: InstanceInfo;
   /** User context if logged in */
   user?: UserContext;
   /** Registered interactive elements */
@@ -174,6 +177,7 @@ class StateManager {
     return {
       screen: this.screen,
       timestamp: Date.now(),
+      instance: getInstance(),
       user: this.user,
       elements: registry.getAll(),
       customActions: customActions.list(),

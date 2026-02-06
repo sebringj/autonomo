@@ -10,6 +10,82 @@
 
 Autonomo is a **local MCP server** that enables AI coding assistants to directly interact with and test your running applications. It's not a competing AI tool—it's infrastructure that makes ALL your AI tools better at testing.
 
+---
+
+## ⚡ Quick Start (5 minutes)
+
+### What You Get
+Your AI assistant (Copilot, Claude, Cursor) gains the ability to **actually run and test** your app—pressing buttons, filling forms, and verifying results—instead of just hoping the code works.
+
+### Step 1: Install the MCP Server
+
+```bash
+npm install -g github:sebringj/autonomo#packages/@autonomo/mcp-server
+```
+
+### Step 2: Configure Your AI Tool
+
+**VS Code (Copilot/Claude)** - Add to `.vscode/mcp.json`:
+```json
+{
+  "servers": {
+    "autonomo": {
+      "command": "autonomo-mcp",
+      "args": ["--multi"]
+    }
+  }
+}
+```
+
+**Cursor/Windsurf** - Add to MCP settings (same command: `autonomo-mcp --multi`)
+
+### Step 3: Add the Bridge to Your App
+
+**React / React Native:**
+```bash
+npm install github:sebringj/autonomo#packages/@autonomo/react
+# or for React Native:
+npm install github:sebringj/autonomo#packages/@autonomo/react-native
+```
+
+```tsx
+// In your app root (e.g., App.tsx)
+import { AutonomoProvider, useTestId } from '@autonomo/react';
+
+function App() {
+  return (
+    <AutonomoProvider name="my-app" enabled={__DEV__}>
+      <MyApp />
+    </AutonomoProvider>
+  );
+}
+
+// In any component - mark interactive elements
+function LoginButton() {
+  const testId = useTestId('Login.Submit');
+  return <button {...testId} onClick={handleLogin}>Login</button>;
+}
+```
+
+### Step 4: Test It!
+
+Start your app, then ask your AI:
+
+> "Press the Login.Submit button and tell me what happens"
+
+The AI will actually press the button and report the result. 🎉
+
+### Other Platforms
+
+| Platform | Package | Quick Install |
+|----------|---------|---------------|
+| **Swift/iOS** | `autonomo-swift` | `Package.swift` - see [Installation](#installation) |
+| **Flutter** | `autonomo_flutter` | `pubspec.yaml` - see [Installation](#installation) |
+| **Python** | `autonomo-python` | `pip install git+...` - see [Installation](#installation) |
+| **Ruby** | `autonomo-ruby` | `Gemfile` - see [Installation](#installation) |
+
+---
+
 ## The Core Insight
 
 **After every action, the LLM gets a unified snapshot of what happened across all levels:**
@@ -245,6 +321,59 @@ autonomo/
 
 **The documentation IS the product.** The AI does the integration work.
 
+## Multi-Instance Support
+
+Autonomo supports **multiple simultaneous app instances** - multiple browser tabs, simulator windows, or app processes. Each instance gets a unique identity:
+
+```typescript
+// In your app's root component (React/React Native)
+import { useInstance } from '@autonomo/react';
+
+function App() {
+  // Initialize once at app mount - generates unique instance ID per window/process
+  useInstance({ 
+    name: 'my-app', 
+    platform: 'web'  // or 'mobile'
+  });
+  
+  return <MyApp />;
+}
+```
+
+The MCP server can then distinguish between instances:
+
+```
+🟢 my-app-a3f7c2d1 (web)     ← Browser Tab 1
+   Screen: checkout
+   Elements: 12
+
+🟢 my-app-b8e4f9a2 (web)     ← Browser Tab 2  
+   Screen: settings
+   Elements: 8
+
+🟢 my-app-c1d6e3b7 (mobile)  ← iOS Simulator
+   Screen: home
+   Elements: 15
+```
+
+**MCP Tools (Multi-Bridge Mode):**
+
+| Tool | Description |
+|------|-------------|
+| `autonomo_list_bridges` | List all connected apps with status |
+| `autonomo_get_state` | Get state from one or all bridges |
+| `autonomo_send_command` | Send command to specific bridge |
+| `autonomo_wait_for` | Wait for condition on a bridge |
+| `autonomo_run_scenario` | Execute multi-step test scenario |
+| `autonomo_register_bridge` | Connect a new app by URL |
+
+**Start MCP server in multi-bridge mode:**
+```bash
+autonomo-mcp --multi
+# Or with initial bridges:
+autonomo-mcp --multi --bridge http://localhost:3000/autonomo --bridge http://localhost:8081/autonomo
+```
+
 ## Platform Support
 
 **SDKs:**
@@ -469,7 +598,8 @@ Autonomo provides packages for multiple platforms and languages:
 
 ## Documentation
 
-- [MCP_INTEGRATION.md](./MCP_INTEGRATION.md) - **Start here** - How Autonomo works with AI tools
+- [QUICKSTART.md](./QUICKSTART.md) - **Fastest path** - Get running in 5 minutes
+- [MCP_INTEGRATION.md](./MCP_INTEGRATION.md) - How Autonomo works with AI tools
 - [TEST_BRIDGE_ARCHITECTURE.md](./TEST_BRIDGE_ARCHITECTURE.md) - Deep dive on implementation
 - [PROTOCOL_SPECIFICATION.md](./PROTOCOL_SPECIFICATION.md) - Universal HTTP API (language-agnostic)
 - [PRODUCT_ROADMAP.md](./PRODUCT_ROADMAP.md) - Feature roadmap

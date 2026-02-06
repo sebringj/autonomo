@@ -293,5 +293,20 @@ export async function startServer(config: ServerConfig): Promise<void> {
   await server.connect(transport);
 }
 
+// Single-app exports (legacy)
 export { AutonomoClient } from './client.js';
-export type { AppState, CommandResult } from './client.js';
+export type { AppState, CommandResult, InstanceInfo } from './client.js';
+
+// Multi-bridge exports (full MCP spec)
+export {
+  createMultiBridgeServer,
+  startMultiBridgeServer,
+  BridgeRegistry,
+} from './multi-bridge.js';
+export type {
+  BridgeConfig,
+  BridgeInfo,
+  ScenarioStep,
+  ScenarioResult,
+} from './multi-bridge.js';
+

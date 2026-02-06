@@ -47,6 +47,20 @@ export type {
   NetworkRequest,
 } from './state.js';
 
+// Instance - unique identity per app window/process
+export {
+  initInstance,
+  getInstance,
+  requireInstance,
+  getBridgeId,
+  resetInstance,
+} from './instance.js';
+
+export type {
+  InstanceConfig,
+  InstanceInfo,
+} from './instance.js';
+
 // Commands - AI control interface
 export {
   setNavigationHandler,

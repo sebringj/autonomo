@@ -2,9 +2,27 @@
  * HTTP client for communicating with the Autonomo endpoint in the app
  */
 
+export interface InstanceInfo {
+  /** Unique instance ID */
+  instanceId: string;
+  /** Application name */
+  name: string;
+  /** Full bridge ID: name + instanceId */
+  bridgeId: string;
+  /** Platform type */
+  platform: 'web' | 'mobile' | 'desktop';
+  /** Version string */
+  version?: string;
+  /** When this instance was created */
+  createdAt: number;
+  /** Additional metadata */
+  meta?: Record<string, unknown>;
+}
+
 export interface AppState {
   screen: string;
   timestamp: number;
+  instance?: InstanceInfo;
   user?: {
     id?: string;
     email?: string;

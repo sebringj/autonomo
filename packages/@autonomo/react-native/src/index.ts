@@ -9,7 +9,7 @@
  * - Expo-compatible implementation
  */
 
-// Re-export all React hooks
+// Re-export all React hooks (includes useInstance)
 export * from '@autonomo/react';
 
 export {
@@ -19,7 +19,7 @@ export {
 
 import { useEffect, useRef, useState } from 'react';
 import { AppState as RNAppState, Platform } from 'react-native';
-import { handleRequest } from '@autonomo/core';
+import { handleRequest, getInstance, initInstance, type InstanceInfo } from '@autonomo/core';
 
 /**
  * Configuration for the Autonomo bridge
@@ -29,8 +29,10 @@ export interface BridgeConfig {
   port?: number;
   /** Only enable in development (default: true) */
   devOnly?: boolean;
+  /** App name for instance identification */
+  appName?: string;
   /** Called when server starts */
-  onStart?: (url: string) => void;
+  onStart?: (url: string, instance: InstanceInfo) => void;
   /** Called on errors */
   onError?: (error: Error) => void;
 }
@@ -38,6 +40,7 @@ export interface BridgeConfig {
 /**
  * Hook to run the Autonomo HTTP bridge
  * 
+ * Automatically initializes the instance identity if not already done.
  * In React Native, this typically uses a polyfill or native module
  * for running an HTTP server. For Expo, we recommend using
  * expo-server or a WebSocket-based approach.
@@ -45,11 +48,13 @@ export interface BridgeConfig {
 export function useAutonomoBridge(config: BridgeConfig = {}): {
   isRunning: boolean;
   url: string | null;
+  instance: InstanceInfo | null;
   error: Error | null;
 } {
-  const { port = 8080, devOnly = true, onStart, onError } = config;
+  const { port = 8080, devOnly = true, appName, onStart, onError } = config;
   const [isRunning, setIsRunning] = useState(false);
   const [url, setUrl] = useState<string | null>(null);
+  const [instance, setInstance] = useState<InstanceInfo | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
@@ -57,6 +62,20 @@ export function useAutonomoBridge(config: BridgeConfig = {}): {
     if (devOnly && !__DEV__) {
       return;
     }
+
+    // Initialize instance if not already done
+    let inst = getInstance();
+    if (!inst) {
+      inst = initInstance({
+        name: appName ?? 'react-native-app',
+        platform: 'mobile',
+        meta: {
+          os: Platform.OS,
+          version: Platform.Version,
+        },
+      });
+    }
+    setInstance(inst);
 
     // Note: Actual server implementation depends on the platform
     // This is a placeholder - real implementation would use:
@@ -67,17 +86,18 @@ export function useAutonomoBridge(config: BridgeConfig = {}): {
     const serverUrl = `http://localhost:${port}`;
     setUrl(serverUrl);
     setIsRunning(true);
-    onStart?.(serverUrl);
+    onStart?.(serverUrl, inst);
 
     console.log(`[Autonomo] Bridge ready at ${serverUrl}`);
+    console.log(`[Autonomo] Instance: ${inst.bridgeId}`);
 
     return () => {
       setIsRunning(false);
       setUrl(null);
     };
-  }, [port, devOnly]);
+  }, [port, devOnly, appName]);
 
-  return { isRunning, url, error };
+  return { isRunning, url, instance, error };
 }
 
 /**

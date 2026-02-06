@@ -4,7 +4,7 @@
  * React hooks and components for Autonomo integration.
  */
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import {
   registry,
   state,
@@ -13,9 +13,13 @@ import {
   registerToggleHandler,
   registerCustomAction,
   setNavigationHandler,
+  initInstance,
+  getInstance,
   type ElementType,
   type CustomActionHandler,
   type NavigationHandler,
+  type InstanceConfig,
+  type InstanceInfo,
 } from '@autonomo/core';
 
 export {
@@ -23,6 +27,12 @@ export {
   state,
   registerCustomAction,
   setNavigationHandler,
+  // Instance management
+  initInstance,
+  getInstance,
+  requireInstance,
+  getBridgeId,
+  resetInstance,
 } from '@autonomo/core';
 
 export type {
@@ -31,6 +41,9 @@ export type {
   ElementInfo,
   AppState,
   CommandResult,
+  // Instance types
+  InstanceConfig,
+  InstanceInfo,
 } from '@autonomo/core';
 
 /**
@@ -177,4 +190,36 @@ export function useWithStateRefresh<T extends (...args: unknown[]) => unknown>(
     }) as T,
     [callback]
   );
+}
+
+/**
+ * Initialize the Autonomo instance identity
+ * 
+ * Call once at app root (e.g., in App.tsx).
+ * Each browser tab/window gets a unique instance ID.
+ * 
+ * @example
+ * ```tsx
+ * function App() {
+ *   useInstance({ name: 'my-app', platform: 'web' });
+ *   return <MyApp />;
+ * }
+ * ```
+ */
+export function useInstance(config: InstanceConfig): InstanceInfo | undefined {
+  const [instance, setInstance] = useState<InstanceInfo | undefined>(undefined);
+
+  useEffect(() => {
+    // Only initialize once per app lifecycle
+    const existing = getInstance();
+    if (existing) {
+      setInstance(existing);
+    } else {
+      const newInstance = initInstance(config);
+      setInstance(newInstance);
+      console.log(`[Autonomo] Instance initialized: ${newInstance.bridgeId}`);
+    }
+  }, []); // Empty deps - only run once
+
+  return instance;
 }
