@@ -4,6 +4,8 @@
 
 # Autonomo — Verify Fast, Fix Fast
 
+**Pronunciation:** /ɔːˈtɒnəˌmoʊ/ — *aw-TAH-nuh-moh*
+
 > Works with: GitHub Copilot • Claude Code • Cursor • Windsurf • Any MCP-compatible AI
 
 Autonomo enables AI coding assistants to directly interact with and test your running applications.
@@ -612,6 +614,7 @@ Autonomo provides packages for multiple platforms and languages:
 ## Documentation
 
 - [QUICKSTART.md](./QUICKSTART.md) - **Fastest path** - Get running in 5 minutes
+- [docs/CUSTOM_ACTIONS.md](./docs/CUSTOM_ACTIONS.md) - **Custom actions** - Fast-path operations for complex interactions
 - [MCP_INTEGRATION.md](./MCP_INTEGRATION.md) - How Autonomo works with AI tools
 - [TEST_BRIDGE_ARCHITECTURE.md](./TEST_BRIDGE_ARCHITECTURE.md) - Deep dive on implementation
 - [PROTOCOL_SPECIFICATION.md](./PROTOCOL_SPECIFICATION.md) - Universal HTTP API (language-agnostic)
