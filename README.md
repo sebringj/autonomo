@@ -2,10 +2,8 @@
   <img src="logo.jpeg" alt="Autonomo" width="200" />
 </p>
 
-# Autonomo
+# Autonomo — Efficient AI Validation
 
-> **MCP Server for AI-Powered Application Testing**
->
 > Works with: GitHub Copilot • Claude Code • Cursor • Windsurf • Any MCP-compatible AI
 
 Autonomo enables AI coding assistants to directly interact with and test your running applications.
