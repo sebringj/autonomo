@@ -4,8 +4,12 @@ C# integration for [Autonomo](https://github.com/sebringj/autonomo) - AI-powered
 
 ## Installation
 
+> **TODO:** Package not yet published to NuGet. Install from source for now.
+
 ```bash
-dotnet add package Autonomo.CSharp
+# Clone the repo and reference the project directly
+git clone https://github.com/sebringj/autonomo.git
+# Add project reference to packages/Autonomo.CSharp
 ```
 
 ## Quick Start

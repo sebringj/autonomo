@@ -5,7 +5,7 @@ Python integration for [Autonomo](https://github.com/sebringj/autonomo) - AI-pow
 ## Installation
 
 ```bash
-pip install autonomo
+pip install git+https://github.com/sebringj/autonomo.git#subdirectory=packages/autonomo-python
 ```
 
 ## Quick Start

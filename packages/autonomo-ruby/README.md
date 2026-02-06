@@ -7,13 +7,13 @@ Ruby integration for [Autonomo](https://github.com/sebringj/autonomo) - AI-power
 Add to your Gemfile:
 
 ```ruby
-gem 'autonomo'
+gem 'autonomo', git: 'https://github.com/sebringj/autonomo.git', glob: 'packages/autonomo-ruby/*.gemspec'
 ```
 
-Or install directly:
+Then run:
 
 ```bash
-gem install autonomo
+bundle install
 ```
 
 ## Quick Start

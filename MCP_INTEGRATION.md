@@ -134,17 +134,11 @@ MCP (Model Context Protocol) is becoming the standard for AI tool integration:
 ### Installation
 
 ```bash
-# Via npm (runs locally)
-npx autonomo-mcp
+# Install from GitHub
+npm install -g github:sebringj/autonomo#packages/@autonomo/mcp-server
 
-# Via Homebrew
-brew install autonomo
-
-# Via pip
-pip install autonomo-mcp
-
-# Or download binary
-curl -fsSL https://autonomo.dev/install.sh | sh
+# Then run
+autonomo-mcp
 ```
 
 ### Configuration for AI Tools
@@ -155,8 +149,7 @@ curl -fsSL https://autonomo.dev/install.sh | sh
 {
   "mcpServers": {
     "autonomo": {
-      "command": "npx",
-      "args": ["autonomo-mcp"],
+      "command": "autonomo-mcp",
       "env": {
         "AUTONOMO_PORT": "9876"
       }
@@ -172,8 +165,7 @@ curl -fsSL https://autonomo.dev/install.sh | sh
 {
   "github.copilot.chat.mcpServers": {
     "autonomo": {
-      "command": "npx",
-      "args": ["autonomo-mcp"]
+      "command": "autonomo-mcp"
     }
   }
 }
@@ -186,8 +178,7 @@ curl -fsSL https://autonomo.dev/install.sh | sh
 {
   "servers": {
     "autonomo": {
-      "command": "npx",
-      "args": ["autonomo-mcp"]
+      "command": "autonomo-mcp"
     }
   }
 }

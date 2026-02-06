@@ -4,19 +4,25 @@ Kotlin/JVM integration for [Autonomo](https://github.com/sebringj/autonomo) - AI
 
 ## Installation
 
-### Gradle (Kotlin DSL)
+> **TODO:** Package not yet published. Requires JitPack setup. Install from source for now.
 
-```kotlin
-dependencies {
-    implementation("com.autonomo:autonomo:0.1.0")
-}
+### From Source
+
+```bash
+git clone https://github.com/sebringj/autonomo.git
+# Add the packages/autonomo-kotlin module to your project
 ```
 
-### Gradle (Groovy)
+### Future (once on JitPack)
 
-```groovy
+```kotlin
+// build.gradle.kts
+repositories {
+    maven { url = uri("https://jitpack.io") }
+}
+
 dependencies {
-    implementation 'com.autonomo:autonomo:0.1.0'
+    implementation("com.github.sebringj.autonomo:autonomo-kotlin:0.1.0")
 }
 ```
 
