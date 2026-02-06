@@ -29,11 +29,16 @@ export interface AppState {
     value?: string;
     hint?: string;
   }>;
-  customActions?: string[];
+  customActions?: Array<string | { name: string; description?: string; args?: Record<string, string> }>;
   user?: Record<string, unknown>;
   data?: Record<string, unknown>;
   errors?: string[];
   logs?: string[];
+  /** 
+   * Available routes for navigation validation.
+   * If provided, navigation commands will be validated against this list.
+   */
+  availableRoutes?: string[];
 }
 
 export interface BridgeConnection {
@@ -118,17 +123,33 @@ export function createWSServer(port: number = DEFAULT_PORT): AutonomoWSServer {
             const instanceId = msg.instanceId || Math.random().toString(36).slice(2, 10);
             bridgeId = `${msg.name || 'app'}-${instanceId}`;
             
+            // Extract initial state if provided with registration
+            let initialState: AppState | null = null;
+            if (msg.state) {
+              initialState = {
+                screen: msg.state.screen || 'unknown',
+                timestamp: Date.now(),
+                elements: msg.state.elements || [],
+                customActions: msg.state.customActions || [],
+                user: msg.state.user,
+                data: msg.state.data,
+                errors: msg.state.errors || [],
+                logs: msg.state.logs || [],
+                availableRoutes: msg.state.availableRoutes || [],
+              };
+            }
+            
             const connection: BridgeConnection = {
               id: bridgeId,
               name: msg.name || 'unknown',
               platform: msg.platform || 'unknown',
               ws,
-              state: null,
+              state: initialState,
               lastSeen: Date.now(),
             };
             
             bridges.set(bridgeId, connection);
-            console.error(`🟢 Bridge connected: ${bridgeId} (${msg.platform || 'unknown'})`);
+            console.error(`🟢 Bridge connected: ${bridgeId} (${msg.platform || 'unknown'})${initialState ? ` on screen: ${initialState.screen}` : ''}`);
             emitter.emit('bridge:connect', bridgeId);
             
             // Send ack
@@ -136,19 +157,22 @@ export function createWSServer(port: number = DEFAULT_PORT): AutonomoWSServer {
             break;
           }
           
-          case 'state': {
-            // App is reporting its state
+          case 'state':
+          case 'stateUpdate': {
+            // App is reporting its state (either initial or update)
             if (bridgeId && bridges.has(bridgeId)) {
               const bridge = bridges.get(bridgeId)!;
+              const state = msg.state || msg; // stateUpdate wraps in .state, legacy puts at root
               bridge.state = {
-                screen: msg.screen || 'unknown',
+                screen: state.screen || 'unknown',
                 timestamp: Date.now(),
-                elements: msg.elements || [],
-                customActions: msg.customActions || [],
-                user: msg.user,
-                data: msg.data,
-                errors: msg.errors || [],
-                logs: msg.logs || [],
+                elements: state.elements || [],
+                customActions: state.customActions || [],
+                user: state.user,
+                data: state.data,
+                errors: state.errors || [],
+                logs: state.logs || [],
+                availableRoutes: state.availableRoutes || [],
               };
               bridge.lastSeen = Date.now();
               emitter.emit('bridge:state', bridgeId, bridge.state);
@@ -246,6 +270,30 @@ export function createWSServer(port: number = DEFAULT_PORT): AutonomoWSServer {
     return bridge?.state || null;
   };
   
+  /**
+   * Check if a route matches available routes (supports glob patterns like /league/*)
+   */
+  const isRouteValid = (route: string, availableRoutes: string[]): boolean => {
+    return availableRoutes.some(pattern => {
+      // Exact match
+      if (pattern === route) return true;
+      
+      // Glob pattern matching (e.g., /league/* matches /league/123)
+      if (pattern.includes('*')) {
+        const regex = new RegExp('^' + pattern.replace(/\*/g, '[^/]+') + '$');
+        return regex.test(route);
+      }
+      
+      // Wildcard suffix (e.g., /league/** matches /league/123/settings)
+      if (pattern.endsWith('/**')) {
+        const prefix = pattern.slice(0, -3);
+        return route.startsWith(prefix);
+      }
+      
+      return false;
+    });
+  };
+  
   emitter.sendCommand = (bridgeId: string, command: Command): Promise<CommandResult> => {
     return new Promise((resolve, reject) => {
       const bridge = bridges.get(bridgeId);
@@ -258,6 +306,28 @@ export function createWSServer(port: number = DEFAULT_PORT): AutonomoWSServer {
       if (bridge.ws.readyState !== WebSocket.OPEN) {
         reject(new Error(`Bridge not connected: ${bridgeId}`));
         return;
+      }
+      
+      // Transform custom action: action='custom', target='fillOtp' → action='fillOtp'
+      let finalCommand = { ...command };
+      if (command.action === 'custom' && command.target) {
+        // Validate custom action exists
+        const customActions = bridge.state?.customActions || [];
+        const actionNames = customActions.map((ca: any) => typeof ca === 'string' ? ca : ca.name);
+        if (!actionNames.includes(command.target)) {
+          reject(new Error(`Unknown custom action: "${command.target}". Available: ${actionNames.join(', ') || 'none'}`));
+          return;
+        }
+        // Remap: action becomes the custom action name, value stays as-is
+        finalCommand = { action: command.target as any, value: command.value };
+      }
+      
+      // Validate navigation routes if availableRoutes is provided
+      if (finalCommand.action === 'navigate' && finalCommand.target && bridge.state?.availableRoutes?.length) {
+        if (!isRouteValid(finalCommand.target, bridge.state.availableRoutes)) {
+          reject(new Error(`Invalid route: "${finalCommand.target}". Available routes: ${bridge.state.availableRoutes.join(', ')}`));
+          return;
+        }
       }
       
       const commandId = `cmd_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -277,7 +347,7 @@ export function createWSServer(port: number = DEFAULT_PORT): AutonomoWSServer {
       bridge.ws.send(JSON.stringify({
         type: 'command',
         id: commandId,
-        ...command,
+        ...finalCommand,
       }));
     });
   };

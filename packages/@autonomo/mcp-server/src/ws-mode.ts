@@ -64,7 +64,7 @@ export async function startWSModeServer(config: WSModeConfig = {}): Promise<void
     },
     {
       name: 'autonomo_send_command',
-      description: 'Send a command to an application. Actions: navigate, press, fillIn/fill, submit, custom.',
+      description: 'Send a command to an application. Built-in: navigate (screen), press (button), fillIn/fill (input), submit (enter key). Custom: use action="custom" with target=customActionName (see state.customActions).',
       inputSchema: {
         type: 'object',
         properties: {
@@ -75,18 +75,18 @@ export async function startWSModeServer(config: WSModeConfig = {}): Promise<void
           action: {
             type: 'string',
             enum: ['navigate', 'press', 'fillIn', 'fill', 'submit', 'custom'],
-            description: 'Action type',
+            description: 'Action type. For custom actions from state.customActions, use "custom".',
           },
           target: {
             type: 'string',
-            description: 'Target element ID or screen name',
+            description: 'For built-in actions: element ID or screen name. For action="custom": the custom action name (e.g., "fillOtp").',
           },
           value: {
             type: 'string',
-            description: 'Value for fillIn action or custom action parameter',
+            description: 'Value for fillIn or custom action argument.',
           },
         },
-        required: ['bridge', 'action', 'target'],
+        required: ['bridge', 'action'],
       },
     },
     {
@@ -223,7 +223,17 @@ export async function startWSModeServer(config: WSModeConfig = {}): Promise<void
             }
           }
           if (state.customActions?.length) {
-            text += `\nCustom Actions: ${state.customActions.join(', ')}\n`;
+            text += `\nCustom Actions (use action="custom", target=name):\n`;
+            for (const ca of state.customActions) {
+              if (typeof ca === 'string') {
+                text += `  • ${ca}\n`;
+              } else if (ca.name) {
+                text += `  • ${ca.name}`;
+                if (ca.description) text += ` - ${ca.description}`;
+                if (ca.args) text += ` [args: ${JSON.stringify(ca.args)}]`;
+                text += '\n';
+              }
+            }
           }
           if (state.errors?.length) {
             text += `\nErrors: ${state.errors.join(', ')}\n`;

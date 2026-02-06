@@ -101,6 +101,12 @@ export interface AppState {
     name?: string;
     role?: string;
   } | null;
+  /** 
+   * Available routes for navigation validation.
+   * If provided, AI agents will only navigate to these routes.
+   * Use glob patterns like '/league/*' for dynamic routes.
+   */
+  availableRoutes?: string[];
 }
 
 /**
