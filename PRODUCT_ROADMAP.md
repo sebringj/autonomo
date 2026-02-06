@@ -151,19 +151,19 @@ Create drop-in packages for common frameworks:
 
 ```bash
 # React Native / Expo
-npm install @autonomo/react-native
+npm install github:sebringj/autonomo#packages/@autonomo/react-native
 
 # React / Next.js  
-npm install @autonomo/react
+npm install github:sebringj/autonomo#packages/@autonomo/react
 
-# Vue
-npm install @autonomo/vue
+# Vue (TODO)
+# npm install github:sebringj/autonomo#packages/@autonomo/vue
 
-# Svelte
-npm install @autonomo/svelte
+# Svelte (TODO)
+# npm install github:sebringj/autonomo#packages/@autonomo/svelte
 
 # Flutter
-flutter pub add autonomo
+# See README Installation section
 ```
 
 ### Open Source Scope

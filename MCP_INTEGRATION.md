@@ -465,7 +465,7 @@ AI: "While testing your new feature, I noticed the login
 ### 1. Install Autonomo MCP Server
 
 ```bash
-npm install -g autonomo-mcp
+npm install -g github:sebringj/autonomo#packages/@autonomo/mcp-server
 ```
 
 ### 2. Configure Your AI Tool

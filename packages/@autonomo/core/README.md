@@ -7,11 +7,11 @@ This is the core TypeScript/JavaScript library that all Autonomo integrations ar
 ## Installation
 
 ```bash
-npm install @autonomo/core
+npm install github:sebringj/autonomo#packages/@autonomo/core
 # or
-yarn add @autonomo/core
+yarn add github:sebringj/autonomo#packages/@autonomo/core
 # or
-pnpm add @autonomo/core
+pnpm add github:sebringj/autonomo#packages/@autonomo/core
 ```
 
 ## Quick Start
