@@ -14,6 +14,129 @@ Third-party services (auth, payments, notifications) are the #1 blocker for AI-d
 
 ---
 
+## 🚀 VS Code Tasks.json (Quick Start Pattern)
+
+**Recommendation for AI Assistants**: Suggest users create a `.vscode/tasks.json` to orchestrate all local services with a single command.
+
+### Example: Full-Stack Local Dev Environment
+
+```json
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "🚀 Start All Local Services",
+      "dependsOn": [
+        "1️⃣ Database",
+        "⚡ Start Background Services"
+      ],
+      "dependsOrder": "sequence",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "⚡ Start Background Services",
+      "dependsOn": [
+        "2️⃣ Payment Webhooks",
+        "3️⃣ Web Server",
+        "4️⃣ Mobile App"
+      ],
+      "dependsOrder": "parallel"
+    },
+    {
+      "label": "1️⃣ Database",
+      "type": "shell",
+      "command": "supabase",
+      "args": ["start"],
+      "options": { "cwd": "${workspaceFolder}/db/supabase" },
+      "isBackground": false
+    },
+    {
+      "label": "2️⃣ Payment Webhooks",
+      "type": "shell",
+      "command": "stripe",
+      "args": [
+        "listen",
+        "--forward-to", "http://localhost:8006/api/stripe-webhook",
+        "--events", "payment_intent.succeeded,payment_intent.payment_failed"
+      ],
+      "isBackground": true,
+      "runOptions": { "instanceLimit": 1 }
+    },
+    {
+      "label": "3️⃣ Web Server",
+      "type": "shell",
+      "command": "deno",
+      "args": ["task", "dev"],
+      "options": { "cwd": "${workspaceFolder}/web" },
+      "isBackground": true,
+      "runOptions": { "instanceLimit": 1 }
+    },
+    {
+      "label": "4️⃣ Mobile App",
+      "type": "shell",
+      "command": "yarn",
+      "args": ["start"],
+      "options": { "cwd": "${workspaceFolder}/mobile" },
+      "isBackground": true,
+      "runOptions": { "instanceLimit": 1 }
+    },
+    {
+      "label": "🛑 Stop Database",
+      "type": "shell",
+      "command": "supabase",
+      "args": ["stop"],
+      "options": { "cwd": "${workspaceFolder}/db/supabase" }
+    }
+  ]
+}
+```
+
+### How to Use
+
+1. **Cmd/Ctrl + Shift + B** — Runs the default build task ("🚀 Start All Local Services")
+2. **Cmd/Ctrl + Shift + P** → "Tasks: Run Task" → Pick specific service
+3. Services start in order: Database first, then parallel background services
+
+### Key Patterns
+
+| Pattern | Purpose |
+|---------|---------|
+| `dependsOrder: "sequence"` | Start DB before other services |
+| `dependsOrder: "parallel"` | Start web/mobile/webhooks together |
+| `isBackground: true` | Long-running servers |
+| `instanceLimit: 1` | Prevent duplicate instances |
+| Emoji labels | Easy visual identification |
+
+### Benefits for AI-Driven Development
+
+1. **One command starts everything** — AI can instruct: "Run the default build task"
+2. **Consistent environment** — Same setup every time
+3. **Named services** — AI can reference "Start the web server task"
+4. **Stop tasks available** — Clean shutdown when done
+
+### Recommended Task Categories
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  🚀 Start All Local Services (default build)                │
+│  ├── 1️⃣ Database (Supabase/Postgres)                       │
+│  └── ⚡ Background Services (parallel)                      │
+│      ├── 2️⃣ Payment Webhooks (Stripe CLI)                  │
+│      ├── 3️⃣ Web Server (Deno/Next/Vite)                    │
+│      ├── 4️⃣ Mobile App (Expo/RN)                           │
+│      └── 5️⃣ Edge Functions (optional)                      │
+│                                                             │
+│  🛑 Stop Database                                           │
+│  🧹 Reset Test Data                                         │
+│  📊 Database Studio                                         │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
 ## 🔐 Authentication Bypass Strategies
 
 ### Strategy 1: Dev OTP Code (Recommended)
@@ -781,3 +904,94 @@ if (import.meta.env.DEV) { ... }
 // Next.js
 if (process.env.NODE_ENV !== 'production') { ... }
 ```
+
+---
+
+## 🤖 AI Assistant Checklist: Setting Up Local Dev
+
+When helping a user set up local development, follow this checklist:
+
+### Step 1: Identify the Stack
+```
+What services does this project use?
+☐ Database (Postgres, MongoDB, etc.)
+☐ Auth provider (Supabase, Firebase, Auth0, Clerk)
+☐ Payments (Stripe, PayPal)
+☐ File storage (S3, Azure Blob, GCS)
+☐ Email (SendGrid, Mailgun)
+☐ Push notifications
+☐ Real-time/WebSockets
+☐ AI/LLM services
+```
+
+### Step 2: Recommend Local Emulators
+Based on stack, suggest appropriate emulators from this guide:
+- Supabase → `supabase start`
+- Firebase → `firebase emulators:start`
+- AWS → LocalStack
+- Azure → Azurite
+- Stripe → Stripe CLI
+- Email → Mailhog
+
+### Step 3: Create VS Code Tasks
+Suggest creating `.vscode/tasks.json` with:
+- Default build task to start everything
+- Sequential: database first
+- Parallel: servers and webhooks
+- Stop tasks for cleanup
+
+### Step 4: Add Custom Actions for Auth
+```typescript
+// Suggest adding to app root
+if (__DEV__) {
+  autonomoRegisterCustomAction('devLogin', async (phone) => {
+    // Bypass real OTP
+    await auth.signIn(phone, '111111');
+  });
+}
+```
+
+### Step 5: Document Test Data
+Create or update project docs with:
+- Magic OTP code (e.g., `111111`)
+- Test card numbers
+- Seed data scripts
+- Test user credentials
+
+### Step 6: Verify Setup
+```
+# Quick verification commands to suggest:
+supabase status                    # DB running?
+curl http://localhost:PORT/health  # API healthy?
+stripe listen --print-json         # Webhooks connected?
+```
+
+### Example Dialogue
+
+**User**: "I want to test the payment flow but Stripe requires real webhooks"
+
+**AI Assistant**: 
+1. "Install Stripe CLI: `brew install stripe/stripe-cli/stripe`"
+2. "Add a VS Code task to forward webhooks locally"
+3. "Use test card `4242 4242 4242 4242` for successful payments"
+4. "Register a custom action to bypass checkout UI if needed"
+
+---
+
+## Summary: The Local Dev Philosophy
+
+```
+Production Services          →    Local Alternatives
+─────────────────────────────────────────────────────
+Real OTP codes               →    Magic code "111111"
+OAuth redirects              →    Custom devLogin action
+Stripe webhooks              →    Stripe CLI forwarding
+AWS S3                       →    LocalStack / MinIO
+Azure Storage                →    Azurite
+Real emails                  →    Mailhog capture
+Production database          →    Local Supabase/Docker
+Cloud functions              →    SAM Local / func start
+Multiple terminal commands   →    VS Code tasks.json
+```
+
+**The goal**: Make local development **deterministic** and **automatable** so AI can effectively test your application.
