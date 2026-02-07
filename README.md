@@ -20,8 +20,11 @@ Autonomo enables AI coding assistants to observe app state, drive multiple devic
 | 👁️ Only sees pixels on screen | 🔍 Sees app state, network calls, errors, auth |
 | 🎯 Coordinates break on resize | 🏷️ Semantic IDs survive redesigns |
 | 👤 Single device at a time | 👥 **Multi-device**: test User A → User B flows |
+| 🔐 Struggles with OTP/OAuth | 🎬 **Custom actions**: bypass auth flows in local testing |
 
 **Multi-user testing example**: "On Device A, send a message. On Device B, verify it arrives."
+
+**Custom actions example**: Register a `devLogin` action that bypasses OTP/OAuth during local testing — AI calls it like any other action.
 
 ---
 
