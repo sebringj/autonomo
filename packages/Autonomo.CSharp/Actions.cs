@@ -27,9 +27,48 @@ public class ActionResult
 }
 
 /// <summary>
+/// Metadata for a custom action - helps AI understand what it does
+/// </summary>
+public class CustomActionMeta
+{
+    public string? Description { get; init; }
+    public Dictionary<string, string>? Args { get; init; }
+    public Dictionary<string, string>? Example { get; init; }
+}
+
+/// <summary>
+/// Rich custom action info returned in state
+/// </summary>
+public class CustomActionInfo
+{
+    public string Name { get; init; } = "";
+    public string? Description { get; init; }
+    public Dictionary<string, string>? Args { get; init; }
+    public Dictionary<string, string>? Example { get; init; }
+
+    public Dictionary<string, object> ToDictionary()
+    {
+        var result = new Dictionary<string, object> { ["name"] = Name };
+        if (Description != null) result["description"] = Description;
+        if (Args != null) result["args"] = Args;
+        if (Example != null) result["example"] = Example;
+        return result;
+    }
+}
+
+/// <summary>
 /// Custom action handler delegate
 /// </summary>
 public delegate ActionResult CustomActionHandler(string? value);
+
+/// <summary>
+/// Internal registered action
+/// </summary>
+internal class RegisteredAction
+{
+    public CustomActionHandler Handler { get; init; } = null!;
+    public CustomActionMeta? Meta { get; init; }
+}
 
 /// <summary>
 /// Singleton registry for custom actions
@@ -39,7 +78,7 @@ public sealed class CustomActionsRegistry
     private static readonly Lazy<CustomActionsRegistry> _instance = new(() => new CustomActionsRegistry());
     public static CustomActionsRegistry Instance => _instance.Value;
 
-    private readonly Dictionary<string, CustomActionHandler> _actions = new();
+    private readonly Dictionary<string, RegisteredAction> _actions = new();
     private readonly List<Action> _listeners = new();
     private readonly object _lock = new();
 
@@ -48,11 +87,11 @@ public sealed class CustomActionsRegistry
     /// <summary>
     /// Register a custom action
     /// </summary>
-    public Action Register(string name, CustomActionHandler handler)
+    public Action Register(string name, CustomActionHandler handler, CustomActionMeta? meta = null)
     {
         lock (_lock)
         {
-            _actions[name] = handler;
+            _actions[name] = new RegisteredAction { Handler = handler, Meta = meta };
             NotifyChange();
             return () => Unregister(name);
         }
@@ -89,20 +128,21 @@ public sealed class CustomActionsRegistry
     /// </summary>
     public ActionResult Execute(string name, string? value = null)
     {
-        CustomActionHandler? handler;
+        RegisteredAction? action;
         lock (_lock)
         {
-            _actions.TryGetValue(name, out handler);
+            _actions.TryGetValue(name, out action);
         }
 
-        if (handler == null)
+        if (action == null)
         {
-            return ActionResult.Fail($"Unknown custom action: {name}");
+            var available = List().Count == 0 ? "none" : string.Join(", ", List());
+            return ActionResult.Fail($"Unknown custom action: {name}. Available: {available}");
         }
 
         try
         {
-            return handler(value);
+            return action.Handler(value);
         }
         catch (Exception ex)
         {
@@ -124,6 +164,23 @@ public sealed class CustomActionsRegistry
     public List<string> List()
     {
         lock (_lock) { return _actions.Keys.ToList(); }
+    }
+
+    /// <summary>
+    /// Get rich info about all actions (for AI discoverability)
+    /// </summary>
+    public List<CustomActionInfo> GetAll()
+    {
+        lock (_lock)
+        {
+            return _actions.Select(kvp => new CustomActionInfo
+            {
+                Name = kvp.Key,
+                Description = kvp.Value.Meta?.Description,
+                Args = kvp.Value.Meta?.Args,
+                Example = kvp.Value.Meta?.Example
+            }).ToList();
+        }
     }
 
     /// <summary>
@@ -157,8 +214,8 @@ public static class CustomActions
     /// <summary>
     /// Register a custom action
     /// </summary>
-    public static Action Register(string name, CustomActionHandler handler)
-        => Instance.Register(name, handler);
+    public static Action Register(string name, CustomActionHandler handler, CustomActionMeta? meta = null)
+        => Instance.Register(name, handler, meta);
 
     /// <summary>
     /// Execute a custom action

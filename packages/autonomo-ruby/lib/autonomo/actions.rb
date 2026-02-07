@@ -29,6 +29,47 @@ module Autonomo
     end
   end
 
+  # Metadata for a custom action - helps AI understand what it does
+  class CustomActionMeta
+    attr_reader :description, :args, :example
+
+    def initialize(description: nil, args: nil, example: nil)
+      @description = description
+      @args = args
+      @example = example
+    end
+  end
+
+  # Rich custom action info returned in state
+  class CustomActionInfo
+    attr_reader :name, :description, :args, :example
+
+    def initialize(name:, description: nil, args: nil, example: nil)
+      @name = name
+      @description = description
+      @args = args
+      @example = example
+    end
+
+    def to_h
+      result = { name: @name }
+      result[:description] = @description if @description
+      result[:args] = @args if @args
+      result[:example] = @example if @example
+      result
+    end
+  end
+
+  # Internal registered action
+  class RegisteredAction
+    attr_reader :handler, :meta
+
+    def initialize(handler:, meta: nil)
+      @handler = handler
+      @meta = meta
+    end
+  end
+
   # Singleton registry for custom actions
   class CustomActionsRegistry
     @instance = nil
@@ -44,9 +85,9 @@ module Autonomo
     end
 
     # Register a custom action
-    def register(name, &handler)
+    def register(name, meta: nil, &handler)
       @mutex.synchronize do
-        @actions[name] = handler
+        @actions[name] = RegisteredAction.new(handler: handler, meta: meta)
         notify_change
       end
       -> { unregister(name) }
@@ -63,12 +104,15 @@ module Autonomo
 
     # Execute a custom action
     def execute(name, value = nil)
-      handler = @mutex.synchronize { @actions[name] }
+      action = @mutex.synchronize { @actions[name] }
       
-      return ActionResult.fail("Unknown custom action: #{name}") unless handler
+      unless action
+        available = list.empty? ? 'none' : list.join(', ')
+        return ActionResult.fail("Unknown custom action: #{name}. Available: #{available}")
+      end
 
       begin
-        handler.call(value)
+        action.handler.call(value)
       rescue => e
         ActionResult.fail(e.message)
       end
@@ -82,6 +126,20 @@ module Autonomo
     # List all action names
     def list
       @mutex.synchronize { @actions.keys }
+    end
+
+    # Get rich info about all actions (for AI discoverability)
+    def get_all
+      @mutex.synchronize do
+        @actions.map do |name, action|
+          CustomActionInfo.new(
+            name: name,
+            description: action.meta&.description,
+            args: action.meta&.args,
+            example: action.meta&.example
+          )
+        end
+      end
     end
 
     # Subscribe to changes
@@ -104,8 +162,8 @@ module Autonomo
     end
 
     # Register a custom action
-    def register_custom_action(name, &handler)
-      custom_actions.register(name, &handler)
+    def register_custom_action(name, meta: nil, &handler)
+      custom_actions.register(name, meta: meta, &handler)
     end
   end
 end

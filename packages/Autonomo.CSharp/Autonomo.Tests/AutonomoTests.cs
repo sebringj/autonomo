@@ -166,6 +166,38 @@ class Program
             Assert(result.Error?.ToLower().Contains("not found") == true, "Error should mention not found");
         });
 
+        Test("custom actions with metadata", () =>
+        {
+            var meta = new CustomActionMeta
+            {
+                Description = "Greets the user",
+                Args = new Dictionary<string, string> { ["name"] = "Name to greet" },
+                Example = new Dictionary<string, string> { ["name"] = "World" }
+            };
+
+            var unregister = CustomActions.Register("greetAction", (value) =>
+            {
+                return ActionResult.Ok($"Hello, {value}!");
+            }, meta);
+
+            // Verify action works
+            var result = CustomActions.Execute("greetAction", "World");
+            Assert(result.Success, "Should succeed");
+            Assert(result.Message?.Contains("Hello, World!") == true, "Message should contain greeting");
+
+            // Verify GetAll returns rich info
+            var allActions = CustomActionsRegistry.Instance.GetAll();
+            Assert(allActions.Count >= 1, "Should have at least one action");
+
+            var greetInfo = allActions.Find(a => a.Name == "greetAction");
+            Assert(greetInfo != null, "Should find greetAction");
+            AssertEqual("Greets the user", greetInfo!.Description);
+            AssertEqual("Name to greet", greetInfo.Args?["name"]);
+            AssertEqual("World", greetInfo.Example?["name"]);
+
+            unregister();
+        });
+
         Console.WriteLine($"\n📊 Results: {passed} passed, {failed} failed\n");
         Environment.Exit(failed > 0 ? 1 : 0);
     }

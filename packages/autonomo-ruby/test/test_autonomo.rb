@@ -140,5 +140,34 @@ test "commands return error for missing element" do
   assert result.error.downcase.include?("not found")
 end
 
+test "custom actions with metadata" do
+  meta = Autonomo::CustomActionMeta.new(
+    description: "Greets the user",
+    args: { "name" => "Name to greet" },
+    example: { "name" => "World" }
+  )
+  
+  unregister = Autonomo.register_custom_action("greetAction", meta: meta) do |value|
+    Autonomo::ActionResult.ok("Hello, #{value}!")
+  end
+  
+  # Verify action works
+  result = Autonomo::CustomActionsRegistry.instance.execute("greetAction", "World")
+  assert result.success, "Should succeed"
+  assert result.message.include?("Hello, World!")
+  
+  # Verify get_all returns rich info
+  all_actions = Autonomo::CustomActionsRegistry.instance.get_all
+  assert all_actions.size >= 1
+  
+  greet_info = all_actions.find { |a| a.name == "greetAction" }
+  assert greet_info, "Should find greetAction"
+  assert_equal "Greets the user", greet_info.description
+  assert_equal({ "name" => "Name to greet" }, greet_info.args)
+  assert_equal({ "name" => "World" }, greet_info.example)
+  
+  unregister.call
+end
+
 puts "\n📊 Results: #{$passed} passed, #{$failed} failed\n"
 exit($failed > 0 ? 1 : 0)

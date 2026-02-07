@@ -190,5 +190,38 @@ void main() {
       expect(result.success, isTrue);
       expect(elapsed, greaterThanOrEqualTo(100));
     });
+
+    test('custom actions with metadata', () {
+      final meta = CustomActionMeta(
+        description: 'Greets the user',
+        args: {'name': 'Name to greet'},
+        example: {'name': 'World'},
+      );
+
+      final unregister = registerCustomAction(
+        'greetAction',
+        (value) => ActionResult.ok('Hello, $value!'),
+        meta: meta,
+      );
+
+      // Verify action works
+      final result = CustomActionsRegistry.instance.execute('greetAction', 'World');
+      expect(result.success, isTrue);
+      expect(result.message, contains('Hello, World!'));
+
+      // Verify getAll returns rich info
+      final allActions = CustomActionsRegistry.instance.getAll();
+      expect(allActions.length, greaterThanOrEqualTo(1));
+
+      final greetInfo = allActions.firstWhere(
+        (a) => a.name == 'greetAction',
+        orElse: () => throw Exception('greetAction not found'),
+      );
+      expect(greetInfo.description, equals('Greets the user'));
+      expect(greetInfo.args?['name'], equals('Name to greet'));
+      expect(greetInfo.example?['name'], equals('World'));
+
+      unregister();
+    });
   });
 }

@@ -127,4 +127,33 @@ final class AutonomoTests: XCTestCase {
         XCTAssertFalse(result.success, "Should fail")
         XCTAssertTrue(result.error?.lowercased().contains("not found") == true)
     }
+    
+    func testCustomActionsWithMetadata() {
+        let meta = CustomActionMeta(
+            description: "Greets the user",
+            args: ["name": "Name to greet"],
+            example: ["name": "World"]
+        )
+        
+        let unregister = registerCustomAction("greetAction", meta: meta) { value in
+            return ActionResult.ok("Hello, \(value ?? "stranger")!")
+        }
+        
+        // Verify action works
+        let result = CustomActionsRegistry.shared.execute("greetAction", value: "World")
+        XCTAssertTrue(result.success)
+        XCTAssertTrue(result.message?.contains("Hello, World!") == true)
+        
+        // Verify getAll returns rich info
+        let allActions = CustomActionsRegistry.shared.getAll()
+        XCTAssertGreaterThanOrEqual(allActions.count, 1)
+        
+        let greetInfo = allActions.first { $0.name == "greetAction" }
+        XCTAssertNotNil(greetInfo)
+        XCTAssertEqual(greetInfo?.description, "Greets the user")
+        XCTAssertEqual(greetInfo?.args?["name"], "Name to greet")
+        XCTAssertEqual(greetInfo?.example?["name"], "World")
+        
+        unregister()
+    }
 }

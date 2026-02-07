@@ -33,9 +33,47 @@ public struct ActionResult {
     }
 }
 
+// MARK: - Custom Action Metadata
+
+/// Metadata for a custom action - helps AI understand what it does
+public struct CustomActionMeta {
+    public let description: String?
+    public let args: [String: String]?
+    public let example: [String: String]?
+    
+    public init(description: String? = nil, args: [String: String]? = nil, example: [String: String]? = nil) {
+        self.description = description
+        self.args = args
+        self.example = example
+    }
+}
+
+/// Rich custom action info returned in state
+public struct CustomActionInfo {
+    public let name: String
+    public let description: String?
+    public let args: [String: String]?
+    public let example: [String: String]?
+    
+    public func toDictionary() -> [String: Any] {
+        var result: [String: Any] = ["name": name]
+        if let description = description { result["description"] = description }
+        if let args = args { result["args"] = args }
+        if let example = example { result["example"] = example }
+        return result
+    }
+}
+
 // MARK: - Custom Action Handler
 
 public typealias CustomActionHandler = (String?) -> ActionResult
+
+// MARK: - Registered Action
+
+private struct RegisteredAction {
+    let handler: CustomActionHandler
+    let meta: CustomActionMeta?
+}
 
 // MARK: - Custom Actions Registry
 
@@ -43,7 +81,7 @@ public typealias CustomActionHandler = (String?) -> ActionResult
 public class CustomActionsRegistry {
     public static let shared = CustomActionsRegistry()
     
-    private var actions: [String: CustomActionHandler] = [:]
+    private var actions: [String: RegisteredAction] = [:]
     private var listeners: [() -> Void] = []
     private let lock = NSLock()
     
@@ -51,9 +89,9 @@ public class CustomActionsRegistry {
     
     /// Register a custom action
     @discardableResult
-    public func register(_ name: String, handler: @escaping CustomActionHandler) -> () -> Void {
+    public func register(_ name: String, handler: @escaping CustomActionHandler, meta: CustomActionMeta? = nil) -> () -> Void {
         lock.lock()
-        actions[name] = handler
+        actions[name] = RegisteredAction(handler: handler, meta: meta)
         lock.unlock()
         notifyChange()
         return { [weak self] in self?.unregister(name) }
@@ -78,15 +116,16 @@ public class CustomActionsRegistry {
     /// Execute a custom action
     public func execute(_ name: String, value: String? = nil) -> ActionResult {
         lock.lock()
-        let handler = actions[name]
+        let action = actions[name]
         lock.unlock()
         
-        guard let handler = handler else {
-            return .fail("Unknown custom action: \(name)")
+        guard let action = action else {
+            let available = list().isEmpty ? "none" : list().joined(separator: ", ")
+            return .fail("Unknown custom action: \(name). Available: \(available)")
         }
         
         do {
-            return handler(value)
+            return action.handler(value)
         } catch {
             return .fail(error.localizedDescription)
         }
@@ -104,6 +143,20 @@ public class CustomActionsRegistry {
         lock.lock()
         defer { lock.unlock() }
         return Array(actions.keys)
+    }
+    
+    /// Get rich info about all actions (for AI discoverability)
+    public func getAll() -> [CustomActionInfo] {
+        lock.lock()
+        defer { lock.unlock() }
+        return actions.map { name, action in
+            CustomActionInfo(
+                name: name,
+                description: action.meta?.description,
+                args: action.meta?.args,
+                example: action.meta?.example
+            )
+        }
     }
     
     /// Subscribe to changes
@@ -136,6 +189,6 @@ public class CustomActionsRegistry {
 
 /// Register a custom action
 @discardableResult
-public func registerCustomAction(_ name: String, handler: @escaping CustomActionHandler) -> () -> Void {
-    CustomActionsRegistry.shared.register(name, handler: handler)
+public func registerCustomAction(_ name: String, handler: @escaping CustomActionHandler, meta: CustomActionMeta? = nil) -> () -> Void {
+    CustomActionsRegistry.shared.register(name, handler: handler, meta: meta)
 }

@@ -26,6 +26,49 @@ class ActionResult {
       };
 }
 
+/// Metadata for a custom action - helps AI understand what it does
+class CustomActionMeta {
+  final String? description;
+  final Map<String, String>? args;
+  final Map<String, String>? example;
+
+  const CustomActionMeta({
+    this.description,
+    this.args,
+    this.example,
+  });
+}
+
+/// Rich custom action info returned in state
+class CustomActionInfo {
+  final String name;
+  final String? description;
+  final Map<String, String>? args;
+  final Map<String, String>? example;
+
+  const CustomActionInfo({
+    required this.name,
+    this.description,
+    this.args,
+    this.example,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        if (description != null) 'description': description,
+        if (args != null) 'args': args,
+        if (example != null) 'example': example,
+      };
+}
+
+/// Internal registered action
+class _RegisteredAction {
+  final CustomActionHandler handler;
+  final CustomActionMeta? meta;
+
+  const _RegisteredAction({required this.handler, this.meta});
+}
+
 typedef CustomActionHandler = Future<ActionResult> Function([String? value]);
 typedef ActionsChangeListener = void Function();
 
@@ -36,13 +79,14 @@ class CustomActionsRegistry {
   factory CustomActionsRegistry() => _instance;
   CustomActionsRegistry._internal();
 
-  final Map<String, CustomActionHandler> _actions = {};
+  final Map<String, _RegisteredAction> _actions = {};
   final Set<ActionsChangeListener> _listeners = {};
 
   /// Register a custom action
   /// Returns a function to unregister
-  void Function() register(String name, CustomActionHandler handler) {
-    _actions[name] = handler;
+  void Function() register(String name, CustomActionHandler handler,
+      {CustomActionMeta? meta}) {
+    _actions[name] = _RegisteredAction(handler: handler, meta: meta);
     _notifyChange();
     return () => unregister(name);
   }
@@ -55,15 +99,16 @@ class CustomActionsRegistry {
 
   /// Execute a custom action
   Future<ActionResult> execute(String name, [String? value]) async {
-    final handler = _actions[name];
-    if (handler == null) {
+    final action = _actions[name];
+    if (action == null) {
+      final available = _actions.isEmpty ? 'none' : _actions.keys.join(', ');
       return ActionResult(
         success: false,
-        error: 'Unknown custom action: $name',
+        error: 'Unknown custom action: $name. Available: $available',
       );
     }
     try {
-      return await handler(value);
+      return await action.handler(value);
     } catch (err) {
       return ActionResult(
         success: false,
@@ -77,6 +122,18 @@ class CustomActionsRegistry {
 
   /// List all action names
   List<String> list() => _actions.keys.toList();
+
+  /// Get rich info about all actions (for AI discoverability)
+  List<CustomActionInfo> getAll() {
+    return _actions.entries.map((entry) {
+      return CustomActionInfo(
+        name: entry.key,
+        description: entry.value.meta?.description,
+        args: entry.value.meta?.args,
+        example: entry.value.meta?.example,
+      );
+    }).toList();
+  }
 
   /// Subscribe to changes
   void Function() onChange(ActionsChangeListener listener) {
@@ -95,7 +152,8 @@ class CustomActionsRegistry {
 final customActions = CustomActionsRegistry();
 
 /// Convenience function to register a custom action
-void Function() registerCustomAction(
-    String name, CustomActionHandler handler) {
-  return customActions.register(name, handler);
+void Function() registerCustomAction(String name, CustomActionHandler handler,
+    {CustomActionMeta? meta}) {
+  return customActions.register(name, handler, meta: meta);
+}
 }

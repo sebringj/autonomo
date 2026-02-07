@@ -153,5 +153,38 @@ def _():
     assert result.success is False
     assert "not found" in result.error.lower()
 
+@test("custom actions with metadata")
+def _():
+    from autonomo.actions import CustomActionMeta
+    
+    meta = CustomActionMeta(
+        description="Greets the user",
+        args={"name": "Name to greet"},
+        example={"name": "World"}
+    )
+    
+    unregister = register_custom_action(
+        "greetAction",
+        lambda value: ActionResult(success=True, message=f"Hello, {value}!"),
+        meta=meta
+    )
+    
+    # Verify action works
+    result = custom_actions.execute("greetAction", "World")
+    assert result.success is True
+    assert "Hello, World!" in result.message
+    
+    # Verify get_all returns rich info
+    all_actions = custom_actions.get_all()
+    assert len(all_actions) >= 1
+    
+    greet_info = next((a for a in all_actions if a.name == "greetAction"), None)
+    assert greet_info is not None
+    assert greet_info.description == "Greets the user"
+    assert greet_info.args == {"name": "Name to greet"}
+    assert greet_info.example == {"name": "World"}
+    
+    unregister()
+
 print(f"\n📊 Results: {passed} passed, {failed} failed\n")
 sys.exit(1 if failed > 0 else 0)
