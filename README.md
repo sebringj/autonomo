@@ -2,13 +2,13 @@
   <img src="logo.jpeg" alt="Autonomo" width="200" />
 </p>
 
-# Autonomo — Verify Fast, Fix Fast
+# Autonomo MCP — Verify, Fix, Repeat
 
 > au·ton·o·mo | \ ä-ˈtä-nə-ˌmō \
 
 > Works with: GitHub Copilot • Claude Code • Cursor • Windsurf • Any MCP-compatible AI
 
-Autonomo enables AI coding assistants to directly interact with and test your running applications.
+Autonomo enables AI coding assistants to know the state of your app and iteratively develop.
 
 ### Why Autonomo?
 
