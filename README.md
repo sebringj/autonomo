@@ -2,7 +2,7 @@
   <img src="logo.jpeg" alt="Autonomo" width="200" />
 </p>
 
-# Autonomo MCP — Verify, Fix, Repeat
+# Autonomo MCP — Build, Verify, Fix, Repeat
 
 > au·ton·o·mo | \ ä-ˈtä-nə-ˌmō \
 
