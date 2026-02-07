@@ -390,6 +390,37 @@ Custom Actions (POWERFUL):
         required: ['scenario'],
       },
     },
+
+    // ==========================================
+    // autonomo/help
+    // ==========================================
+    {
+      name: 'autonomo_help',
+      description:
+        `Get comprehensive Autonomo documentation and scenario guides. Call this when you need help understanding how to use Autonomo effectively.
+
+Topics available:
+• "overview" - Quick start and core concepts
+• "elements" - How element registration works (CRITICAL to understand)
+• "custom-actions" - Bypassing OTP/OAuth and creating shortcuts
+• "multi-device" - Testing across multiple devices/users
+• "troubleshooting" - Common issues and solutions
+• "scenarios" - Real-world testing patterns
+• "best-practices" - Tips for reliable testing
+
+Call without a topic to see the full table of contents.`,
+      inputSchema: {
+        type: 'object',
+        properties: {
+          topic: {
+            type: 'string',
+            enum: ['overview', 'elements', 'custom-actions', 'multi-device', 'troubleshooting', 'scenarios', 'best-practices'],
+            description: 'Help topic to retrieve. Omit for table of contents.',
+          },
+        },
+        required: [],
+      },
+    },
   ];
 
   // Register tool list handler
@@ -695,6 +726,23 @@ Custom Actions (POWERFUL):
           };
         }
 
+        // ==========================================
+        // autonomo/help
+        // ==========================================
+        case 'autonomo_help': {
+          const { topic } = args as { topic?: string };
+          const helpContent = await getHelpContent(topic);
+
+          return {
+            content: [
+              {
+                type: 'text',
+                text: helpContent,
+              },
+            ],
+          };
+        }
+
         default:
           return {
             content: [
@@ -938,6 +986,74 @@ function formatCrossBridgeResult(
   }
 
   return lines.join('\n');
+}
+
+// ==========================================
+// Help content fetcher
+// ==========================================
+
+const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/sebringj/autonomo/main/docs/ai_help';
+
+const HELP_TOPICS = ['index', 'overview', 'elements', 'custom-actions', 'multi-device', 'troubleshooting', 'scenarios', 'best-practices'] as const;
+type HelpTopic = typeof HELP_TOPICS[number];
+
+// Cache for help content
+const helpCache = new Map<string, { content: string; timestamp: number }>();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+async function fetchHelpContent(topic: HelpTopic): Promise<string> {
+  const url = `${GITHUB_RAW_BASE}/${topic}.md`;
+  
+  // Check cache
+  const cached = helpCache.get(topic);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return cached.content;
+  }
+  
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'Accept': 'text/plain',
+        'User-Agent': 'autonomo-mcp-server'
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    
+    const content = await response.text();
+    
+    // Cache the result
+    helpCache.set(topic, { content, timestamp: Date.now() });
+    
+    return content;
+  } catch (error) {
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    return `⚠️ Could not fetch help content from repository.
+
+Error: ${errorMsg}
+
+Please check your internet connection and try again, or view the documentation directly at:
+https://github.com/sebringj/autonomo/blob/main/docs/ai_help/${topic}.md
+
+Available topics:
+• overview - Quick start and core concepts
+• elements - How element registration works
+• custom-actions - Bypassing OTP/OAuth
+• multi-device - Testing across multiple devices
+• troubleshooting - Common issues and solutions
+• scenarios - Real-world testing patterns
+• best-practices - Tips for reliable testing`;
+  }
+}
+
+async function getHelpContent(topic?: string): Promise<string> {
+  const normalizedTopic: HelpTopic = topic && HELP_TOPICS.includes(topic as HelpTopic) 
+    ? topic as HelpTopic 
+    : 'index';
+  
+  return fetchHelpContent(normalizedTopic);
 }
 
 /**
