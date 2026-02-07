@@ -45,9 +45,9 @@
   ```
 
 ### Better Error Messages
-- [ ] On element not found: show element types, not just IDs
-- [ ] On action mismatch: suggest correct action for element type
-- [ ] Include "did you mean?" for typos
+- [x] On element not found: show element types, not just IDs
+- [x] On action mismatch: suggest correct action for element type
+- [x] Include "did you mean?" for typos
 
 ## 🟢 Nice to Have
 
@@ -75,7 +75,9 @@
 | 2026-02-06 | AI navigated to `/verify` which doesn't exist | ✅ Fixed: route validation |
 | 2026-02-06 | `fillOtp` custom action not discoverable | ✅ Fixed: `action='custom'` with target |
 | 2026-02-06 | State returned before React re-render | ⚠️ Fixed in LeagueHub (100ms delay) |
-| 2026-02-06 | Elements don't indicate what actions they support | 🟡 TODO |
+| 2026-02-06 | Elements don't indicate what actions they support | ✅ Fixed: elements now include `actions` array |
+| 2026-02-07 | Custom actions invisible to AI (no metadata) | ✅ Fixed: customActions now include description, args, example |
+| 2026-02-07 | Cryptic element not found errors | ✅ Fixed: "did you mean?" suggestions + elements by type |
 
 ## Future: State Sync Improvements
 
