@@ -188,6 +188,49 @@ renderErrors: []    # React/rendering errors
 # Either populated = investigate and fix
 ```
 
+### Backend Errors Must Be Clear and Actionable
+
+The errors array is only useful if your backend returns **descriptive, serialized error messages**. Generic errors like "Something went wrong" make AI troubleshooting impossible.
+
+**Bad backend responses:**
+```json
+{ "error": "Error" }
+{ "error": "Request failed" }
+{ "status": 500 }
+```
+
+**Good backend responses:**
+```json
+{ "error": "Validation failed: email format invalid", "field": "email" }
+{ "error": "Team not found", "code": "TEAM_NOT_FOUND", "teamId": "abc123" }
+{ "error": "Permission denied: user lacks 'admin' role for league 'xyz'" }
+```
+
+**App code should capture and expose these clearly:**
+```typescript
+// In your API layer, serialize errors for Autonomo
+try {
+  const result = await api.createTeam(data);
+  return result;
+} catch (err) {
+  // Capture the full error context
+  const errorMessage = err.response?.data?.error 
+    || err.response?.data?.message
+    || err.message
+    || 'Unknown error';
+  
+  // Report to Autonomo state
+  autonomoAddError(`createTeam failed: ${errorMessage}`);
+  throw err;
+}
+```
+
+**Why this matters:**
+- AI agents can only diagnose what they can see
+- "Failed to save" → AI doesn't know what to fix
+- "Failed to save: team name already exists" → AI knows to try a different name
+- Clear errors = faster iteration = better AI-assisted development
+
 ### Clean Up After Failures
 
 ```
