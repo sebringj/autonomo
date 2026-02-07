@@ -253,6 +253,100 @@ scenario=[
 ]
 ```
 
+## Screen Hints & Suggested Flow
+
+### Use Screen Hints to Guide AI Agents
+
+Screen hints provide context about what a screen is for and how to use it:
+
+```typescript
+// React Native
+const { setScreenContext } = useAutonomo({
+  name: 'my-app',
+  getState: () => ({
+    screen: '/login',
+    screenHint: 'Enter phone number and tap Send Code. Use the fillOtp custom action after receiving code.',
+    elements: [...],
+  }),
+});
+
+// Or use the state manager directly
+import { state } from '@autonomo/core';
+state.setScreenContext('/login', 
+  'Enter phone number and tap Send Code. Use fillOtp after receiving code.',
+  [
+    { action: 'fillIn', target: 'Login.PhoneInput', value: '+15551234567', description: 'Enter phone number' },
+    { action: 'press', target: 'Login.SendCodeButton', description: 'Request OTP code' },
+  ]
+);
+```
+
+### When to Use Screen Hints
+
+```
+✓ Good use cases:
+- Complex flows with multiple steps
+- Screens with custom actions that aren't obvious
+- Forms with specific validation rules
+- Workflows with dependencies between elements
+
+✗ Unnecessary:
+- Simple CRUD screens
+- Standard forms with clear labels
+- Screens with obvious single actions
+```
+
+### Suggested Flow for Multi-Step Screens
+
+Help AI understand the typical workflow:
+
+```typescript
+getState: () => ({
+  screen: '/checkout',
+  screenHint: 'Complete checkout: fill shipping, then payment, then review.',
+  suggestedFlow: [
+    { 
+      action: 'fillIn', 
+      target: 'Checkout.AddressInput', 
+      description: 'Enter shipping address' 
+    },
+    { 
+      action: 'press', 
+      target: 'Checkout.ContinueButton', 
+      description: 'Proceed to payment' 
+    },
+    { 
+      action: 'custom', 
+      target: 'enterTestCard', 
+      description: 'Use custom action for test payment card' 
+    },
+    { 
+      action: 'press', 
+      target: 'Checkout.PlaceOrderButton', 
+      description: 'Complete order' 
+    },
+  ],
+  elements: [...],
+})
+```
+
+### Flutter Example
+
+```dart
+state.setScreenContext(
+  '/onboarding',
+  hint: 'Complete profile setup: name, then preferences, then photo.',
+  flow: [
+    SuggestedAction(action: 'fillIn', target: 'Onboarding.NameInput', description: 'Enter display name'),
+    SuggestedAction(action: 'press', target: 'Onboarding.PreferencesButton', description: 'Open preferences'),
+    SuggestedAction(action: 'custom', target: 'selectPreferences', value: '["sports","music"]'),
+    SuggestedAction(action: 'press', target: 'Onboarding.CompleteButton', description: 'Finish setup'),
+  ],
+);
+```
+
+---
+
 ## Performance Tips
 
 ### Prefer Custom Actions Over UI Clicks

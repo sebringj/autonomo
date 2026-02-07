@@ -54,12 +54,44 @@ class NetworkRequest {
       };
 }
 
+/// Suggested action in a flow
+class SuggestedAction {
+  /// Action to perform: press, fillIn, navigate, custom
+  final String action;
+  /// Target element ID or route
+  final String target;
+  /// Optional value for fillIn or custom actions
+  final String? value;
+  /// Human-readable description of this step
+  final String? description;
+
+  const SuggestedAction({
+    required this.action,
+    required this.target,
+    this.value,
+    this.description,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'action': action,
+        'target': target,
+        if (value != null) 'value': value,
+        if (description != null) 'description': description,
+      };
+}
+
 /// Complete application state snapshot
 class AppState {
   final String screen;
   final int timestamp;
   final InstanceInfo? instance;
   final UserContext? user;
+  /// Screen-level hint for AI agents.
+  /// Provides context about what this screen is for and how to use it.
+  final String? screenHint;
+  /// Suggested flow of actions for this screen.
+  /// Helps AI understand the typical workflow.
+  final List<SuggestedAction>? suggestedFlow;
   final List<ElementInfo> elements;
   final List<String> customActions;
   final Map<String, dynamic>? data;
@@ -73,6 +105,8 @@ class AppState {
     required this.timestamp,
     this.instance,
     this.user,
+    this.screenHint,
+    this.suggestedFlow,
     required this.elements,
     required this.customActions,
     this.data,
@@ -87,6 +121,9 @@ class AppState {
         'timestamp': timestamp,
         if (instance != null) 'instance': instance!.toJson(),
         if (user != null) 'user': user!.toJson(),
+        if (screenHint != null) 'screenHint': screenHint,
+        if (suggestedFlow != null)
+          'suggestedFlow': suggestedFlow!.map((s) => s.toJson()).toList(),
         'elements': elements.map((e) => e.toJson()).toList(),
         'customActions': customActions,
         if (data != null) 'data': data,
@@ -111,6 +148,8 @@ class StateManager {
   }
 
   String _screen = 'unknown';
+  String? _screenHint;
+  List<SuggestedAction>? _suggestedFlow;
   UserContext? _user;
   Map<String, dynamic> _data = {};
   final List<String> _errors = [];
@@ -124,13 +163,39 @@ class StateManager {
   static const int _maxNetwork = 50;
 
   /// Set current screen/route
+  /// Clears screen-specific hints when screen changes
   void setScreen(String screen) {
     _screen = screen;
+    _screenHint = null;
+    _suggestedFlow = null;
     notifyChange();
   }
 
   /// Get current screen
   String getScreen() => _screen;
+
+  /// Set screen-level hint for AI agents.
+  /// Provides context about what this screen is for and how to use it.
+  void setScreenHint(String? hint) {
+    _screenHint = hint;
+    notifyChange();
+  }
+
+  /// Set suggested flow of actions for the current screen.
+  /// Helps AI understand the typical workflow.
+  void setSuggestedFlow(List<SuggestedAction>? flow) {
+    _suggestedFlow = flow;
+    notifyChange();
+  }
+
+  /// Set screen with optional hint and suggested flow.
+  /// Convenience method to set all screen context at once.
+  void setScreenContext(String screen, {String? hint, List<SuggestedAction>? flow}) {
+    _screen = screen;
+    _screenHint = hint;
+    _suggestedFlow = flow;
+    notifyChange();
+  }
 
   /// Set user context
   void setUser(UserContext? user) {
@@ -208,6 +273,8 @@ class StateManager {
       timestamp: DateTime.now().millisecondsSinceEpoch,
       instance: getInstance(),
       user: _user,
+      screenHint: _screenHint,
+      suggestedFlow: _suggestedFlow,
       elements: registry.getAll(),
       customActions: customActions.list(),
       data: _data.isNotEmpty ? _data : null,

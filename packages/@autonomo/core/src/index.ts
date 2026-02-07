@@ -45,6 +45,7 @@ export type {
   UserContext,
   AppState,
   NetworkRequest,
+  SuggestedAction,
 } from './state.js';
 
 // Instance - unique identity per app window/process

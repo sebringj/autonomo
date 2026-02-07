@@ -1,5 +1,6 @@
 /Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/Sources/Autonomo/Actions.swift
 /Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/Sources/Autonomo/Commands.swift
+/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/Sources/Autonomo/Instance.swift
 /Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/Sources/Autonomo/Registry.swift
 /Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/Sources/Autonomo/State.swift
 /Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/Sources/Autonomo/Transport.swift

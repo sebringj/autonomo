@@ -29,22 +29,56 @@ data class ActionResult(
 }
 
 /**
+ * Metadata for a custom action - helps AI understand what it does
+ */
+data class CustomActionMeta(
+    val description: String? = null,
+    val args: Map<String, String>? = null,
+    val example: Map<String, String>? = null
+)
+
+/**
+ * Rich custom action info returned in state
+ */
+data class CustomActionInfo(
+    val name: String,
+    val description: String? = null,
+    val args: Map<String, String>? = null,
+    val example: Map<String, String>? = null
+) {
+    fun toMap(): Map<String, Any?> = buildMap {
+        put("name", name)
+        description?.let { put("description", it) }
+        args?.let { put("args", it) }
+        example?.let { put("example", it) }
+    }
+}
+
+/**
  * Custom action handler type
  */
 typealias CustomActionHandler = (String?) -> ActionResult
 
 /**
+ * Internal registered action
+ */
+private data class RegisteredAction(
+    val handler: CustomActionHandler,
+    val meta: CustomActionMeta? = null
+)
+
+/**
  * Singleton registry for custom actions
  */
 object CustomActionsRegistry {
-    private val actions = ConcurrentHashMap<String, CustomActionHandler>()
+    private val actions = ConcurrentHashMap<String, RegisteredAction>()
     private val listeners = CopyOnWriteArrayList<() -> Unit>()
 
     /**
      * Register a custom action
      */
-    fun register(name: String, handler: CustomActionHandler): () -> Unit {
-        actions[name] = handler
+    fun register(name: String, handler: CustomActionHandler, meta: CustomActionMeta? = null): () -> Unit {
+        actions[name] = RegisteredAction(handler, meta)
         notifyChange()
         return { unregister(name) }
     }
@@ -62,9 +96,10 @@ object CustomActionsRegistry {
      * Execute a custom action
      */
     fun execute(name: String, value: String? = null): ActionResult {
-        val handler = actions[name] ?: return ActionResult.fail("Unknown custom action: $name")
+        val action = actions[name] 
+            ?: return ActionResult.fail("Unknown custom action: $name. Available: ${list().ifEmpty { listOf("none") }.joinToString(", ")}")
         return try {
-            handler(value)
+            action.handler(value)
         } catch (e: Exception) {
             ActionResult.fail(e.message ?: "Unknown error")
         }
@@ -79,6 +114,18 @@ object CustomActionsRegistry {
      * List all action names
      */
     fun list(): List<String> = actions.keys.toList()
+
+    /**
+     * Get rich info about all actions (for AI discoverability)
+     */
+    fun getAll(): List<CustomActionInfo> = actions.map { (name, action) ->
+        CustomActionInfo(
+            name = name,
+            description = action.meta?.description,
+            args = action.meta?.args,
+            example = action.meta?.example
+        )
+    }
 
     /**
      * Subscribe to changes
@@ -96,5 +143,5 @@ object CustomActionsRegistry {
 /**
  * Register a custom action
  */
-fun registerCustomAction(name: String, handler: CustomActionHandler): () -> Unit =
-    CustomActionsRegistry.register(name, handler)
+fun registerCustomAction(name: String, handler: CustomActionHandler, meta: CustomActionMeta? = null): () -> Unit =
+    CustomActionsRegistry.register(name, handler, meta)

@@ -10,6 +10,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 
 class AutonomoTest {
     
@@ -145,6 +146,36 @@ class AutonomoTest {
         assertFalse(result.success, "Should fail")
         assertTrue(result.error?.lowercase()?.contains("not found") == true)
     }
+    
+    @Test
+    fun `custom actions with metadata`() {
+        val meta = CustomActionMeta(
+            description = "Greets the user",
+            args = mapOf("name" to "Name to greet"),
+            example = mapOf("name" to "World")
+        )
+        
+        val unregister = registerCustomAction("greetAction", meta) { value ->
+            ActionResult.ok("Hello, $value!")
+        }
+        
+        // Verify action works
+        val result = CustomActionsRegistry.execute("greetAction", "World")
+        assertTrue(result.success, "Should succeed")
+        assertTrue(result.message?.contains("Hello, World!") == true)
+        
+        // Verify getAll returns rich info
+        val allActions = CustomActionsRegistry.getAll()
+        assertTrue(allActions.isNotEmpty(), "Should have at least one action")
+        
+        val greetInfo = allActions.find { it.name == "greetAction" }
+        assertNotNull(greetInfo)
+        assertEquals("Greets the user", greetInfo?.description)
+        assertEquals("Name to greet", greetInfo?.args?.get("name"))
+        assertEquals("World", greetInfo?.example?.get("name"))
+        
+        unregister()
+    }
 }
 
 // Standalone runner for quick testing without gradle
@@ -178,6 +209,7 @@ fun main() {
     test("commands execute press") { tests.`commands execute press`() }
     test("commands execute fill") { tests.`commands execute fill`() }
     test("commands return error for missing element") { tests.`commands return error for missing element`() }
+    test("custom actions with metadata") { tests.`custom actions with metadata`() }
     
     println("\n📊 Results: $passed passed, $failed failed\n")
     if (failed > 0) System.exit(1)

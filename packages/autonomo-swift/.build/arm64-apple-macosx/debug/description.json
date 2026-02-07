@@ -36,6 +36,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/Sources/Autonomo/Instance.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/Sources/Autonomo/Registry.swift"
         },
         {
@@ -61,6 +65,7 @@
       "objects" : [
         "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Actions.swift.o",
         "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Commands.swift.o",
+        "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Instance.swift.o",
         "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Registry.swift.o",
         "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/State.swift.o",
         "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Transport.swift.o"
@@ -83,7 +88,6 @@
         "-emit-objc-header",
         "-emit-objc-header-path",
         "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Autonomo-Swift.h",
-        "-color-diagnostics",
         "-swift-version",
         "5",
         "-sdk",
@@ -128,6 +132,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Instance.swift.o"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Registry.swift.o"
         },
         {
@@ -147,6 +155,7 @@
       "sources" : [
         "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/Sources/Autonomo/Actions.swift",
         "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/Sources/Autonomo/Commands.swift",
+        "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/Sources/Autonomo/Instance.swift",
         "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/Sources/Autonomo/Registry.swift",
         "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/Sources/Autonomo/State.swift",
         "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/Sources/Autonomo/Transport.swift"
@@ -202,7 +211,6 @@
         "-emit-objc-header",
         "-emit-objc-header-path",
         "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/AutonomoPackageTests.build/AutonomoPackageTests-Swift.h",
-        "-color-diagnostics",
         "-sdk",
         "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk",
         "-F",
@@ -296,7 +304,6 @@
         "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/ModuleCache",
         "-parseable-output",
         "-parse-as-library",
-        "-color-diagnostics",
         "-swift-version",
         "5",
         "-sdk",
@@ -362,6 +369,7 @@
       "-c",
       "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/Sources/Autonomo/Actions.swift",
       "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/Sources/Autonomo/Commands.swift",
+      "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/Sources/Autonomo/Instance.swift",
       "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/Sources/Autonomo/Registry.swift",
       "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/Sources/Autonomo/State.swift",
       "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/Sources/Autonomo/Transport.swift",
@@ -384,7 +392,6 @@
       "-emit-objc-header",
       "-emit-objc-header-path",
       "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Autonomo-Swift.h",
-      "-color-diagnostics",
       "-swift-version",
       "5",
       "-sdk",
@@ -449,7 +456,6 @@
       "-emit-objc-header",
       "-emit-objc-header-path",
       "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/AutonomoPackageTests.build/AutonomoPackageTests-Swift.h",
-      "-color-diagnostics",
       "-sdk",
       "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.5.sdk",
       "-F",
@@ -509,7 +515,6 @@
       "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/ModuleCache",
       "-parseable-output",
       "-parse-as-library",
-      "-color-diagnostics",
       "-swift-version",
       "5",
       "-sdk",
@@ -594,6 +599,10 @@
         },
         {
           "kind" : "file",
+          "name" : "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/Sources/Autonomo/Instance.swift"
+        },
+        {
+          "kind" : "file",
           "name" : "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/Sources/Autonomo/Registry.swift"
         },
         {
@@ -635,6 +644,10 @@
         {
           "kind" : "file",
           "name" : "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Commands.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Instance.swift.o"
         },
         {
           "kind" : "file",

@@ -39,6 +39,13 @@ When you call `get_state`, you receive:
 ```typescript
 {
   screen: string;           // Current screen/route name
+  screenHint?: string;      // Hint about how to use this screen
+  suggestedFlow?: [{        // Suggested sequence of actions
+    action: string;         // Action type: press, fillIn, navigate, custom
+    target: string;         // Element ID or route
+    value?: string;         // Value for fillIn/custom
+    description?: string;   // Human-readable step description
+  }];
   user?: {                  // Logged-in user info
     id: string;
     email?: string;

@@ -22,6 +22,15 @@ import { EventEmitter } from 'events';
 export interface AppState {
   screen: string;
   timestamp: number;
+  /** Screen-level hint for AI agents */
+  screenHint?: string;
+  /** Suggested flow of actions for this screen */
+  suggestedFlow?: Array<{
+    action: string;
+    target: string;
+    value?: string;
+    description?: string;
+  }>;
   elements: Array<{
     id: string;
     type: string;

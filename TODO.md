@@ -35,12 +35,16 @@
   ```
 
 ### Screen Context/Hints
-- [ ] Allow apps to provide screen-level hints:
+- [x] Allow apps to provide screen-level hints:
   ```typescript
   state: {
     screen: '/login',
-    hint: 'Enter phone number and tap Send Code. Use fillOtp after.',
-    suggestedFlow: [...]
+    screenHint: 'Enter phone number and tap Send Code. Use fillOtp after.',
+    suggestedFlow: [
+      { action: 'fillIn', target: 'Login.PhoneInput', description: 'Enter phone' },
+      { action: 'press', target: 'Login.SendCodeButton', description: 'Request code' },
+    ],
+    ...
   }
   ```
 

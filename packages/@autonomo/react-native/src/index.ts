@@ -97,10 +97,34 @@ export interface CustomActionInfo {
 }
 
 /**
+ * Suggested action in a flow
+ */
+export interface SuggestedAction {
+  /** Action to perform: press, fillIn, navigate, custom */
+  action: string;
+  /** Target element ID or route */
+  target: string;
+  /** Optional value for fillIn or custom actions */
+  value?: string;
+  /** Human-readable description of this step */
+  description?: string;
+}
+
+/**
  * App state for reporting to MCP server
  */
 export interface AppState {
   screen: string;
+  /** 
+   * Screen-level hint for AI agents.
+   * Provides context about what this screen is for and how to use it.
+   */
+  screenHint?: string;
+  /** 
+   * Suggested flow of actions for this screen.
+   * Helps AI understand the typical workflow.
+   */
+  suggestedFlow?: SuggestedAction[];
   elements: Array<{
     id: string;
     type: string;

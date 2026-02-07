@@ -23,6 +23,15 @@ export interface AppState {
   screen: string;
   timestamp: number;
   instance?: InstanceInfo;
+  /** Screen-level hint for AI agents */
+  screenHint?: string;
+  /** Suggested flow of actions for this screen */
+  suggestedFlow?: Array<{
+    action: string;
+    target: string;
+    value?: string;
+    description?: string;
+  }>;
   user?: {
     id?: string;
     email?: string;

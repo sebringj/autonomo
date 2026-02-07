@@ -14,6 +14,12 @@
     "swiftmodule": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Commands~partial.swiftmodule",
     "swift-dependencies": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Commands.swiftdeps"
   },
+  "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/Sources/Autonomo/Instance.swift": {
+    "dependencies": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Instance.d",
+    "object": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Instance.swift.o",
+    "swiftmodule": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Instance~partial.swiftmodule",
+    "swift-dependencies": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Instance.swiftdeps"
+  },
   "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/Sources/Autonomo/Registry.swift": {
     "dependencies": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Registry.d",
     "object": "/Users/jasonsebring/Development/Projects/autonomo/packages/autonomo-swift/.build/arm64-apple-macosx/debug/Autonomo.build/Registry.swift.o",

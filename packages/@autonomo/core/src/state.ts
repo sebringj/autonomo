@@ -17,6 +17,17 @@ export interface UserContext {
   [key: string]: unknown;
 }
 
+export interface SuggestedAction {
+  /** Action to perform: press, fillIn, navigate, custom */
+  action: string;
+  /** Target element ID or route */
+  target: string;
+  /** Optional value for fillIn or custom actions */
+  value?: string;
+  /** Human-readable description of this step */
+  description?: string;
+}
+
 export interface AppState {
   /** Current screen/route name */
   screen: string;
@@ -26,6 +37,16 @@ export interface AppState {
   instance?: InstanceInfo;
   /** User context if logged in */
   user?: UserContext;
+  /** 
+   * Screen-level hint for AI agents.
+   * Provides context about what this screen is for and how to use it.
+   */
+  screenHint?: string;
+  /** 
+   * Suggested flow of actions for this screen.
+   * Helps AI understand the typical workflow.
+   */
+  suggestedFlow?: SuggestedAction[];
   /** Registered interactive elements */
   elements: ElementInfo[];
   /** 
@@ -57,6 +78,8 @@ type StateChangeListener = (state: AppState) => void;
 
 class StateManager {
   private screen = 'unknown';
+  private screenHint: string | undefined;
+  private suggestedFlow: SuggestedAction[] | undefined;
   private user: UserContext | undefined;
   private data: Record<string, unknown> = {};
   private errors: string[] = [];
@@ -74,6 +97,9 @@ class StateManager {
    */
   setScreen(screen: string): void {
     this.screen = screen;
+    // Clear screen-specific hints when screen changes
+    this.screenHint = undefined;
+    this.suggestedFlow = undefined;
     this.notifyChange();
   }
 
@@ -82,6 +108,35 @@ class StateManager {
    */
   getScreen(): string {
     return this.screen;
+  }
+
+  /**
+   * Set screen-level hint for AI agents.
+   * Provides context about what this screen is for and how to use it.
+   */
+  setScreenHint(hint: string | undefined): void {
+    this.screenHint = hint;
+    this.notifyChange();
+  }
+
+  /**
+   * Set suggested flow of actions for the current screen.
+   * Helps AI understand the typical workflow.
+   */
+  setSuggestedFlow(flow: SuggestedAction[] | undefined): void {
+    this.suggestedFlow = flow;
+    this.notifyChange();
+  }
+
+  /**
+   * Set screen with optional hint and suggested flow.
+   * Convenience method to set all screen context at once.
+   */
+  setScreenContext(screen: string, hint?: string, flow?: SuggestedAction[]): void {
+    this.screen = screen;
+    this.screenHint = hint;
+    this.suggestedFlow = flow;
+    this.notifyChange();
   }
 
   /**
@@ -182,6 +237,8 @@ class StateManager {
       timestamp: Date.now(),
       instance: getInstance(),
       user: this.user,
+      screenHint: this.screenHint,
+      suggestedFlow: this.suggestedFlow,
       elements: registry.getAll(),
       customActions: customActions.getAll(),
       data: this.data,
