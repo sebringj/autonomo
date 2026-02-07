@@ -38,6 +38,7 @@
 │   │  autonomo/send_command    - Control the app             │  │
 │   │  autonomo/wait_for        - Wait for condition          │  │
 │   │  autonomo/run_scenario    - Execute test scenario       │  │
+│   │  autonomo/help            - Get documentation           │  │
 │   │                                                          │  │
 │   └─────────────────────────────────────────────────────────┘  │
 │                             │                                    │
@@ -326,6 +327,41 @@ Execute a multi-step test scenario.
   ],
   "totalDuration": 1955,
   "finalState": { ... }
+}
+```
+
+### `autonomo/help`
+
+Get comprehensive documentation and guides. Fetches content directly from GitHub for always up-to-date information.
+
+```typescript
+// Input
+{
+  "topic": "overview"  // optional - omit for table of contents
+}
+
+// Available topics:
+// Top-level:
+//   "overview"        - Quick start and core concepts
+//   "elements"        - How element registration works (CRITICAL)
+//   "custom-actions"  - Bypassing OTP/OAuth and creating shortcuts
+//   "multi-device"    - Testing across multiple devices/users
+//   "troubleshooting" - Common issues and solutions
+//   "scenarios"       - Real-world testing patterns
+//   "best-practices"  - Tips for reliable testing
+//
+// Local development (sub-topics for focused context):
+//   "local-development"              - Index with decision tree
+//   "local-development/auth-bypass"  - Skip OTP/OAuth flows
+//   "local-development/payments"     - Stripe CLI, test cards
+//   "local-development/aws"          - LocalStack, DynamoDB, SAM
+//   "local-development/azure"        - Azurite, Functions, Cosmos DB
+//   "local-development/gcp"          - Firestore, Pub/Sub, Spanner
+//   "local-development/checklist"    - AI assistant setup guide
+
+// Output
+{
+  "content": "# Autonomo Overview\n\n..."  // Markdown content
 }
 ```
 

@@ -97,6 +97,17 @@ Ask your AI:
 
 The AI will actually interact with your running app and report results. 🎉
 
+### Need Help?
+
+Ask your AI to call the help tool for documentation:
+
+```
+"Call autonomo_help to show me how to set up local development"
+"Call autonomo_help with topic local-development/auth-bypass"
+```
+
+Topics include: `overview`, `elements`, `custom-actions`, `troubleshooting`, and `local-development/*` sub-topics for AWS, Azure, GCP emulators, auth bypass, payments, and more.
+
 ---
 
 ## The Core Insight
