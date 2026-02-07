@@ -9,6 +9,7 @@
 | [overview](overview.md) | Core concepts, workflow, and quick start | **Start here** |
 | [elements](elements.md) | How element registration works (CRITICAL) | Before your first command |
 | [custom-actions](custom-actions.md) | Bypass OTP/OAuth, create shortcuts | When testing auth flows |
+| [local-development](local-development.md) | Local emulators for auth, payments, etc. | **Setting up dev environment** |
 | [multi-device](multi-device.md) | Test across multiple devices/users | For chat, notifications, collaboration |
 | [troubleshooting](troubleshooting.md) | Common issues and solutions | When things don't work |
 | [scenarios](scenarios.md) | Real-world testing patterns | For complex workflows |
@@ -24,6 +25,8 @@ I need to...
 ├─► Know why elements aren't showing → Read "elements"
 │
 ├─► Bypass login/OTP in tests → Read "custom-actions"
+│
+├─► Set up local dev environment → Read "local-development"
 │
 ├─► Test User A sends to User B → Read "multi-device"
 │

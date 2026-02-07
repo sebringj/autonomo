@@ -403,6 +403,7 @@ Topics available:
 • "overview" - Quick start and core concepts
 • "elements" - How element registration works (CRITICAL to understand)
 • "custom-actions" - Bypassing OTP/OAuth and creating shortcuts
+• "local-development" - Local emulators for auth, payments, AWS, Azure, GCP
 • "multi-device" - Testing across multiple devices/users
 • "troubleshooting" - Common issues and solutions
 • "scenarios" - Real-world testing patterns
@@ -414,7 +415,7 @@ Call without a topic to see the full table of contents.`,
         properties: {
           topic: {
             type: 'string',
-            enum: ['overview', 'elements', 'custom-actions', 'multi-device', 'troubleshooting', 'scenarios', 'best-practices'],
+            enum: ['overview', 'elements', 'custom-actions', 'local-development', 'multi-device', 'troubleshooting', 'scenarios', 'best-practices'],
             description: 'Help topic to retrieve. Omit for table of contents.',
           },
         },
@@ -994,7 +995,7 @@ function formatCrossBridgeResult(
 
 const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/sebringj/autonomo/main/docs/ai_help';
 
-const HELP_TOPICS = ['index', 'overview', 'elements', 'custom-actions', 'multi-device', 'troubleshooting', 'scenarios', 'best-practices'] as const;
+const HELP_TOPICS = ['index', 'overview', 'elements', 'custom-actions', 'local-development', 'multi-device', 'troubleshooting', 'scenarios', 'best-practices'] as const;
 type HelpTopic = typeof HELP_TOPICS[number];
 
 // Cache for help content
