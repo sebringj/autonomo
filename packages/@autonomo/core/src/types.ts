@@ -11,6 +11,8 @@ export type {
 export type {
   ActionResult,
   CustomActionHandler,
+  CustomActionMeta,
+  CustomActionInfo,
 } from './actions.js';
 
 export type {

@@ -7,7 +7,7 @@
 
 import type { ElementInfo } from './registry.js';
 import { registry } from './registry.js';
-import { customActions } from './actions.js';
+import { customActions, type CustomActionInfo } from './actions.js';
 import { getInstance, type InstanceInfo } from './instance.js';
 
 export interface UserContext {
@@ -28,8 +28,11 @@ export interface AppState {
   user?: UserContext;
   /** Registered interactive elements */
   elements: ElementInfo[];
-  /** Available custom actions */
-  customActions: string[];
+  /** 
+   * Available custom actions with metadata.
+   * Each action includes name, description, args schema, and usage example.
+   */
+  customActions: CustomActionInfo[];
   /** Application-specific data */
   data?: Record<string, unknown>;
   /** Recent errors */
@@ -180,7 +183,7 @@ class StateManager {
       instance: getInstance(),
       user: this.user,
       elements: registry.getAll(),
-      customActions: customActions.list(),
+      customActions: customActions.getAll(),
       data: this.data,
       errors: [...this.errors],
       logs: [...this.logs],

@@ -27,6 +27,8 @@ export interface ElementHandler {
 export interface ElementInfo {
   id: string;
   type: ElementType;
+  /** Actions this element supports (e.g., ['press'], ['fillIn', 'submit']) */
+  actions: string[];
   disabled?: boolean;
   value?: string;
   hint?: string;
@@ -85,11 +87,35 @@ class ElementRegistry {
     return Array.from(this.elements.entries()).map(([id, handler]) => ({
       id,
       type: handler.type,
+      actions: this.getActionsForType(handler),
       disabled: handler.disabled,
       value: handler.getValue?.(),
       hint: handler.hint,
       meta: handler.meta,
     }));
+  }
+
+  /**
+   * Get supported actions for an element based on its type and capabilities
+   */
+  private getActionsForType(handler: ElementHandler): string[] {
+    switch (handler.type) {
+      case 'button':
+      case 'link':
+        return ['press'];
+      case 'input':
+        const inputActions = ['fillIn'];
+        if (handler.onSubmit) inputActions.push('submit');
+        return inputActions;
+      case 'toggle':
+        return ['press'];
+      case 'select':
+        return ['fillIn'];
+      case 'custom':
+        return ['press', 'fillIn']; // Custom elements may support both
+      default:
+        return ['press'];
+    }
   }
 
   /**

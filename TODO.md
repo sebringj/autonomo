@@ -7,12 +7,12 @@
 ### Route Validation
 - [x] Add `availableRoutes` to AppState interface
 - [x] Add route validation in `sendCommand()` before sending to bridge
-- [ ] Support glob patterns for dynamic routes (`/league/*`, `/user/**`)
-- [ ] Return helpful error with valid routes when navigation fails
+- [x] Support glob patterns for dynamic routes (`/league/*`, `/user/**`)
+- [x] Return helpful error with valid routes when navigation fails
 
 ### Custom Actions Invisible to AI
-- [ ] Separate `customActions` from `elements` in state response
-- [ ] Include schema for each custom action:
+- [x] Separate `customActions` from `elements` in state response
+- [x] Include schema for each custom action:
   ```typescript
   customActions: [{
     name: 'fillOtp',
@@ -21,12 +21,12 @@
     example: { action: 'fillOtp', value: '111111' }
   }]
   ```
-- [ ] Update MCP tools to accept custom action names (not just enum)
+- [x] Update MCP tools to accept custom action names (not just enum)
 
 ## 🟡 Medium Priority (Caused Confusion)
 
 ### Elements Need Capabilities
-- [ ] Include supported actions per element:
+- [x] Include supported actions per element:
   ```typescript
   elements: [
     { id: 'Login.PhoneInput', type: 'input', actions: ['fillIn', 'submit'] },

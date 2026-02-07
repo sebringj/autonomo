@@ -83,6 +83,20 @@ export function getMcpServerUrl(port: number = DEFAULT_MCP_PORT, host?: string):
 }
 
 /**
+ * Custom action metadata for AI discoverability
+ */
+export interface CustomActionInfo {
+  /** Action name (e.g., 'fillOtp') */
+  name: string;
+  /** Human-readable description of what the action does */
+  description?: string;
+  /** Argument schema: { argName: 'type description' } */
+  args?: Record<string, string>;
+  /** Example usage */
+  example?: { value?: string };
+}
+
+/**
  * App state for reporting to MCP server
  */
 export interface AppState {
@@ -94,7 +108,11 @@ export interface AppState {
     disabled?: boolean;
     hint?: string;
   }>;
-  customActions?: string[];
+  /** 
+   * Available custom actions with metadata.
+   * Can be simple strings for backwards compatibility, or rich objects with schema.
+   */
+  customActions?: Array<string | CustomActionInfo>;
   errors?: Array<{ message: string; timestamp: number }>;
   user?: {
     id?: string;
