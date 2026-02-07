@@ -42,7 +42,35 @@ export async function createMultiBridgeServer(
 
   const registry = new BridgeRegistry(bridges);
   const server = new Server(
-    { name, version },
+    {
+      name,
+      version,
+      description: `Autonomo MCP Server - Control and inspect connected applications (web, mobile, desktop) via AI.
+
+CORE WORKFLOW:
+1. autonomo_list_bridges → Discover connected apps
+2. autonomo_get_state → Inspect current screen, elements, errors, and custom actions
+3. autonomo_send_command → Interact: press buttons, fill inputs, invoke custom actions
+4. autonomo_wait_for → Wait for screens, elements, or error-free state
+5. autonomo_run_scenario → Execute multi-step test flows
+
+CRITICAL - ALWAYS CALL get_state AFTER COMMANDS:
+Commands execute asynchronously. The send_command response confirms delivery, NOT completion.
+Errors from API calls, navigation, or data loading appear in the get_state "errors" array AFTER the action completes.
+ALWAYS call get_state after send_command to verify the result and check for errors.
+
+ELEMENT VISIBILITY:
+Elements appear in state ONLY if the app explicitly registers them via:
+• autonomoRegister(id, type, handler) - Direct registration
+• useAutonomoElement() hook - React hook for registration
+Just adding testID or data-testid does NOT make elements visible to Autonomo.
+
+CUSTOM ACTIONS:
+Apps can register ANY custom action (e.g., "addRole", "loginAs", "clearData", "switchRole").
+These bypass UI interaction for faster, more reliable testing.
+Invoke via: send_command(action="custom", target="actionName", value="optional-param")
+`,
+    },
     { capabilities: { tools: {} } }
   );
 
