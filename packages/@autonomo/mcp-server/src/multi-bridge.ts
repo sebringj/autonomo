@@ -403,11 +403,21 @@ Topics available:
 • "overview" - Quick start and core concepts
 • "elements" - How element registration works (CRITICAL to understand)
 • "custom-actions" - Bypassing OTP/OAuth and creating shortcuts
-• "local-development" - Local emulators for auth, payments, AWS, Azure, GCP
 • "multi-device" - Testing across multiple devices/users
 • "troubleshooting" - Common issues and solutions
 • "scenarios" - Real-world testing patterns
 • "best-practices" - Tips for reliable testing
+
+Local Development (sub-topics for focused context):
+• "local-development" - Index with decision tree (read first)
+• "local-development/vscode-tasks" - VS Code tasks.json patterns
+• "local-development/auth-bypass" - Skip OTP/OAuth flows
+• "local-development/payments" - Stripe CLI, test cards
+• "local-development/databases" - Supabase, Firebase, MongoDB
+• "local-development/aws" - LocalStack, DynamoDB, SAM
+• "local-development/azure" - Azurite, Functions, Cosmos DB
+• "local-development/gcp" - Firestore, Pub/Sub, Spanner
+• "local-development/checklist" - AI assistant setup guide
 
 Call without a topic to see the full table of contents.`,
       inputSchema: {
@@ -415,8 +425,27 @@ Call without a topic to see the full table of contents.`,
         properties: {
           topic: {
             type: 'string',
-            enum: ['overview', 'elements', 'custom-actions', 'local-development', 'multi-device', 'troubleshooting', 'scenarios', 'best-practices'],
-            description: 'Help topic to retrieve. Omit for table of contents.',
+            enum: [
+              'overview', 'elements', 'custom-actions', 'multi-device', 
+              'troubleshooting', 'scenarios', 'best-practices',
+              'local-development',
+              'local-development/vscode-tasks',
+              'local-development/auth-bypass', 
+              'local-development/payments',
+              'local-development/email',
+              'local-development/notifications',
+              'local-development/databases',
+              'local-development/realtime',
+              'local-development/maps-location',
+              'local-development/file-storage',
+              'local-development/aws',
+              'local-development/azure',
+              'local-development/gcp',
+              'local-development/ai-llm',
+              'local-development/analytics',
+              'local-development/checklist'
+            ],
+            description: 'Help topic to retrieve. Use "local-development" for index, or "local-development/[subtopic]" for specific guides.',
           },
         },
         required: [],
@@ -995,15 +1024,51 @@ function formatCrossBridgeResult(
 
 const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/sebringj/autonomo/main/docs/ai_help';
 
-const HELP_TOPICS = ['index', 'overview', 'elements', 'custom-actions', 'local-development', 'multi-device', 'troubleshooting', 'scenarios', 'best-practices'] as const;
-type HelpTopic = typeof HELP_TOPICS[number];
+// Top-level topics
+const TOP_LEVEL_TOPICS = ['index', 'overview', 'elements', 'custom-actions', 'multi-device', 'troubleshooting', 'scenarios', 'best-practices'] as const;
+
+// Local development sub-topics (folder structure)
+const LOCAL_DEV_TOPICS = [
+  'local-development',
+  'local-development/index',
+  'local-development/vscode-tasks',
+  'local-development/auth-bypass',
+  'local-development/payments',
+  'local-development/email',
+  'local-development/notifications',
+  'local-development/databases',
+  'local-development/realtime',
+  'local-development/maps-location',
+  'local-development/file-storage',
+  'local-development/aws',
+  'local-development/azure',
+  'local-development/gcp',
+  'local-development/ai-llm',
+  'local-development/analytics',
+  'local-development/checklist'
+] as const;
+
+const ALL_TOPICS = [...TOP_LEVEL_TOPICS, ...LOCAL_DEV_TOPICS] as const;
+type HelpTopic = typeof ALL_TOPICS[number];
 
 // Cache for help content
 const helpCache = new Map<string, { content: string; timestamp: number }>();
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
-async function fetchHelpContent(topic: HelpTopic): Promise<string> {
-  const url = `${GITHUB_RAW_BASE}/${topic}.md`;
+function getTopicUrl(topic: string): string {
+  // Handle local-development folder structure
+  if (topic === 'local-development') {
+    return `${GITHUB_RAW_BASE}/local-development/index.md`;
+  }
+  if (topic.startsWith('local-development/')) {
+    return `${GITHUB_RAW_BASE}/${topic}.md`;
+  }
+  // Top-level topics
+  return `${GITHUB_RAW_BASE}/${topic}.md`;
+}
+
+async function fetchHelpContent(topic: string): Promise<string> {
+  const url = getTopicUrl(topic);
   
   // Check cache
   const cached = helpCache.get(topic);
@@ -1036,25 +1101,43 @@ async function fetchHelpContent(topic: HelpTopic): Promise<string> {
 Error: ${errorMsg}
 
 Please check your internet connection and try again, or view the documentation directly at:
-https://github.com/sebringj/autonomo/blob/main/docs/ai_help/${topic}.md
+https://github.com/sebringj/autonomo/blob/main/docs/ai_help/${topic === 'local-development' ? 'local-development/index' : topic}.md
 
-Available topics:
+Top-level topics:
 • overview - Quick start and core concepts
 • elements - How element registration works
 • custom-actions - Bypassing OTP/OAuth
 • multi-device - Testing across multiple devices
 • troubleshooting - Common issues and solutions
 • scenarios - Real-world testing patterns
-• best-practices - Tips for reliable testing`;
+• best-practices - Tips for reliable testing
+
+Local development sub-topics:
+• local-development - Index with decision tree
+• local-development/auth-bypass - Skip OTP/OAuth
+• local-development/payments - Stripe CLI
+• local-development/aws - LocalStack, DynamoDB
+• local-development/azure - Azurite, Functions
+• local-development/gcp - Firestore, Pub/Sub
+• local-development/checklist - AI setup guide`;
   }
 }
 
 async function getHelpContent(topic?: string): Promise<string> {
-  const normalizedTopic: HelpTopic = topic && HELP_TOPICS.includes(topic as HelpTopic) 
-    ? topic as HelpTopic 
-    : 'index';
+  // Default to index if no topic or invalid topic
+  if (!topic) {
+    return fetchHelpContent('index');
+  }
   
-  return fetchHelpContent(normalizedTopic);
+  // Check if it's a valid topic
+  const isValid = ALL_TOPICS.includes(topic as HelpTopic) || 
+    topic.startsWith('local-development/');
+  
+  if (!isValid) {
+    return fetchHelpContent('index');
+  }
+  
+  return fetchHelpContent(topic);
 }
 
 /**

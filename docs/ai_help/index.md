@@ -9,11 +9,26 @@
 | [overview](overview.md) | Core concepts, workflow, and quick start | **Start here** |
 | [elements](elements.md) | How element registration works (CRITICAL) | Before your first command |
 | [custom-actions](custom-actions.md) | Bypass OTP/OAuth, create shortcuts | When testing auth flows |
-| [local-development](local-development.md) | Local emulators for auth, payments, etc. | **Setting up dev environment** |
+| [local-development/](local-development/) | Local emulators, auth bypass, cloud services | **Setting up dev environment** |
 | [multi-device](multi-device.md) | Test across multiple devices/users | For chat, notifications, collaboration |
 | [troubleshooting](troubleshooting.md) | Common issues and solutions | When things don't work |
 | [scenarios](scenarios.md) | Real-world testing patterns | For complex workflows |
 | [best-practices](best-practices.md) | Tips for reliable testing | Before production testing |
+
+### 📂 Local Development (Sub-Topics)
+
+The `local-development/` folder contains focused guides:
+
+| Sub-Topic | File | Description |
+|-----------|------|-------------|
+| VS Code Tasks | [vscode-tasks.md](local-development/vscode-tasks.md) | Orchestrate services |
+| Auth Bypass | [auth-bypass.md](local-development/auth-bypass.md) | Skip OTP/OAuth |
+| Payments | [payments.md](local-development/payments.md) | Stripe CLI, test cards |
+| Databases | [databases.md](local-development/databases.md) | Supabase, Firebase |
+| AWS | [aws.md](local-development/aws.md) | LocalStack, DynamoDB |
+| Azure | [azure.md](local-development/azure.md) | Azurite, Functions |
+| GCP | [gcp.md](local-development/gcp.md) | Firestore, Pub/Sub |
+| Checklist | [checklist.md](local-development/checklist.md) | AI setup guide |
 
 ## 🚀 Quick Decision Tree
 
