@@ -2,7 +2,7 @@
   <img src="logo.jpeg" alt="Autonomo" width="200" />
 </p>
 
-# Autonomo MCP — Build -> Verify -> Fix (repeat)
+# Autonomo MCP — AI developing while E2E testing
 
 > au·ton·o·mo | \ ä-ˈtä-nə-ˌmō \
 
