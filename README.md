@@ -8,7 +8,7 @@
 
 > Works with: GitHub Copilot • Claude Code • Cursor • Windsurf • Any MCP-compatible AI
 
-Autonomo enables AI coding assistants to know the state of your app and iteratively develop.
+Autonomo enables AI coding assistants to observe app state, drive multiple devices simultaneously, and validate cross-device interactions — all in one iterative development loop.
 
 ### Why Autonomo?
 
