@@ -8,6 +8,7 @@
 
 | If you need... | File | Description |
 |----------------|------|-------------|
+| **Security guidelines** | [security.md](security.md) | ⚠️ Read first! Dev-only gates, DRY |
 | Start all services at once | [vscode-tasks.md](vscode-tasks.md) | VS Code tasks.json patterns |
 | Bypass OTP/login flows | [auth-bypass.md](auth-bypass.md) | 5 strategies for auth bypass |
 | Test Stripe payments locally | [payments.md](payments.md) | Stripe CLI, test cards |
@@ -30,6 +31,9 @@
 
 ```
 User wants to test an app with Autonomo?
+│
+├─ First time? Read security guidelines first!
+│   └─ Read: security.md
 │
 ├─ App won't run locally
 │   └─ Read: vscode-tasks.md

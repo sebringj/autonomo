@@ -27,7 +27,7 @@ function assert(condition: boolean, message: string) {
 const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/sebringj/autonomo/main/docs/ai_help';
 
 // Top-level topics
-const TOP_LEVEL_TOPICS = ['index', 'overview', 'elements', 'custom-actions', 'multi-device', 'troubleshooting', 'scenarios', 'best-practices'];
+const TOP_LEVEL_TOPICS = ['index', 'overview', 'security', 'elements', 'custom-actions', 'multi-device', 'troubleshooting', 'scenarios', 'best-practices'];
 
 // Local development sub-topics
 const LOCAL_DEV_TOPICS = [

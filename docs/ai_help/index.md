@@ -7,6 +7,7 @@
 | Topic | Description | When to Read |
 |-------|-------------|--------------|
 | [overview](overview.md) | Core concepts, workflow, and quick start | **Start here** |
+| [security](security.md) | **Security & coding guidelines (DRY, errors)** | **⚠️ Before writing code** |
 | [elements](elements.md) | How element registration works (CRITICAL) | Before your first command |
 | [custom-actions](custom-actions.md) | Bypass OTP/OAuth, create shortcuts | When testing auth flows |
 | [local-development/](local-development/) | Local emulators, auth bypass, cloud services | **Setting up dev environment** |
@@ -36,6 +37,8 @@ The `local-development/` folder contains focused guides:
 I need to...
 │
 ├─► Understand Autonomo → Read "overview"
+│
+├─► Learn security/coding best practices → Read "security" ⚠️
 │
 ├─► Know why elements aren't showing → Read "elements"
 │

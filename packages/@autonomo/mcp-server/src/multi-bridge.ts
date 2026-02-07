@@ -401,6 +401,7 @@ Custom Actions (POWERFUL):
 
 Topics available:
 • "overview" - Quick start and core concepts
+• "security" - ⚠️ Security & coding guidelines (DRY, error handling) - READ FIRST!
 • "elements" - How element registration works (CRITICAL to understand)
 • "custom-actions" - Bypassing OTP/OAuth and creating shortcuts
 • "multi-device" - Testing across multiple devices/users
@@ -426,7 +427,7 @@ Call without a topic to see the full table of contents.`,
           topic: {
             type: 'string',
             enum: [
-              'overview', 'elements', 'custom-actions', 'multi-device', 
+              'overview', 'security', 'elements', 'custom-actions', 'multi-device', 
               'troubleshooting', 'scenarios', 'best-practices',
               'local-development',
               'local-development/vscode-tasks',
@@ -1025,7 +1026,7 @@ function formatCrossBridgeResult(
 const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/sebringj/autonomo/main/docs/ai_help';
 
 // Top-level topics
-const TOP_LEVEL_TOPICS = ['index', 'overview', 'elements', 'custom-actions', 'multi-device', 'troubleshooting', 'scenarios', 'best-practices'] as const;
+const TOP_LEVEL_TOPICS = ['index', 'overview', 'security', 'elements', 'custom-actions', 'multi-device', 'troubleshooting', 'scenarios', 'best-practices'] as const;
 
 // Local development sub-topics (folder structure)
 const LOCAL_DEV_TOPICS = [
@@ -1105,6 +1106,7 @@ https://github.com/sebringj/autonomo/blob/main/docs/ai_help/${topic === 'local-d
 
 Top-level topics:
 • overview - Quick start and core concepts
+• security - Security practices, DRY, coding guidelines
 • elements - How element registration works
 • custom-actions - Bypassing OTP/OAuth
 • multi-device - Testing across multiple devices
