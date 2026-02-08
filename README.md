@@ -10,6 +10,8 @@
 
 Autonomo enables AI coding assistants to observe app state, drive multiple devices simultaneously, and validate cross-device interactions — all in one iterative development loop.
 
+<video src="autonomo-demo.mp4" controls width="100%"></video>
+
 ### Why Autonomo?
 
 | Vision-Based Testing | Autonomo |
