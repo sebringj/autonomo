@@ -812,11 +812,18 @@ function formatState(state: any, bridgeId: string): string {
     lines.push(`User: ${state.user.email ?? state.user.id ?? 'logged in'}`);
   }
 
+  // Screen hint provides AI guidance for this specific screen
+  if (state.screenHint) {
+    lines.push('');
+    lines.push(`💡 Hint: ${state.screenHint}`);
+  }
+
   if (state.elements?.length > 0) {
     lines.push('');
     lines.push('Elements:');
     for (const el of state.elements) {
-      let line = `  • ${el.id} (${el.type})`;
+      const actions = Array.isArray(el.actions) ? el.actions.join(', ') : el.type;
+      let line = `  • ${el.id} (${actions})`;
       if (el.disabled) line += ' [disabled]';
       if (el.value) line += ` = "${el.value}"`;
       if (el.hint) line += ` -- ${el.hint}`;
@@ -824,9 +831,24 @@ function formatState(state: any, bridgeId: string): string {
     }
   }
 
+  // Show full custom action details (not just names)
   if (state.customActions?.length > 0) {
     lines.push('');
-    lines.push(`Custom Actions: ${state.customActions.join(', ')}`);
+    lines.push('Custom Actions:');
+    for (const action of state.customActions) {
+      if (typeof action === 'string') {
+        lines.push(`  • ${action}`);
+      } else {
+        let line = `  • ${action.name}`;
+        if (action.description) line += ` - ${action.description}`;
+        lines.push(line);
+        if (action.args) {
+          for (const [argName, argDesc] of Object.entries(action.args)) {
+            lines.push(`      ${argName}: ${argDesc}`);
+          }
+        }
+      }
+    }
   }
 
   if (state.errors?.length > 0) {
