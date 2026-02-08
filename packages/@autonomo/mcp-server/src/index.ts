@@ -310,3 +310,22 @@ export type {
   ScenarioResult,
 } from './multi-bridge.js';
 
+// Schema exports (for generating documentation)
+export {
+  AppStateSchema,
+  ElementInfoSchema,
+  CustomActionInfoSchema,
+  UserContextSchema,
+  SuggestedActionSchema,
+  schemaToMarkdown,
+  generateElementSummary,
+  generateCustomActionSummary,
+  generateGetStateDescription,
+  generateSendCommandDescription,
+  toJsonSchema,
+} from './schema.js';
+export type {
+  FieldDescriptor,
+  SchemaDescriptor,
+} from './schema.js';
+

@@ -56,7 +56,7 @@
 ## 🟢 Nice to Have
 
 ### AI-Friendly Documentation
-- [ ] Generate MCP tool descriptions from AppState schema
+- [x] Generate MCP tool descriptions from AppState schema
 - [ ] Auto-document custom actions in tool descriptions
 - [ ] Include examples in error messages
 

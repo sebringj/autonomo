@@ -22,6 +22,10 @@ import {
   type BridgeInfo,
   type ScenarioStep,
 } from './registry.js';
+import {
+  generateGetStateDescription,
+  generateSendCommandDescription,
+} from './schema.js';
 
 export interface MultiBridgeServerConfig {
   /** Initial bridges to register */
@@ -95,27 +99,7 @@ Invoke via: send_command(action="custom", target="actionName", value="optional-p
     // ==========================================
     {
       name: 'autonomo_get_state',
-      description:
-        `Get the current state of an application. Returns screen name, user info, available elements, custom actions, and any errors.
-
-IMPORTANT - Element Registration:
-• Elements appear in state ONLY if the app explicitly registers them via autonomoRegister() or useAutonomoElement() hook
-• Just adding testID/data-testid to a component does NOT make it visible to Autonomo
-• The app must call autonomoRegister(id, type, handler) to expose elements
-• Custom actions are registered via autonomoRegisterCustomAction(name, handler)
-
-Elements returned include:
-• id: The element identifier (e.g., "Tab.home", "Login.SubmitButton")
-• type: "tap" | "input" | "select" | "custom"
-• label: Optional human-readable label
-• hint: Optional usage hint for the AI
-• disabled: Whether the element is currently disabled
-
-Custom Actions:
-• Listed separately in the response
-• Invoked via send_command with action="custom", target=actionName
-• Can accept an optional value parameter
-• Apps can register ANY custom action to shortcut complex operations (e.g., "addRole", "loginAs", "seedTestData", "switchRole")`,
+      description: generateGetStateDescription(),
       inputSchema: {
         type: 'object',
         properties: {
@@ -134,25 +118,7 @@ Custom Actions:
     // ==========================================
     {
       name: 'autonomo_send_command',
-      description:
-        `Send a command to an application.
-
-Actions:
-• navigate: Go to a screen/route (target = screen name like "/home" or "/(tabs)/settings")
-• press: Tap a button or interactive element (target = element ID from get_state)
-• fillIn/fill: Enter text into an input (target = input element ID, value = text)
-• submit: Press enter/submit on an input (target = input element ID)
-• custom: Execute app-specific action (target = action name, value = optional parameter)
-
-CRITICAL: The target must be an element ID returned by get_state. If an element is not listed in get_state, the app has not registered it and the command will fail.
-
-Custom Actions (POWERFUL):
-• Apps can register custom actions that do ANYTHING - database operations, role changes, test data setup, complex multi-step flows
-• Custom actions are the recommended way to add shortcuts for testing (e.g., "addRole" to add any role, "loginAs" to login as specific user)
-• Use action="custom", target=actionName, value=optionalParam
-• Example: action="custom", target="switchRole", value="coach"
-• Example: action="custom", target="addRole", value="parent"
-• Check get_state response for available customActions in the current app`,
+      description: generateSendCommandDescription(),
       inputSchema: {
         type: 'object',
         properties: {

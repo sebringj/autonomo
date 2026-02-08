@@ -19,9 +19,10 @@
     "dev": "tsc --watch",
     "start": "node dist/cli.js",
     "typecheck": "tsc --noEmit",
-    "test": "npx tsx test/help.test.ts && npx tsx test/registry.test.ts",
+    "test": "npx tsx test/help.test.ts && npx tsx test/registry.test.ts && npx tsx test/schema.test.ts",
     "test:help": "npx tsx test/help.test.ts",
-    "test:registry": "npx tsx test/registry.test.ts"
+    "test:registry": "npx tsx test/registry.test.ts",
+    "test:schema": "npx tsx test/schema.test.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
