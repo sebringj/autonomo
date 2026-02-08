@@ -103,10 +103,11 @@ Ask your AI to call the help tool for documentation:
 
 ```
 "Call autonomo_help to show me how to set up local development"
+"Call autonomo_help with topic recommend for guidance"
 "Call autonomo_help with topic local-development/auth-bypass"
 ```
 
-Topics include: `overview`, `elements`, `custom-actions`, `troubleshooting`, and `local-development/*` sub-topics for AWS, Azure, GCP emulators, auth bypass, payments, and more.
+Topics include: `overview`, `recommend`, `elements`, `custom-actions`, `troubleshooting`, and `local-development/*` sub-topics for AWS, Azure, GCP emulators, auth bypass, payments, and more.
 
 ---
 
@@ -389,6 +390,8 @@ The MCP server can then distinguish between instances:
 
 | Tool | Description |
 |------|-------------|
+| `autonomo_validate` | **Primary validation tool** - Test features end-to-end with clear PASS/FAIL results |
+| `autonomo_help` | Get documentation, recommendations, and guidance on any topic |
 | `autonomo_list_bridges` | List all connected apps with status |
 | `autonomo_get_state` | Get state from one or all bridges |
 | `autonomo_send_command` | Send command to specific bridge |
