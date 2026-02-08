@@ -49,30 +49,51 @@ export async function createMultiBridgeServer(
     {
       name,
       version,
-      description: `Autonomo MCP Server - Control and inspect connected applications (web, mobile, desktop) via AI.
+      description: `Autonomo MCP Server - AI-driven development with real-time validation.
 
-CORE WORKFLOW:
-1. autonomo_list_bridges → Discover connected apps
-2. autonomo_get_state → Inspect current screen, elements, errors, and custom actions
-3. autonomo_send_command → Interact: press buttons, fill inputs, invoke custom actions
-4. autonomo_wait_for → Wait for screens, elements, or error-free state
-5. autonomo_run_scenario → Execute multi-step test flows
+## THE DEVELOPMENT LOOP (USE THIS!)
 
-CRITICAL - ALWAYS CALL get_state AFTER COMMANDS:
-Commands execute asynchronously. The send_command response confirms delivery, NOT completion.
-Errors from API calls, navigation, or data loading appear in the get_state "errors" array AFTER the action completes.
-ALWAYS call get_state after send_command to verify the result and check for errors.
+When building ANY feature:
 
-ELEMENT VISIBILITY:
-Elements appear in state ONLY if the app explicitly registers them via:
-• autonomoRegister(id, type, handler) - Direct registration
-• useAutonomoElement() hook - React hook for registration
-Just adding testID or data-testid does NOT make elements visible to Autonomo.
+1. IMPLEMENT → Write the code
+2. VALIDATE → Use Autonomo to test it actually works
+3. CHECK → Look at errors array - empty means success
+4. FIX → If errors or wrong behavior, fix and go to step 2
+5. REPEAT → Until the feature works end-to-end
 
-CUSTOM ACTIONS:
-Apps can register ANY custom action (e.g., "addRole", "loginAs", "clearData", "switchRole").
-These bypass UI interaction for faster, more reliable testing.
-Invoke via: send_command(action="custom", target="actionName", value="optional-param")
+NEVER say "done" without validating through Autonomo. Code review is NOT validation.
+
+## VALIDATION WORKFLOW
+
+1. autonomo_list_bridges → Find your app (if not connected, app isn't running)
+2. autonomo_get_state → See current screen, elements, errors
+3. autonomo_send_command → Interact: press, fillIn, navigate
+4. autonomo_get_state → ALWAYS check state after commands
+5. If errors[] is not empty → Something failed, investigate
+6. If on wrong screen → Navigate or login first
+
+## COMMON PATTERNS
+
+**Authentication Required (401/403 errors):**
+Look at elements in get_state - if you see login-related elements (PhoneInput, EmailInput, 
+PasswordInput, LoginButton, OtpInput), you need to login first. Fill credentials and submit.
+
+**Finding Test Credentials:**
+Check customActions in get_state - apps often provide "devLogin", "loginAs", or similar 
+shortcuts. Also check element hints for test values.
+
+**Verifying Feature Works:**
+Don't just check if screen renders. Do the full CRUD flow:
+Create something → Verify it appears → Edit it → Verify changes → Delete it → Verify gone
+
+## TOOL REFERENCE
+
+• autonomo_list_bridges - Discover connected apps
+• autonomo_get_state - Inspect screen, elements, errors, custom actions
+• autonomo_send_command - Interact: press, fillIn, navigate, custom
+• autonomo_wait_for - Wait for conditions (screen:X, element:X, noError)
+• autonomo_run_scenario - Execute multi-step flows
+• autonomo_help - Get detailed documentation on any topic
 `,
     },
     { capabilities: { tools: {} } }
@@ -818,6 +839,13 @@ function formatState(state: any, bridgeId: string): string {
     lines.push(`💡 Hint: ${state.screenHint}`);
   }
 
+  // Auto-detect patterns and suggest next action
+  const autoHint = detectPatternHint(state);
+  if (autoHint && !state.screenHint) {
+    lines.push('');
+    lines.push(`💡 ${autoHint}`);
+  }
+
   if (state.elements?.length > 0) {
     lines.push('');
     lines.push('Elements:');
@@ -853,13 +881,78 @@ function formatState(state: any, bridgeId: string): string {
 
   if (state.errors?.length > 0) {
     lines.push('');
-    lines.push('Errors:');
+    lines.push('⚠️ ERRORS (fix these before proceeding):');
     for (const err of state.errors) {
-      lines.push(`  ⚠ ${err}`);
+      lines.push(`  • ${err}`);
+    }
+    // Add error recovery hints
+    const errorHint = detectErrorHint(state.errors);
+    if (errorHint) {
+      lines.push('');
+      lines.push(`💡 ${errorHint}`);
     }
   }
 
   return lines.join('\n');
+}
+
+/**
+ * Auto-detect patterns in state and suggest next action
+ */
+function detectPatternHint(state: any): string | null {
+  const elementIds = (state.elements || []).map((e: any) => e.id?.toLowerCase() || '');
+  const screen = (state.screen || '').toLowerCase();
+  
+  // Login screen detection
+  const hasPhoneInput = elementIds.some((id: string) => id.includes('phone') && id.includes('input'));
+  const hasEmailInput = elementIds.some((id: string) => id.includes('email') && id.includes('input'));
+  const hasPasswordInput = elementIds.some((id: string) => id.includes('password'));
+  const hasOtpInput = elementIds.some((id: string) => id.includes('otp'));
+  const hasLoginButton = elementIds.some((id: string) => id.includes('login') || id.includes('signin') || id.includes('verify'));
+  
+  if (hasOtpInput) {
+    return 'OTP input detected. Fill each OTP digit field, then press verify/submit button.';
+  }
+  
+  if ((hasPhoneInput || hasEmailInput) && (hasLoginButton || hasPasswordInput)) {
+    return 'Login screen detected. Fill credentials and submit to authenticate.';
+  }
+  
+  if (screen.includes('login') || screen.includes('signin') || screen.includes('landing')) {
+    return 'On auth screen. Look for input fields and login/submit button.';
+  }
+  
+  // No user logged in
+  if (!state.user && !hasPhoneInput && !hasEmailInput && !hasOtpInput) {
+    return 'No user logged in. Navigate to login screen to authenticate first.';
+  }
+  
+  return null;
+}
+
+/**
+ * Suggest recovery action based on errors
+ */
+function detectErrorHint(errors: string[]): string | null {
+  const errorStr = errors.join(' ').toLowerCase();
+  
+  if (errorStr.includes('401') || errorStr.includes('unauthorized') || errorStr.includes('unauthenticated')) {
+    return 'Authentication error. You need to login first - look for login elements or navigate to login screen.';
+  }
+  
+  if (errorStr.includes('403') || errorStr.includes('forbidden') || errorStr.includes('permission')) {
+    return 'Permission denied. You may need a different role or the action is not allowed.';
+  }
+  
+  if (errorStr.includes('404') || errorStr.includes('not found')) {
+    return 'Resource not found. Check if you\'re on the right screen or if the data exists.';
+  }
+  
+  if (errorStr.includes('network') || errorStr.includes('fetch') || errorStr.includes('connection')) {
+    return 'Network error. Check if the backend server is running.';
+  }
+  
+  return 'Check the error details above and fix the underlying issue before continuing.';
 }
 
 function formatMultiState(

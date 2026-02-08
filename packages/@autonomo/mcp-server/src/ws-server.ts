@@ -50,6 +50,30 @@ export interface AppState {
   availableRoutes?: string[];
 }
 
+export interface AIContext {
+  /** Markdown instructions for AI about how to test this app */
+  instructions?: string;
+  /** Test credentials (phone, email, password, OTP codes, etc.) */
+  credentials?: Record<string, string>;
+  /** Available user roles to test */
+  roles?: string[];
+  /** Pre-defined login scenario */
+  loginScenario?: Array<{
+    action: string;
+    target: string;
+    value?: string;
+    description?: string;
+  }>;
+  /** TestID naming convention description */
+  testIdPattern?: string;
+  /** Common validation scenarios */
+  validationScenarios?: Record<string, Array<{
+    action: string;
+    target: string;
+    value?: string;
+  }>>;
+}
+
 export interface BridgeConnection {
   id: string;
   name: string;
@@ -57,6 +81,8 @@ export interface BridgeConnection {
   ws: WebSocket;
   state: AppState | null;
   lastSeen: number;
+  /** AI context provided by the app */
+  aiContext?: AIContext;
   pendingCommand?: {
     id: string;
     resolve: (result: CommandResult) => void;
@@ -97,6 +123,8 @@ export interface BridgeInfo {
   elements?: number;
   status: 'connected' | 'disconnected';
   lastSeen: number;
+  /** Whether this bridge has AI context available */
+  hasAiContext?: boolean;
 }
 
 export interface Command {
@@ -155,10 +183,12 @@ export function createWSServer(port: number = DEFAULT_PORT): AutonomoWSServer {
               ws,
               state: initialState,
               lastSeen: Date.now(),
+              aiContext: msg.aiContext, // 👈 Capture AI context from registration
             };
             
             bridges.set(bridgeId, connection);
-            console.error(`🟢 Bridge connected: ${bridgeId} (${msg.platform || 'unknown'})${initialState ? ` on screen: ${initialState.screen}` : ''}`);
+            const hasContext = msg.aiContext ? ' [has AI context]' : '';
+            console.error(`🟢 Bridge connected: ${bridgeId} (${msg.platform || 'unknown'})${initialState ? ` on screen: ${initialState.screen}` : ''}${hasContext}`);
             emitter.emit('bridge:connect', bridgeId);
             
             // Send ack
@@ -271,7 +301,14 @@ export function createWSServer(port: number = DEFAULT_PORT): AutonomoWSServer {
       elements: b.state?.elements?.length,
       status: 'connected' as const,
       lastSeen: b.lastSeen,
+      hasAiContext: !!b.aiContext,
     }));
+  };
+  
+  // Get AI context for a bridge
+  (emitter as any).getAiContext = (bridgeId: string): AIContext | null => {
+    const bridge = bridges.get(bridgeId);
+    return bridge?.aiContext || null;
   };
   
   emitter.getState = (bridgeId: string): AppState | null => {
