@@ -26,6 +26,10 @@ function setupGracefulShutdown(): void {
 
   process.on('SIGTERM', () => shutdown('SIGTERM'));
   process.on('SIGINT', () => shutdown('SIGINT'));
+  
+  // Handle stdin close (VS Code MCP stops server by closing stdin)
+  process.stdin.on('close', () => shutdown('stdin close'));
+  process.stdin.on('end', () => shutdown('stdin end'));
 }
 
 setupGracefulShutdown();

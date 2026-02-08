@@ -135,6 +135,21 @@ await test('Server logs shutdown message on SIGTERM', async () => {
   assert(shutdownLogged, 'Server should log shutdown message');
 });
 
+await test('stdin close causes graceful shutdown (VS Code MCP stop)', async () => {
+  const child = await spawnCli(TEST_PORT);
+  const pid = child.pid!;
+  
+  assert(isProcessRunning(pid), 'Server should be running');
+  
+  // Close stdin (simulates VS Code MCP stopping the server)
+  child.stdin?.end();
+  
+  // Wait for process to exit
+  await sleep(500);
+  
+  assert(!isProcessRunning(pid), 'Server should have exited after stdin close');
+});
+
 console.log(`\n📊 Results: ${passed} passed, ${failed} failed\n`);
 
 process.exit(failed > 0 ? 1 : 0);
