@@ -379,15 +379,93 @@ Create something → Verify it appears → Edit it → Verify changes → Delete
     },
 
     // ==========================================
+    // autonomo/validate
+    // ==========================================
+    {
+      name: 'autonomo_validate',
+      description:
+        `Validate, test, or verify a feature works correctly. This is the PRIMARY tool to use when asked to "validate", "test", "verify", or "check" that something works.
+
+Use this tool when:
+• User says "validate this feature"
+• User says "test the login flow"
+• User says "verify the form works"
+• User says "check that X works"
+• After implementing a feature to confirm it works end-to-end
+
+The tool will:
+1. Connect to the appropriate bridge
+2. Execute the validation steps you provide
+3. Return a clear PASS/FAIL result with any errors
+
+Provide either:
+• A description of what to validate (AI will determine steps)
+• Explicit steps to execute
+
+This is the MOST IMPORTANT tool for development workflows - always validate before marking work complete!`,
+      inputSchema: {
+        type: 'object',
+        properties: {
+          bridge: {
+            type: 'string',
+            description: 'Bridge ID to validate against. Use autonomo_list_bridges first if unsure.',
+          },
+          description: {
+            type: 'string',
+            description: 'What to validate in plain English (e.g., "user can book a demo slot", "login flow works"). The AI will determine appropriate steps.',
+          },
+          steps: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                action: {
+                  type: 'string',
+                  enum: ['navigate', 'press', 'fillIn', 'fill', 'submit', 'custom', 'waitFor', 'wait', 'assertScreen', 'assertElement', 'assertNoErrors'],
+                },
+                target: { type: 'string', description: 'Element ID, screen name, or assertion target' },
+                value: { type: 'string', description: 'Value for fill actions or expected value for assertions' },
+                condition: { type: 'string', description: 'Condition for waitFor action' },
+                timeout: { type: 'number', description: 'Timeout in ms' },
+              },
+              required: ['action'],
+            },
+            description: 'Explicit validation steps. If omitted, provide description instead.',
+          },
+          expectScreen: {
+            type: 'string',
+            description: 'Expected final screen after validation (e.g., "confirmation", "dashboard")',
+          },
+          expectElement: {
+            type: 'string',
+            description: 'Expected element to be present after validation (e.g., "SuccessMessage", "Confirmation")',
+          },
+        },
+        required: ['bridge'],
+      },
+    },
+
+    // ==========================================
     // autonomo/help
     // ==========================================
     {
       name: 'autonomo_help',
       description:
-        `Get comprehensive Autonomo documentation and scenario guides. Call this when you need help understanding how to use Autonomo effectively.
+        `Get Autonomo documentation, recommendations, and guidance. Call this when you need help, advice, or recommendations on how to proceed.
+
+Use this tool when:
+• User asks "what should I do?"
+• User asks for recommendations or advice
+• User needs help understanding Autonomo
+• User asks "how do I test X?"
+• User is stuck and needs guidance
+• User asks about best practices
+
+This tool provides recommendations and documentation on:
 
 Topics available:
 • "overview" - Quick start and core concepts
+• "recommend" - Get AI recommendations for your current situation
 • "security" - ⚠️ Security & coding guidelines (DRY, error handling) - READ FIRST!
 • "elements" - How element registration works (CRITICAL to understand)
 • "custom-actions" - Bypassing OTP/OAuth and creating shortcuts
@@ -414,7 +492,7 @@ Call without a topic to see the full table of contents.`,
           topic: {
             type: 'string',
             enum: [
-              'overview', 'security', 'elements', 'custom-actions', 'multi-device', 
+              'overview', 'recommend', 'security', 'elements', 'custom-actions', 'multi-device', 
               'troubleshooting', 'scenarios', 'best-practices',
               'local-development',
               'local-development/vscode-tasks',
@@ -739,6 +817,183 @@ Call without a topic to see the full table of contents.`,
               {
                 type: 'text',
                 text: formatCrossBridgeResult(steps, totalDuration, allPassed),
+              },
+            ],
+          };
+        }
+
+        // ==========================================
+        // autonomo/validate
+        // ==========================================
+        case 'autonomo_validate': {
+          interface ValidateStep {
+            action: 'navigate' | 'press' | 'fillIn' | 'fill' | 'submit' | 'custom' | 'waitFor' | 'wait' | 'assertScreen' | 'assertElement' | 'assertNoErrors';
+            target?: string;
+            value?: string;
+            condition?: string;
+            timeout?: number;
+          }
+
+          const { bridge, description, steps, expectScreen, expectElement } = args as {
+            bridge: string;
+            description?: string;
+            steps?: ValidateStep[];
+            expectScreen?: string;
+            expectElement?: string;
+          };
+
+          // Verify bridge exists
+          if (!registry.hasBridge(bridge)) {
+            return {
+              content: [
+                {
+                  type: 'text',
+                  text: `✗ VALIDATION FAILED\n\nBridge not found: ${bridge}\n\nUse autonomo_list_bridges to see available bridges.\nMake sure the app is running with AutonomoBridge component mounted.`,
+                },
+              ],
+              isError: true,
+            };
+          }
+
+          const validationSteps: Array<{
+            step: number;
+            action: string;
+            target?: string;
+            success: boolean;
+            duration: number;
+            error?: string;
+          }> = [];
+          const overallStart = Date.now();
+
+          // Execute provided steps
+          if (steps && steps.length > 0) {
+            for (let i = 0; i < steps.length; i++) {
+              const step = steps[i];
+              const stepStart = Date.now();
+
+              try {
+                let success = false;
+                let error: string | undefined;
+
+                switch (step.action) {
+                  case 'waitFor': {
+                    const result = await registry.waitFor(bridge, step.condition!, step.timeout ?? 5000);
+                    success = result.success;
+                    error = result.error;
+                    break;
+                  }
+                  case 'wait': {
+                    await new Promise((resolve) => setTimeout(resolve, step.timeout ?? 1000));
+                    success = true;
+                    break;
+                  }
+                  case 'assertScreen': {
+                    const stateResult = await registry.getState(bridge);
+                    const state = (stateResult as any).state;
+                    if (state.screen === step.target || state.screen.includes(step.target!)) {
+                      success = true;
+                    } else {
+                      success = false;
+                      error = `Expected screen "${step.target}", got "${state.screen}"`;
+                    }
+                    break;
+                  }
+                  case 'assertElement': {
+                    const stateResult = await registry.getState(bridge);
+                    const state = (stateResult as any).state;
+                    const hasElement = state.elements.some((el: any) => 
+                      el.id === step.target || el.id.includes(step.target!)
+                    );
+                    if (hasElement) {
+                      success = true;
+                    } else {
+                      success = false;
+                      error = `Expected element "${step.target}" not found. Available: ${state.elements.map((e: any) => e.id).join(', ')}`;
+                    }
+                    break;
+                  }
+                  case 'assertNoErrors': {
+                    const stateResult = await registry.getState(bridge);
+                    const state = (stateResult as any).state;
+                    if (state.errors.length === 0) {
+                      success = true;
+                    } else {
+                      success = false;
+                      error = `Found errors: ${state.errors.join(', ')}`;
+                    }
+                    break;
+                  }
+                  default: {
+                    const result = await registry.sendCommand(
+                      bridge,
+                      step.action as 'navigate' | 'press' | 'fillIn' | 'fill' | 'submit' | 'custom',
+                      step.target!,
+                      step.value
+                    );
+                    success = result.success;
+                    error = result.error;
+                  }
+                }
+
+                const stepDuration = Date.now() - stepStart;
+                validationSteps.push({
+                  step: i + 1,
+                  action: step.action,
+                  target: step.target,
+                  success,
+                  duration: stepDuration,
+                  error,
+                });
+
+                if (!success) break; // Stop on first failure
+              } catch (e) {
+                const stepDuration = Date.now() - stepStart;
+                validationSteps.push({
+                  step: i + 1,
+                  action: step.action,
+                  target: step.target,
+                  success: false,
+                  duration: stepDuration,
+                  error: e instanceof Error ? e.message : String(e),
+                });
+                break;
+              }
+            }
+          }
+
+          // Final assertions
+          const finalState = await registry.getState(bridge);
+          const state = (finalState as any).state;
+          let finalSuccess = validationSteps.every((s) => s.success);
+          const finalErrors: string[] = [];
+
+          if (expectScreen && !state.screen.includes(expectScreen)) {
+            finalSuccess = false;
+            finalErrors.push(`Expected final screen "${expectScreen}", got "${state.screen}"`);
+          }
+
+          if (expectElement) {
+            const hasElement = state.elements.some((el: any) => 
+              el.id === expectElement || el.id.includes(expectElement)
+            );
+            if (!hasElement) {
+              finalSuccess = false;
+              finalErrors.push(`Expected element "${expectElement}" not found`);
+            }
+          }
+
+          if (state.errors.length > 0) {
+            finalSuccess = false;
+            finalErrors.push(`App has errors: ${state.errors.join(', ')}`);
+          }
+
+          const totalDuration = Date.now() - overallStart;
+
+          return {
+            content: [
+              {
+                type: 'text',
+                text: formatValidationResult(validationSteps, totalDuration, finalSuccess, finalErrors, description, state),
               },
             ],
           };
@@ -1100,6 +1355,97 @@ function formatCrossBridgeResult(
   return lines.join('\n');
 }
 
+function formatValidationResult(
+  steps: Array<{
+    step: number;
+    action: string;
+    target?: string;
+    success: boolean;
+    duration: number;
+    error?: string;
+  }>,
+  totalDuration: number,
+  passed: boolean,
+  finalErrors: string[],
+  description?: string,
+  finalState?: any
+): string {
+  const lines: string[] = [];
+
+  // Big, clear pass/fail banner
+  if (passed) {
+    lines.push('═══════════════════════════════════════════');
+    lines.push('✅ VALIDATION PASSED');
+    lines.push('═══════════════════════════════════════════');
+  } else {
+    lines.push('═══════════════════════════════════════════');
+    lines.push('❌ VALIDATION FAILED');
+    lines.push('═══════════════════════════════════════════');
+  }
+
+  if (description) {
+    lines.push(`Validating: ${description}`);
+  }
+  lines.push(`Duration: ${totalDuration}ms`);
+  lines.push('');
+
+  // Show steps if any
+  if (steps.length > 0) {
+    lines.push('Steps:');
+    for (const step of steps) {
+      const icon = step.success ? '✓' : '✗';
+      let line = `  ${step.step}. ${icon} ${step.action}`;
+      if (step.target) line += ` → ${step.target}`;
+      line += ` (${step.duration}ms)`;
+      lines.push(line);
+      if (step.error) {
+        lines.push(`      ⚠️ ${step.error}`);
+      }
+    }
+    lines.push('');
+  }
+
+  // Show final errors
+  if (finalErrors.length > 0) {
+    lines.push('Final Assertion Failures:');
+    for (const err of finalErrors) {
+      lines.push(`  ⚠️ ${err}`);
+    }
+    lines.push('');
+  }
+
+  // Show final state summary
+  if (finalState) {
+    lines.push(`Final Screen: ${finalState.screen}`);
+    if (finalState.user) {
+      lines.push(`User: ${finalState.user.email ?? finalState.user.id ?? 'logged in'}`);
+    }
+    if (finalState.errors?.length > 0) {
+      lines.push(`App Errors: ${finalState.errors.join(', ')}`);
+    }
+  }
+
+  // Actionable next steps
+  if (!passed) {
+    lines.push('');
+    lines.push('─────────────────────────────────────────');
+    lines.push('Next Steps:');
+    if (finalErrors.some(e => e.includes('screen'))) {
+      lines.push('  • Check navigation - are you on the right page?');
+    }
+    if (finalErrors.some(e => e.includes('element'))) {
+      lines.push('  • Check element testIDs - use autonomo_get_state to see available elements');
+    }
+    if (finalState?.errors?.length > 0) {
+      lines.push('  • Fix app errors before retrying validation');
+    }
+    lines.push('  • Review the failed step and fix the issue');
+    lines.push('  • Re-run validation with autonomo_validate');
+  }
+
+  return lines.join('\n');
+}
+
 // ==========================================
 // Help content fetcher
 // ==========================================
@@ -1107,7 +1453,7 @@ function formatCrossBridgeResult(
 const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/sebringj/autonomo/main/docs/ai_help';
 
 // Top-level topics
-const TOP_LEVEL_TOPICS = ['index', 'overview', 'security', 'elements', 'custom-actions', 'multi-device', 'troubleshooting', 'scenarios', 'best-practices'] as const;
+const TOP_LEVEL_TOPICS = ['index', 'overview', 'recommend', 'security', 'elements', 'custom-actions', 'multi-device', 'troubleshooting', 'scenarios', 'best-practices'] as const;
 
 // Local development sub-topics (folder structure)
 const LOCAL_DEV_TOPICS = [
