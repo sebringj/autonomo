@@ -90,3 +90,55 @@ The 100ms delay before collecting state is a hack. Better solutions:
 - [ ] Debounce state updates from apps
 - [ ] Add `stateVersion` and let MCP wait for version change
 - [ ] Support `waitForElement` in command options
+
+## Future: API Discovery (Auto-detect from Specs)
+
+Support automatic API endpoint discovery from existing standards:
+
+### Adapters to Build
+- [ ] **OpenAPI/Swagger** - Auto-import from `/openapi.json`, `/swagger.json`, `/api/docs`
+- [ ] **GraphQL** - Introspection query to `/graphql`
+- [ ] **HATEOAS/HAL** - Parse `_links` from API responses
+- [ ] **JSON:API** - Extract resource endpoints
+
+### Auto-Detection Flow
+```typescript
+// On bridge init, probe common endpoints
+const specs = await autoDetect({
+  openapi: ['/openapi.json', '/swagger.json', '/api/docs'],
+  graphql: ['/graphql'],
+  hateoas: ['/api'],
+});
+
+// Import all found specs → unified elements
+for (const [type, url] of Object.entries(specs)) {
+  await bridge.importSpec(type, url);
+}
+```
+
+### Unified Element Format
+Each adapter normalizes to Autonomo elements:
+
+| Spec Source | Becomes |
+|-------------|---------|
+| OpenAPI `POST /users` | `{ id: "POST /users", type: "endpoint", params: [...] }` |
+| GraphQL `mutation createUser` | `{ id: "mutation.createUser", type: "graphql", args: [...] }` |
+| HATEOAS `_links.create` | `{ id: "users.create", type: "endpoint", href: "..." }` |
+
+### Autonomo-Only Runtime Context (specs can't provide)
+- Current user/auth state
+- Active errors
+- Custom test actions (devLogin, seedData)
+- Permission-aware filtering (hide endpoints user can't access)
+
+### API
+```typescript
+// Auto-detect and import
+bridge.autoDiscoverAPIs();
+
+// Manual import
+bridge.importOpenAPI('/api/openapi.json');
+bridge.importGraphQL('/graphql');
+
+// Result: all endpoints appear in elements[]
+// Plus runtime auth/error state that specs don't have
