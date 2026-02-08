@@ -14,6 +14,21 @@
 import { startServer } from './index.js';
 import { startMultiBridgeServer, type BridgeConfig } from './multi-bridge.js';
 import { startWSModeServer } from './ws-mode.js';
+import { closeWSServer } from './ws-server.js';
+
+// Graceful shutdown handler
+function setupGracefulShutdown(): void {
+  const shutdown = (signal: string) => {
+    console.error(`\n${signal} received, shutting down gracefully...`);
+    closeWSServer();
+    process.exit(0);
+  };
+
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
+  process.on('SIGINT', () => shutdown('SIGINT'));
+}
+
+setupGracefulShutdown();
 
 const args = process.argv.slice(2);
 
