@@ -635,6 +635,7 @@ Autonomo provides packages for multiple platforms and languages:
 ## Documentation
 
 - [QUICKSTART.md](./QUICKSTART.md) - **Fastest path** - Get running in 5 minutes
+- [CONTRIBUTING.md](./CONTRIBUTING.md) - **Contributing** - How to contribute to Autonomo
 - [docs/CUSTOM_ACTIONS.md](./docs/CUSTOM_ACTIONS.md) - **Custom actions** - Fast-path operations for complex interactions
 - [MCP_INTEGRATION.md](./MCP_INTEGRATION.md) - How Autonomo works with AI tools
 - [TEST_BRIDGE_ARCHITECTURE.md](./TEST_BRIDGE_ARCHITECTURE.md) - Deep dive on implementation
