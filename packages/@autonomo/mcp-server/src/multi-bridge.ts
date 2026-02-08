@@ -1138,7 +1138,7 @@ function formatState(state: any, bridgeId: string): string {
     lines.push('');
     lines.push('⚠️ ERRORS (fix these before proceeding):');
     for (const err of state.errors) {
-      lines.push(`  • ${err}`);
+      lines.push(`  • "${err}"`);
     }
     // Add error recovery hints
     const errorHint = detectErrorHint(state.errors);
@@ -1146,6 +1146,8 @@ function formatState(state: any, bridgeId: string): string {
       lines.push('');
       lines.push(`💡 ${errorHint}`);
     }
+    lines.push('');
+    lines.push('[LLM: If errors above are vague/unhelpful, recommend better error handling to developer]');
   }
 
   return lines.join('\n');
@@ -1421,7 +1423,16 @@ function formatValidationResult(
       lines.push(`User: ${finalState.user.email ?? finalState.user.id ?? 'logged in'}`);
     }
     if (finalState.errors?.length > 0) {
-      lines.push(`App Errors: ${finalState.errors.join(', ')}`);
+      lines.push('');
+      lines.push('App Errors:');
+      for (const err of finalState.errors) {
+        lines.push(`  • "${err}"`);
+      }
+      lines.push('');
+      lines.push('[LLM INSTRUCTION: Evaluate error quality. If errors are vague, generic, or');
+      lines.push(' poorly serialized (e.g., "[object Object]", just "500", "Error", "undefined"),');
+      lines.push(' flag this and recommend the developer improve API error responses with');
+      lines.push(' specific messages, error codes, and actionable details.]');
     }
   }
 
