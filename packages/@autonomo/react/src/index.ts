@@ -391,9 +391,18 @@ export function useAutonomo(config: UseAutonomoConfig): AutonomoConnection {
           break;
         }
         
-        default:
-          error = `Unknown action: ${action}`;
-          success = false;
+        default: {
+          // Try as custom action (MCP server sends custom actions with action=actionName)
+          if (customActions.has(action)) {
+            const result = await customActions.execute(action, value || target);
+            success = result.success;
+            message = result.message;
+            error = result.error;
+          } else {
+            error = `Unknown action: ${action}`;
+            success = false;
+          }
+        }
       }
     } catch (err: any) {
       success = false;

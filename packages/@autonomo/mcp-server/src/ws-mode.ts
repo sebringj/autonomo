@@ -309,7 +309,18 @@ export async function startWSModeServer(config: WSModeConfig = {}): Promise<void
             const stepStart = Date.now();
             
             try {
-              if (step.action === 'wait' || step.action === 'waitFor') {
+              if (step.action === 'wait') {
+                // Simple sleep/delay
+                const timeout = step.timeout || 1000;
+                await sleep(timeout);
+                
+                results.push({
+                  step: i + 1,
+                  action: 'wait',
+                  success: true,
+                  duration: Date.now() - stepStart,
+                });
+              } else if (step.action === 'waitFor') {
                 // Wait for condition
                 const condition = step.condition || `element:${step.target}`;
                 const timeout = step.timeout || 5000;
