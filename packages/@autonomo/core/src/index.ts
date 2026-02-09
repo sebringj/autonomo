@@ -91,3 +91,14 @@ export type {
   TransportConfig,
   TransportInstance,
 } from './transport.js';
+
+// Discovery - auto-discover elements from existing attributes
+export {
+  discoverWebElements,
+  mergeWithExplicit,
+} from './discovery.js';
+
+export type {
+  DiscoveryOptions,
+  DiscoveredElement,
+} from './discovery.js';
