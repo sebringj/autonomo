@@ -16,6 +16,51 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import { getWSServer, type AutonomoWSServer, type AppState, type Command } from './ws-server.js';
 
+// ==========================================
+// State History for Diff Mode
+// ==========================================
+
+interface StateSnapshot {
+  screen: string;
+  elements: Set<string>;
+  errors: string[];
+  raw: any;
+}
+
+const stateHistory: Map<string, StateSnapshot> = new Map();
+
+function snapshotState(state: any): StateSnapshot {
+  return {
+    screen: state.screen || 'unknown',
+    elements: new Set((state.elements || []).map((e: any) => e.id)),
+    errors: state.errors || [],
+    raw: state,
+  };
+}
+
+function computeDiff(
+  prev: StateSnapshot | undefined, 
+  curr: StateSnapshot
+): { added: string[]; removed: string[]; screenChanged: boolean; newErrors: string[] } {
+  const added: string[] = [];
+  const removed: string[] = [];
+  
+  for (const id of curr.elements) {
+    if (!prev?.elements.has(id)) added.push(id);
+  }
+  if (prev) {
+    for (const id of prev.elements) {
+      if (!curr.elements.has(id)) removed.push(id);
+    }
+  }
+  
+  const screenChanged = prev?.screen !== curr.screen;
+  const prevErrorSet = new Set(prev?.errors || []);
+  const newErrors = curr.errors.filter(e => !prevErrorSet.has(e));
+  
+  return { added, removed, screenChanged, newErrors };
+}
+
 export interface WSModeConfig {
   port?: number;
   name?: string;
@@ -61,6 +106,10 @@ export async function startWSModeServer(config: WSModeConfig = {}): Promise<void
           expand: {
             type: 'string',
             description: 'Expand a collapsed element group to see all items. Pass the namespace prefix shown as "Namespace.* (N items)" to see full list.',
+          },
+          diffOnly: {
+            type: 'boolean',
+            description: 'Return only changes since last get_state call (added/removed elements, screen changes, new errors). Token-efficient for confirming actions worked. Default: false.',
           },
         },
         required: ['bridge'],
@@ -183,7 +232,7 @@ export async function startWSModeServer(config: WSModeConfig = {}): Promise<void
         }
         
         case 'autonomo_get_state': {
-          const { bridge: bridgeId, expand: expandPrefix } = args as { bridge: string; expand?: string };
+          const { bridge: bridgeId, expand: expandPrefix, diffOnly } = args as { bridge: string; expand?: string; diffOnly?: boolean };
           
           if (bridgeId === 'all') {
             const bridges = wsServer.listBridges();
@@ -205,6 +254,17 @@ export async function startWSModeServer(config: WSModeConfig = {}): Promise<void
           const state = wsServer.getState(bridgeId);
           if (!state) {
             return { content: [{ type: 'text', text: `Bridge not found or no state: ${bridgeId}` }] };
+          }
+          
+          const currSnapshot = snapshotState(state);
+          const prevSnapshot = stateHistory.get(bridgeId);
+          
+          // Always update history for next diff
+          stateHistory.set(bridgeId, currSnapshot);
+          
+          // Diff mode: return only changes
+          if (diffOnly && prevSnapshot) {
+            return { content: [{ type: 'text', text: formatStateDiff(currSnapshot, prevSnapshot) }] };
           }
           
           return { content: [{ type: 'text', text: formatStateText(state, expandPrefix) }] };
@@ -535,4 +595,46 @@ function formatStateText(state: any, expandPrefix?: string): string {
   }
   
   return text;
+}
+
+/**
+ * Format state diff - token-efficient output showing only changes
+ */
+function formatStateDiff(curr: StateSnapshot, prev: StateSnapshot): string {
+  const diff = computeDiff(prev, curr);
+  const lines: string[] = [];
+
+  lines.push(`Screen: ${curr.screen}${diff.screenChanged ? ` (was: ${prev.screen})` : ''}`);
+
+  // Errors
+  if (diff.newErrors.length > 0) {
+    lines.push('');
+    lines.push('⚠️ NEW ERRORS:');
+    for (const err of diff.newErrors) {
+      lines.push(`  • "${err}"`);
+    }
+  } else if (curr.errors.length === 0 && prev.errors.length > 0) {
+    lines.push('');
+    lines.push('✓ Errors cleared');
+  }
+
+  // Element changes
+  if (diff.added.length > 0 || diff.removed.length > 0) {
+    lines.push('');
+    lines.push('Element Changes:');
+    if (diff.added.length > 0) {
+      lines.push(`  + Added: ${diff.added.slice(0, 10).join(', ')}${diff.added.length > 10 ? '...' : ''}`);
+    }
+    if (diff.removed.length > 0) {
+      lines.push(`  - Removed: ${diff.removed.slice(0, 10).join(', ')}${diff.removed.length > 10 ? '...' : ''}`);
+    }
+  } else {
+    lines.push('');
+    lines.push('Elements: unchanged');
+  }
+
+  lines.push('');
+  lines.push(`Current: ${curr.elements.size} elements, ${curr.errors.length} errors`);
+
+  return lines.join('\n');
 }

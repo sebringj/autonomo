@@ -59,6 +59,59 @@ function getRecentActions(count: number = 10): ActionHistoryEntry[] {
   return actionHistory.slice(-count);
 }
 
+// ==========================================
+// State History for Diff Mode
+// ==========================================
+
+interface StateSnapshot {
+  screen: string;
+  elements: Set<string>; // Set of element IDs for fast diff
+  errors: string[];
+  customActions: string[];
+  user?: string;
+  raw: any; // Keep raw state for full output
+}
+
+const stateHistory: Map<string, StateSnapshot> = new Map();
+
+function snapshotState(state: any): StateSnapshot {
+  return {
+    screen: state.screen || 'unknown',
+    elements: new Set((state.elements || []).map((e: any) => e.id)),
+    errors: state.errors || [],
+    customActions: (state.customActions || []).map((a: any) => 
+      typeof a === 'string' ? a : a.name
+    ),
+    user: state.user?.email || state.user?.id,
+    raw: state,
+  };
+}
+
+function computeDiff(
+  prev: StateSnapshot | undefined, 
+  curr: StateSnapshot
+): { added: string[]; removed: string[]; screenChanged: boolean; errorsChanged: boolean; newErrors: string[] } {
+  const added: string[] = [];
+  const removed: string[] = [];
+  
+  // Elements diff
+  for (const id of curr.elements) {
+    if (!prev?.elements.has(id)) added.push(id);
+  }
+  if (prev) {
+    for (const id of prev.elements) {
+      if (!curr.elements.has(id)) removed.push(id);
+    }
+  }
+  
+  const screenChanged = prev?.screen !== curr.screen;
+  const prevErrorSet = new Set(prev?.errors || []);
+  const newErrors = curr.errors.filter(e => !prevErrorSet.has(e));
+  const errorsChanged = newErrors.length > 0 || (prev?.errors.length || 0) !== curr.errors.length;
+  
+  return { added, removed, screenChanged, errorsChanged, newErrors };
+}
+
 export interface MultiBridgeServerConfig {
   /** Initial bridges to register */
   bridges?: BridgeConfig[];
@@ -165,6 +218,11 @@ Create something → Verify it appears → Edit it → Verify changes → Delete
             type: 'string',
             description:
               'Expand a collapsed element group to see all items. Pass the namespace prefix shown as "Namespace.* (N items)" to see full list. Example: "WebApp.Schedule.Day" to see all calendar days.',
+          },
+          diffOnly: {
+            type: 'boolean',
+            description:
+              'Return only changes since last get_state call (added/removed elements, screen changes, new errors). Token-efficient for confirming actions worked. Default: false (full state).',
           },
         },
         required: ['bridge'],
@@ -629,7 +687,7 @@ Call autonomo_list_bridges first if you don't know the bridge ID.`,
         // autonomo/get_state
         // ==========================================
         case 'autonomo_get_state': {
-          const { bridge, expand } = args as { bridge: string; expand?: string };
+          const { bridge, expand, diffOnly } = args as { bridge: string; expand?: string; diffOnly?: boolean };
           const result = await registry.getState(bridge);
 
           // Record the get_state action
@@ -659,11 +717,31 @@ Call autonomo_list_bridges first if you don't know the bridge ID.`,
             };
           }
 
+          const state = (result as any).state;
+          const currSnapshot = snapshotState(state);
+          const prevSnapshot = stateHistory.get(bridge);
+          
+          // Always update history for next diff
+          stateHistory.set(bridge, currSnapshot);
+
+          // Diff mode: return only changes
+          if (diffOnly && prevSnapshot) {
+            return {
+              content: [
+                {
+                  type: 'text',
+                  text: formatStateDiff(currSnapshot, prevSnapshot, bridge),
+                },
+              ],
+            };
+          }
+
+          // Full state (default)
           return {
             content: [
               {
                 type: 'text',
-                text: formatState((result as any).state, bridge, expand),
+                text: formatState(state, bridge, expand),
               },
             ],
           };
@@ -1430,6 +1508,92 @@ function formatState(state: any, bridgeId: string, expandPrefix?: string): strin
   }
 
   return lines.join('\n');
+}
+
+/**
+ * Format state diff - token-efficient output showing only changes
+ */
+function formatStateDiff(curr: StateSnapshot, prev: StateSnapshot, bridgeId: string): string {
+  const diff = computeDiff(prev, curr);
+  const lines: string[] = [];
+
+  // Always show current screen
+  lines.push(`Screen: ${curr.screen}${diff.screenChanged ? ` (was: ${prev.screen})` : ''}`);
+
+  // Errors are critical - always show if any exist or changed
+  if (diff.errorsChanged) {
+    if (diff.newErrors.length > 0) {
+      lines.push('');
+      lines.push('⚠️ NEW ERRORS:');
+      for (const err of diff.newErrors) {
+        lines.push(`  • "${err}"`);
+      }
+    }
+    if (curr.errors.length === 0 && prev.errors.length > 0) {
+      lines.push('');
+      lines.push('✓ Errors cleared');
+    }
+  } else if (curr.errors.length > 0) {
+    lines.push(`Errors: ${curr.errors.length} (unchanged)`);
+  }
+
+  // Element changes
+  if (diff.added.length > 0 || diff.removed.length > 0) {
+    lines.push('');
+    lines.push('Element Changes:');
+    
+    // Group and summarize for readability
+    if (diff.added.length > 0) {
+      if (diff.added.length <= 5) {
+        lines.push(`  + Added: ${diff.added.join(', ')}`);
+      } else {
+        // Summarize large additions
+        const prefixes = summarizeByPrefix(diff.added);
+        lines.push(`  + Added (${diff.added.length}): ${prefixes}`);
+      }
+    }
+    if (diff.removed.length > 0) {
+      if (diff.removed.length <= 5) {
+        lines.push(`  - Removed: ${diff.removed.join(', ')}`);
+      } else {
+        const prefixes = summarizeByPrefix(diff.removed);
+        lines.push(`  - Removed (${diff.removed.length}): ${prefixes}`);
+      }
+    }
+  } else {
+    lines.push('');
+    lines.push('Elements: unchanged');
+  }
+
+  // Summary
+  lines.push('');
+  lines.push(`Current: ${curr.elements.size} elements, ${curr.errors.length} errors`);
+
+  return lines.join('\n');
+}
+
+/**
+ * Summarize element IDs by common prefixes
+ */
+function summarizeByPrefix(ids: string[]): string {
+  const prefixCounts: Map<string, number> = new Map();
+  for (const id of ids) {
+    const parts = id.split('.');
+    const prefix = parts.length > 1 ? parts.slice(0, -1).join('.') : id;
+    prefixCounts.set(prefix, (prefixCounts.get(prefix) || 0) + 1);
+  }
+  
+  const summaries: string[] = [];
+  for (const [prefix, count] of prefixCounts) {
+    if (count > 1) {
+      summaries.push(`${prefix}.* (${count})`);
+    } else {
+      // Find the actual ID with this prefix
+      const match = ids.find(id => id.startsWith(prefix));
+      summaries.push(match || prefix);
+    }
+  }
+  return summaries.slice(0, 5).join(', ') + (summaries.length > 5 ? '...' : '');
 }
 
 /**
