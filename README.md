@@ -398,11 +398,49 @@ The MCP server can then distinguish between instances:
 | `autonomo_help` | Get documentation, recommendations, and guidance on any topic |
 | `autonomo_restore_context` | Restore AI context after summarization - returns recent actions and current state |
 | `autonomo_list_bridges` | List all connected apps with status |
-| `autonomo_get_state` | Get state from one or all bridges |
+| `autonomo_get_state` | Get state from one or all bridges (supports `expand` parameter) |
 | `autonomo_send_command` | Send command to specific bridge |
 | `autonomo_wait_for` | Wait for condition on a bridge |
 | `autonomo_run_scenario` | Execute multi-step test scenario |
 | `autonomo_register_bridge` | Connect a new app by URL |
+
+### Smart Element Grouping
+
+When an app has many repetitive elements (like calendar days or list items), `autonomo_get_state` automatically collapses them to reduce noise:
+
+```
+Elements:
+- AIChat.Panel → tap
+- AIChat.Input → fill
+- WebApp.Schedule.Day.* (44 items, tap)   ← Collapsed!
+- WebApp.Nav.teams → tap
+```
+
+**Collapse Rules:**
+- Groups with 5+ items sharing a namespace prefix are collapsed
+- Data-like suffixes trigger grouping: dates (2026-02-01), UUIDs, numeric IDs, hashes
+- Semantic suffixes (like `schedule`, `teams`) are NOT collapsed
+
+**Expanding Groups:**
+Use the `expand` parameter to drill into a collapsed group:
+
+```
+get_state(bridge: "web", expand: "WebApp.Schedule.Day")
+```
+
+This returns all 44 individual day elements for detailed inspection.
+
+### Errors-First Display
+
+Errors are always shown at the TOP of state output, not buried in elements:
+
+```
+⚠️ Error: league_id, title, and start_at are required
+
+Screen: "schedule"
+Elements:
+- ...
+```
 
 **Start MCP server in multi-bridge mode:**
 ```bash
