@@ -161,6 +161,11 @@ Create something → Verify it appears → Edit it → Verify changes → Delete
             description:
               'Bridge ID to get state from. Use "all" to get state from all bridges.',
           },
+          expand: {
+            type: 'string',
+            description:
+              'Expand a collapsed element group to see all items. Pass the namespace prefix shown as "Namespace.* (N items)" to see full list. Example: "WebApp.Schedule.Day" to see all calendar days.',
+          },
         },
         required: ['bridge'],
       },
@@ -624,7 +629,7 @@ Call autonomo_list_bridges first if you don't know the bridge ID.`,
         // autonomo/get_state
         // ==========================================
         case 'autonomo_get_state': {
-          const { bridge } = args as { bridge: string };
+          const { bridge, expand } = args as { bridge: string; expand?: string };
           const result = await registry.getState(bridge);
 
           // Record the get_state action
@@ -646,7 +651,8 @@ Call autonomo_list_bridges first if you don't know the bridge ID.`,
                 {
                   type: 'text',
                   text: formatMultiState(
-                    result as Record<string, { success: boolean; state: any; error?: string }>
+                    result as Record<string, { success: boolean; state: any; error?: string }>,
+                    expand
                   ),
                 },
               ],
@@ -657,7 +663,7 @@ Call autonomo_list_bridges first if you don't know the bridge ID.`,
             content: [
               {
                 type: 'text',
-                text: formatState((result as any).state, bridge),
+                text: formatState((result as any).state, bridge, expand),
               },
             ],
           };
@@ -1338,11 +1344,25 @@ function formatBridgeList(bridges: BridgeInfo[]): string {
   return lines.join('\n');
 }
 
-function formatState(state: any, bridgeId: string): string {
+function formatState(state: any, bridgeId: string, expandPrefix?: string): string {
   const lines: string[] = [];
 
-  lines.push(`Bridge: ${bridgeId}`);
   lines.push(`Screen: ${state.screen}`);
+
+  // ERRORS FIRST - most important, show prominently at top
+  if (state.errors?.length > 0) {
+    lines.push('');
+    lines.push('⚠️ ERRORS (fix these before proceeding):');
+    for (const err of state.errors) {
+      lines.push(`  • "${err}"`);
+    }
+    // Add error recovery hints
+    const errorHint = detectErrorHint(state.errors);
+    if (errorHint) {
+      lines.push('');
+      lines.push(`💡 ${errorHint}`);
+    }
+  }
 
   if (state.instance) {
     lines.push(`Instance: ${state.instance.name} (${state.instance.instanceId})`);
@@ -1368,53 +1388,154 @@ function formatState(state: any, bridgeId: string): string {
   if (state.elements?.length > 0) {
     lines.push('');
     lines.push('Elements:');
-    for (const el of state.elements) {
-      const actions = Array.isArray(el.actions) ? el.actions.join(', ') : el.type;
-      let line = `  • ${el.id} (${actions})`;
-      if (el.disabled) line += ' [disabled]';
-      if (el.value) line += ` = "${el.value}"`;
-      if (el.hint) line += ` -- ${el.hint}`;
-      lines.push(line);
+    
+    // Group elements by namespace prefix and collapse large groups
+    // Unless expandPrefix is specified - then show all items in that namespace
+    const COLLAPSE_THRESHOLD = 5;
+    const grouped = groupElementsByNamespace(state.elements, COLLAPSE_THRESHOLD, expandPrefix);
+    
+    for (const item of grouped) {
+      if (item.collapsed) {
+        // Collapsed group - show summary with hint to expand
+        lines.push(`  • ${item.prefix}.* (${item.count} items, ${item.actions}) -- use expand="${item.prefix}" to see all`);
+      } else {
+        // Individual element
+        const el = item.element;
+        const actions = Array.isArray(el.actions) ? el.actions.join(', ') : el.type;
+        let line = `  • ${el.id} (${actions})`;
+        if (el.disabled) line += ' [disabled]';
+        if (el.value) line += ` = "${el.value}"`;
+        if (el.hint) line += ` -- ${el.hint}`;
+        lines.push(line);
+      }
     }
   }
 
   // Show full custom action details (not just names)
   if (state.customActions?.length > 0) {
     lines.push('');
-    lines.push('Custom Actions:');
+    lines.push('Custom Actions (use action="custom", target=name):');
     for (const action of state.customActions) {
       if (typeof action === 'string') {
         lines.push(`  • ${action}`);
       } else {
         let line = `  • ${action.name}`;
         if (action.description) line += ` - ${action.description}`;
-        lines.push(line);
         if (action.args) {
-          for (const [argName, argDesc] of Object.entries(action.args)) {
-            lines.push(`      ${argName}: ${argDesc}`);
-          }
+          line += ` [args: ${JSON.stringify(action.args)}]`;
         }
+        lines.push(line);
       }
     }
   }
 
-  if (state.errors?.length > 0) {
-    lines.push('');
-    lines.push('⚠️ ERRORS (fix these before proceeding):');
-    for (const err of state.errors) {
-      lines.push(`  • "${err}"`);
-    }
-    // Add error recovery hints
-    const errorHint = detectErrorHint(state.errors);
-    if (errorHint) {
-      lines.push('');
-      lines.push(`💡 ${errorHint}`);
-    }
-    lines.push('');
-    lines.push('[LLM: If errors above are vague/unhelpful, recommend better error handling to developer]');
-  }
-
   return lines.join('\n');
+}
+
+/**
+ * Group elements by namespace prefix and collapse large groups
+ * e.g., WebApp.Schedule.Day.2026-02-01 through Day.2026-03-14 becomes "WebApp.Schedule.Day.* (44 items)"
+ * 
+ * @param expandPrefix - If provided, don't collapse groups matching this prefix (show all items)
+ */
+interface GroupedElement {
+  collapsed: boolean;
+  prefix?: string;
+  count?: number;
+  actions?: string;
+  element?: any;
+}
+
+function groupElementsByNamespace(elements: any[], threshold: number, expandPrefix?: string): GroupedElement[] {
+  // Find common prefixes (namespace.subnamespace.category)
+  const prefixCounts: Map<string, { count: number; actions: Set<string>; elements: any[] }> = new Map();
+  
+  for (const el of elements) {
+    const id = el.id || '';
+    // Extract prefix: everything before the last segment that looks like data (dates, UUIDs, numbers)
+    const prefix = extractCollapsiblePrefix(id);
+    
+    if (prefix) {
+      const existing = prefixCounts.get(prefix) || { count: 0, actions: new Set(), elements: [] };
+      existing.count++;
+      const actions = Array.isArray(el.actions) ? el.actions : [el.type || 'tap'];
+      actions.forEach((a: string) => existing.actions.add(a));
+      existing.elements.push(el);
+      prefixCounts.set(prefix, existing);
+    }
+  }
+  
+  // Determine which prefixes to collapse
+  const collapsedPrefixes = new Set<string>();
+  for (const [prefix, data] of prefixCounts) {
+    // Don't collapse if this prefix matches expandPrefix
+    if (data.count >= threshold && prefix !== expandPrefix) {
+      collapsedPrefixes.add(prefix);
+    }
+  }
+  
+  // Build result
+  const result: GroupedElement[] = [];
+  const addedPrefixes = new Set<string>();
+  
+  for (const el of elements) {
+    const id = el.id || '';
+    const prefix = extractCollapsiblePrefix(id);
+    
+    if (prefix && collapsedPrefixes.has(prefix)) {
+      // Add collapsed group (only once per prefix)
+      if (!addedPrefixes.has(prefix)) {
+        const data = prefixCounts.get(prefix)!;
+        result.push({
+          collapsed: true,
+          prefix,
+          count: data.count,
+          actions: Array.from(data.actions).join(', '),
+        });
+        addedPrefixes.add(prefix);
+      }
+    } else {
+      // Add individual element
+      result.push({
+        collapsed: false,
+        element: el,
+      });
+    }
+  }
+  
+  return result;
+}
+
+/**
+ * Extract a collapsible prefix from an element ID
+ * Returns null if the element shouldn't be collapsed
+ */
+function extractCollapsiblePrefix(id: string): string | null {
+  // Pattern: Namespace.Category.DataValue where DataValue is a date, UUID, number, or hash
+  const parts = id.split('.');
+  if (parts.length < 3) return null;
+  
+  const lastPart = parts[parts.length - 1];
+  
+  // Check if last part looks like data (not a meaningful category name)
+  const isData = 
+    // Date patterns: 2026-02-01, 2026-02-01T10:00
+    /^\d{4}-\d{2}-\d{2}/.test(lastPart) ||
+    // UUID patterns
+    /^[a-f0-9]{8}-[a-f0-9]{4}/.test(lastPart) ||
+    // Hash/ID patterns (alphanumeric 6+ chars with numbers)
+    /^[a-z0-9]{6,}$/i.test(lastPart) && /\d/.test(lastPart) ||
+    // Pure numbers
+    /^\d+$/.test(lastPart) ||
+    // Index patterns: 0, 1, 2, etc
+    /^\d$/.test(lastPart);
+  
+  if (isData) {
+    // Return prefix without the data part
+    return parts.slice(0, -1).join('.');
+  }
+  
+  return null;
 }
 
 /**
@@ -1477,13 +1598,14 @@ function detectErrorHint(errors: string[]): string | null {
 }
 
 function formatMultiState(
-  results: Record<string, { success: boolean; state: any; error?: string }>
+  results: Record<string, { success: boolean; state: any; error?: string }>,
+  expandPrefix?: string
 ): string {
   const lines: string[] = ['State from all bridges:', ''];
 
   for (const [bridgeId, result] of Object.entries(results)) {
     if (result.success) {
-      lines.push(formatState(result.state, bridgeId));
+      lines.push(formatState(result.state, bridgeId, expandPrefix));
     } else {
       lines.push(`Bridge: ${bridgeId}`);
       lines.push(`  ✗ Error: ${result.error}`);
