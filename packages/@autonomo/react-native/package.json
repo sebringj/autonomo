@@ -1,6 +1,6 @@
 {
   "name": "@autonomo/react-native",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "React Native integration for Autonomo with Expo support",
   "type": "module",
   "main": "./dist/index.js",

@@ -1,6 +1,6 @@
 {
   "name": "autonomo-cli",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "CLI for Autonomo - manage MCP server and debug connections",
   "type": "module",
   "main": "./dist/index.js",
