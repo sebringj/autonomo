@@ -1151,6 +1151,10 @@ Call autonomo_list_bridges first if you don't know the bridge ID.`,
           lines.push('              CONTEXT RESTORATION REPORT');
           lines.push('═══════════════════════════════════════════════════════════════');
           lines.push('');
+          lines.push('🎯 PURPOSE: Autonomo lets you interact with running apps to');
+          lines.push('   validate code changes work. Observe state → Send commands →');
+          lines.push('   Verify results. Fix code if errors appear, then re-test.');
+          lines.push('');
 
           // Part 1: Recent Action History
           lines.push('📜 RECENT ACTION HISTORY');
