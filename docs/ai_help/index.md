@@ -62,6 +62,7 @@ I need to...
 3. **Always check state after commands**: Commands are async; errors appear in next `get_state`
 4. **Use custom actions for auth**: Register a `devLogin` action to skip OTP flows
 5. **Multi-device = multiple bridges**: Each device/user connects as a separate bridge
+6. **Context summarized?** Call `autonomo_restore_context()` to recover recent action history
 
 ## 🔗 Links
 

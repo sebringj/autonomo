@@ -7,6 +7,7 @@
  * - autonomo/send_command - Send commands to applications
  * - autonomo/wait_for - Wait for conditions
  * - autonomo/run_scenario - Execute multi-step scenarios
+ * - autonomo/restore_context - Restore context after summarization
  */
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
@@ -26,6 +27,37 @@ import {
   generateGetStateDescription,
   generateSendCommandDescription,
 } from './schema.js';
+
+// ==========================================
+// Action History Tracking (FILA - First In, Last Accessed)
+// ==========================================
+
+interface ActionHistoryEntry {
+  timestamp: number;
+  tool: string;
+  bridge?: string;
+  action?: string;
+  target?: string;
+  value?: string;
+  success: boolean;
+  error?: string;
+  screen?: string;
+}
+
+const MAX_HISTORY_ENTRIES = 20;
+const actionHistory: ActionHistoryEntry[] = [];
+
+function recordAction(entry: ActionHistoryEntry): void {
+  actionHistory.push(entry);
+  // Keep only the most recent entries
+  if (actionHistory.length > MAX_HISTORY_ENTRIES) {
+    actionHistory.shift();
+  }
+}
+
+function getRecentActions(count: number = 10): ActionHistoryEntry[] {
+  return actionHistory.slice(-count);
+}
 
 export interface MultiBridgeServerConfig {
   /** Initial bridges to register */
@@ -517,6 +549,49 @@ Call without a topic to see the full table of contents.`,
         required: [],
       },
     },
+
+    // ==========================================
+    // autonomo/restore_context
+    // ==========================================
+    {
+      name: 'autonomo_restore_context',
+      description:
+        `⚠️ IMPORTANT: Call this tool FIRST if your context was just summarized, if this is a fresh conversation, or if you're unsure what was happening.
+
+This tool restores your working context by returning:
+• Recent action history (what you've done in this session)
+• Current application state (screen, elements, errors)
+• Any errors that need attention
+
+When to use:
+• After context summarization (your conversation history was condensed)
+• At the start of a conversation when resuming work
+• When you feel "lost" or unsure what the previous context was
+• When the user says "continue where we left off"
+• Before making assumptions about current state
+
+This helps you understand:
+• What actions were taken before summarization
+• What screen the app is currently on
+• What errors exist that need fixing
+• What the user was trying to accomplish
+
+Call autonomo_list_bridges first if you don't know the bridge ID.`,
+      inputSchema: {
+        type: 'object',
+        properties: {
+          bridge: {
+            type: 'string',
+            description: 'Bridge ID to restore context for. Use "all" to get context from all bridges. Use autonomo_list_bridges first if unsure.',
+          },
+          historyCount: {
+            type: 'number',
+            description: 'Number of recent actions to include (default: 10, max: 20)',
+          },
+        },
+        required: [],
+      },
+    },
   ];
 
   // Register tool list handler
@@ -551,6 +626,19 @@ Call without a topic to see the full table of contents.`,
         case 'autonomo_get_state': {
           const { bridge } = args as { bridge: string };
           const result = await registry.getState(bridge);
+
+          // Record the get_state action
+          if (bridge !== 'all') {
+            const state = (result as any).state;
+            recordAction({
+              timestamp: Date.now(),
+              tool: 'get_state',
+              bridge,
+              success: true,
+              screen: state?.screen,
+              error: state?.errors?.length > 0 ? state.errors[0] : undefined,
+            });
+          }
 
           if (bridge === 'all') {
             return {
@@ -589,6 +677,19 @@ Call without a topic to see the full table of contents.`,
 
           const result = await registry.sendCommand(bridge, action, target, value);
 
+          // Record the action for history
+          recordAction({
+            timestamp: Date.now(),
+            tool: 'send_command',
+            bridge,
+            action,
+            target,
+            value,
+            success: result.success,
+            error: result.error,
+            screen: result.state?.screen,
+          });
+
           // Optional wait after command
           if (waitFor && result.success) {
             const waitResult = await registry.waitFor(bridge, waitFor, 5000);
@@ -624,6 +725,16 @@ Call without a topic to see the full table of contents.`,
 
           const result = await registry.waitFor(bridge, condition, timeout ?? 5000);
 
+          // Record the wait action
+          recordAction({
+            timestamp: Date.now(),
+            tool: 'wait_for',
+            bridge,
+            target: condition,
+            success: result.success,
+            error: result.error,
+          });
+
           return {
             content: [
               {
@@ -649,6 +760,17 @@ Call without a topic to see the full table of contents.`,
             scenario,
             stopOnError ?? true
           );
+
+          // Record the scenario execution
+          recordAction({
+            timestamp: Date.now(),
+            tool: 'run_scenario',
+            bridge,
+            target: `${scenario.length} steps`,
+            success: result.success,
+            error: result.error,
+            screen: result.finalState?.screen,
+          });
 
           return {
             content: [
@@ -1011,6 +1133,144 @@ Call without a topic to see the full table of contents.`,
               {
                 type: 'text',
                 text: helpContent,
+              },
+            ],
+          };
+        }
+
+        // ==========================================
+        // autonomo/restore_context
+        // ==========================================
+        case 'autonomo_restore_context': {
+          const { bridge, historyCount } = args as { bridge?: string; historyCount?: number };
+          const count = Math.min(historyCount ?? 10, MAX_HISTORY_ENTRIES);
+          const recentActions = getRecentActions(count);
+
+          const lines: string[] = [];
+          lines.push('═══════════════════════════════════════════════════════════════');
+          lines.push('              CONTEXT RESTORATION REPORT');
+          lines.push('═══════════════════════════════════════════════════════════════');
+          lines.push('');
+
+          // Part 1: Recent Action History
+          lines.push('📜 RECENT ACTION HISTORY');
+          lines.push('─────────────────────────────────────────');
+          if (recentActions.length === 0) {
+            lines.push('  No actions recorded yet in this session.');
+            lines.push('  This appears to be a fresh start.');
+          } else {
+            for (let i = 0; i < recentActions.length; i++) {
+              const entry = recentActions[i];
+              const time = new Date(entry.timestamp).toLocaleTimeString();
+              const status = entry.success ? '✓' : '✗';
+              let line = `  ${i + 1}. [${time}] ${status} ${entry.tool}`;
+              if (entry.bridge) line += ` on ${entry.bridge}`;
+              if (entry.action) line += ` → ${entry.action}`;
+              if (entry.target) line += `(${entry.target})`;
+              lines.push(line);
+              if (entry.screen) lines.push(`      Screen: ${entry.screen}`);
+              if (entry.error) lines.push(`      Error: ${entry.error}`);
+            }
+          }
+          lines.push('');
+
+          // Part 2: Current Application State
+          lines.push('📱 CURRENT APPLICATION STATE');
+          lines.push('─────────────────────────────────────────');
+          
+          if (bridge) {
+            try {
+              if (bridge === 'all') {
+                const result = await registry.getState(bridge);
+                const states = result as Record<string, { success: boolean; state: any; error?: string }>;
+                for (const [bridgeId, bridgeResult] of Object.entries(states)) {
+                  if (bridgeResult.success) {
+                    lines.push(`  Bridge: ${bridgeId}`);
+                    lines.push(`    Screen: ${bridgeResult.state.screen}`);
+                    lines.push(`    Elements: ${bridgeResult.state.elements?.length ?? 0}`);
+                    if (bridgeResult.state.errors?.length > 0) {
+                      lines.push(`    ⚠️ Errors: ${bridgeResult.state.errors.join(', ')}`);
+                    }
+                  } else {
+                    lines.push(`  Bridge: ${bridgeId} - ${bridgeResult.error ?? 'disconnected'}`);
+                  }
+                }
+              } else {
+                const result = await registry.getState(bridge);
+                const state = (result as any).state;
+                lines.push(`  Bridge: ${bridge}`);
+                lines.push(`  Screen: ${state.screen}`);
+                if (state.user) {
+                  lines.push(`  User: ${state.user.email ?? state.user.id ?? 'logged in'}`);
+                }
+                lines.push(`  Elements: ${state.elements?.length ?? 0}`);
+                if (state.customActions?.length > 0) {
+                  const actionNames = state.customActions.map((a: any) => 
+                    typeof a === 'string' ? a : a.name
+                  );
+                  lines.push(`  Custom Actions: ${actionNames.join(', ')}`);
+                }
+                if (state.errors?.length > 0) {
+                  lines.push('');
+                  lines.push('  ⚠️ ACTIVE ERRORS (need attention):');
+                  for (const err of state.errors) {
+                    lines.push(`    • ${err}`);
+                  }
+                }
+              }
+            } catch (e) {
+              lines.push(`  ⚠️ Could not get state: ${e instanceof Error ? e.message : String(e)}`);
+              lines.push('  Use autonomo_list_bridges to see available bridges.');
+            }
+          } else {
+            // No bridge specified - list available bridges
+            try {
+              const bridges = await registry.listBridges();
+              if (bridges.length === 0) {
+                lines.push('  No bridges connected.');
+                lines.push('  Make sure your app is running with AutonomoBridge mounted.');
+              } else {
+                lines.push('  Available bridges:');
+                for (const b of bridges) {
+                  const status = b.status === 'connected' ? '🟢' : '⚪';
+                  lines.push(`    ${status} ${b.id} (${b.name}) - ${b.screen ?? 'unknown screen'}`);
+                }
+                lines.push('');
+                lines.push('  💡 Call restore_context with a bridge ID for detailed state.');
+              }
+            } catch (e) {
+              lines.push(`  ⚠️ Could not list bridges: ${e instanceof Error ? e.message : String(e)}`);
+            }
+          }
+          lines.push('');
+
+          // Part 3: Recommendations
+          lines.push('💡 RECOMMENDED NEXT STEPS');
+          lines.push('─────────────────────────────────────────');
+          if (recentActions.length === 0) {
+            lines.push('  1. Use autonomo_list_bridges to see connected apps');
+            lines.push('  2. Use autonomo_get_state to inspect the current screen');
+            lines.push('  3. Ask the user what they need help with');
+          } else {
+            const lastAction = recentActions[recentActions.length - 1];
+            if (!lastAction.success) {
+              lines.push('  ⚠️ Last action failed - investigate the error above');
+              lines.push('  1. Use autonomo_get_state to see current errors');
+              lines.push('  2. Fix the issue before continuing');
+            } else {
+              lines.push('  1. Review the action history above to understand context');
+              lines.push('  2. Use autonomo_get_state for current app state');
+              lines.push('  3. Continue where you left off or ask user for direction');
+            }
+          }
+          lines.push('');
+          lines.push('═══════════════════════════════════════════════════════════════');
+
+          return {
+            content: [
+              {
+                type: 'text',
+                text: lines.join('\n'),
               },
             ],
           };

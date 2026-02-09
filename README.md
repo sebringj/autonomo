@@ -396,6 +396,7 @@ The MCP server can then distinguish between instances:
 |------|-------------|
 | `autonomo_validate` | **Primary validation tool** - Test features end-to-end with clear PASS/FAIL results |
 | `autonomo_help` | Get documentation, recommendations, and guidance on any topic |
+| `autonomo_restore_context` | Restore AI context after summarization - returns recent actions and current state |
 | `autonomo_list_bridges` | List all connected apps with status |
 | `autonomo_get_state` | Get state from one or all bridges |
 | `autonomo_send_command` | Send command to specific bridge |

@@ -30,7 +30,21 @@ Autonomo enables AI coding assistants to **observe app state**, **drive multiple
 | `autonomo_wait_for` | Wait for condition | Wait for screen or element |
 | `autonomo_run_scenario` | Multi-step flow | Login sequence |
 | `autonomo_cross_bridge_scenario` | Multi-device flow | User A → User B |
+| `autonomo_restore_context` | Restore after summarization | Recover recent action history |
 | `autonomo_help` | Get documentation | This content |
+
+### Context Restoration
+
+When your context is summarized or truncated, call `autonomo_restore_context` immediately to recover:
+- Recent action history (last 20 actions)
+- Current state of all connected bridges
+- What was being tested before summarization
+
+```
+# After context summarization/truncation
+autonomo_restore_context()
+→ Returns recent actions + current state for all bridges
+```
 
 ## State Object
 
