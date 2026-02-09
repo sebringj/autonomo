@@ -686,3 +686,9 @@ Autonomo provides packages for multiple platforms and languages:
 ---
 
 **Status**: Production-ready MCP server with packages for React, React Native, Swift, Flutter, Python, Ruby, Kotlin, and C#.
+
+---
+
+<p align="center">
+  <sub>If Autonomo saves you debugging time, a ⭐ or <a href="https://github.com/sponsors/sebringj">sponsorship</a> helps keep it moving.</sub>
+</p>
