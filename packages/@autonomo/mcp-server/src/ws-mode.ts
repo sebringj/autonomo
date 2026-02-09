@@ -50,13 +50,17 @@ export async function startWSModeServer(config: WSModeConfig = {}): Promise<void
     },
     {
       name: 'autonomo_get_state',
-      description: 'Get the current state of an application. Returns screen name, elements, user info, errors, and custom actions.',
+      description: 'Get the current state of an application. Returns screen name, elements, user info, errors, and custom actions. Large element groups (5+) are auto-collapsed - use expand parameter to drill in.',
       inputSchema: {
         type: 'object',
         properties: {
           bridge: {
             type: 'string',
             description: 'Bridge ID to get state from. Use "all" to get state from all bridges.',
+          },
+          expand: {
+            type: 'string',
+            description: 'Expand a collapsed element group to see all items. Pass the namespace prefix shown as "Namespace.* (N items)" to see full list.',
           },
         },
         required: ['bridge'],
@@ -179,7 +183,7 @@ export async function startWSModeServer(config: WSModeConfig = {}): Promise<void
         }
         
         case 'autonomo_get_state': {
-          const bridgeId = (args as any).bridge;
+          const { bridge: bridgeId, expand: expandPrefix } = args as { bridge: string; expand?: string };
           
           if (bridgeId === 'all') {
             const bridges = wsServer.listBridges();
@@ -191,16 +195,7 @@ export async function startWSModeServer(config: WSModeConfig = {}): Promise<void
             for (const b of bridges) {
               const state = wsServer.getState(b.id);
               text += `Bridge: ${b.id}\n`;
-              text += `Screen: ${state?.screen || 'unknown'}\n`;
-              if (state?.elements?.length) {
-                text += `Elements:\n`;
-                for (const el of state.elements) {
-                  text += `  • ${el.id} (${el.type})${el.disabled ? ' [disabled]' : ''}\n`;
-                }
-              }
-              if (state?.errors?.length) {
-                text += `Errors: ${state.errors.join(', ')}\n`;
-              }
+              text += formatStateText(state, expandPrefix);
               text += '---\n';
             }
             
@@ -212,34 +207,7 @@ export async function startWSModeServer(config: WSModeConfig = {}): Promise<void
             return { content: [{ type: 'text', text: `Bridge not found or no state: ${bridgeId}` }] };
           }
           
-          let text = `Screen: ${state.screen}\n\n`;
-          if (state.elements?.length) {
-            text += `Elements:\n`;
-            for (const el of state.elements) {
-              text += `  • ${el.id} (${el.type})${el.disabled ? ' [disabled]' : ''}`;
-              if (el.value) text += ` = "${el.value}"`;
-              if (el.hint) text += ` [hint: ${el.hint}]`;
-              text += '\n';
-            }
-          }
-          if (state.customActions?.length) {
-            text += `\nCustom Actions (use action="custom", target=name):\n`;
-            for (const ca of state.customActions) {
-              if (typeof ca === 'string') {
-                text += `  • ${ca}\n`;
-              } else if (ca.name) {
-                text += `  • ${ca.name}`;
-                if (ca.description) text += ` - ${ca.description}`;
-                if (ca.args) text += ` [args: ${JSON.stringify(ca.args)}]`;
-                text += '\n';
-              }
-            }
-          }
-          if (state.errors?.length) {
-            text += `\nErrors: ${state.errors.join(', ')}\n`;
-          }
-          
-          return { content: [{ type: 'text', text }] };
+          return { content: [{ type: 'text', text: formatStateText(state, expandPrefix) }] };
         }
         
         case 'autonomo_send_command': {
@@ -418,4 +386,153 @@ export async function startWSModeServer(config: WSModeConfig = {}): Promise<void
 
 function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// ==========================================
+// Element Grouping for reduced noise
+// ==========================================
+
+const COLLAPSE_THRESHOLD = 5;
+
+interface GroupedElement {
+  collapsed: boolean;
+  prefix?: string;
+  count?: number;
+  actions?: string;
+  element?: any;
+}
+
+/**
+ * Extract collapsible prefix from element ID
+ * Returns prefix if the last segment looks like data (date, UUID, number, hash)
+ */
+function extractCollapsiblePrefix(id: string): string | null {
+  const parts = id.split('.');
+  if (parts.length < 3) return null;
+  
+  const lastPart = parts[parts.length - 1];
+  
+  // Check if last part looks like data (not a meaningful name)
+  const isData = 
+    /^\d{4}-\d{2}-\d{2}/.test(lastPart) ||  // Date: 2026-02-01
+    /^[a-f0-9]{8}-[a-f0-9]{4}/.test(lastPart) ||  // UUID start
+    (/^[a-z0-9]{6,}$/i.test(lastPart) && /\d/.test(lastPart)) ||  // Hash with digits: abc123def
+    /^\d+$/.test(lastPart) ||  // Pure number: 123
+    /^\d$/.test(lastPart);  // Single digit index: 0, 1, 2
+  
+  if (isData) {
+    return parts.slice(0, -1).join('.');
+  }
+  
+  return null;
+}
+
+/**
+ * Group elements by namespace prefix and collapse large groups
+ */
+function groupElementsByNamespace(elements: any[], threshold: number, expandPrefix?: string): GroupedElement[] {
+  const prefixCounts: Map<string, { count: number; actions: Set<string>; elements: any[] }> = new Map();
+  
+  for (const el of elements) {
+    const id = el.id || '';
+    const prefix = extractCollapsiblePrefix(id);
+    
+    if (prefix) {
+      const existing = prefixCounts.get(prefix) || { count: 0, actions: new Set(), elements: [] };
+      existing.count++;
+      const actions = Array.isArray(el.actions) ? el.actions : [el.type || 'tap'];
+      actions.forEach((a: string) => existing.actions.add(a));
+      existing.elements.push(el);
+      prefixCounts.set(prefix, existing);
+    }
+  }
+  
+  // Determine which prefixes to collapse
+  const collapsedPrefixes = new Set<string>();
+  for (const [prefix, data] of prefixCounts) {
+    if (data.count >= threshold && prefix !== expandPrefix) {
+      collapsedPrefixes.add(prefix);
+    }
+  }
+  
+  // Build result
+  const result: GroupedElement[] = [];
+  const addedPrefixes = new Set<string>();
+  
+  for (const el of elements) {
+    const id = el.id || '';
+    const prefix = extractCollapsiblePrefix(id);
+    
+    if (prefix && collapsedPrefixes.has(prefix)) {
+      if (!addedPrefixes.has(prefix)) {
+        const data = prefixCounts.get(prefix)!;
+        result.push({
+          collapsed: true,
+          prefix,
+          count: data.count,
+          actions: Array.from(data.actions).join(', '),
+        });
+        addedPrefixes.add(prefix);
+      }
+    } else {
+      result.push({
+        collapsed: false,
+        element: el,
+      });
+    }
+  }
+  
+  return result;
+}
+
+/**
+ * Format state with errors-first and element grouping
+ */
+function formatStateText(state: any, expandPrefix?: string): string {
+  if (!state) return 'No state available\n';
+  
+  let text = `Screen: ${state.screen || 'unknown'}\n`;
+  
+  // ERRORS FIRST - most important
+  if (state.errors?.length) {
+    text += '\n⚠️ ERRORS:\n';
+    for (const err of state.errors) {
+      text += `  • "${err}"\n`;
+    }
+  }
+  
+  // Elements with grouping
+  if (state.elements?.length) {
+    text += '\nElements:\n';
+    const grouped = groupElementsByNamespace(state.elements, COLLAPSE_THRESHOLD, expandPrefix);
+    
+    for (const item of grouped) {
+      if (item.collapsed) {
+        text += `  • ${item.prefix}.* (${item.count} items, ${item.actions}) -- use expand="${item.prefix}" to see all\n`;
+      } else {
+        const el = item.element;
+        text += `  • ${el.id} (${el.type})${el.disabled ? ' [disabled]' : ''}`;
+        if (el.value) text += ` = "${el.value}"`;
+        if (el.hint) text += ` [hint: ${el.hint}]`;
+        text += '\n';
+      }
+    }
+  }
+  
+  // Custom actions
+  if (state.customActions?.length) {
+    text += '\nCustom Actions (use action="custom", target=name):\n';
+    for (const ca of state.customActions) {
+      if (typeof ca === 'string') {
+        text += `  • ${ca}\n`;
+      } else if (ca.name) {
+        text += `  • ${ca.name}`;
+        if (ca.description) text += ` - ${ca.description}`;
+        if (ca.args) text += ` [args: ${JSON.stringify(ca.args)}]`;
+        text += '\n';
+      }
+    }
+  }
+  
+  return text;
 }
