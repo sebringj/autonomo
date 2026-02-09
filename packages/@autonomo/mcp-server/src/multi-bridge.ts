@@ -10,6 +10,9 @@
  * - autonomo/restore_context - Restore context after summarization
  */
 
+// Note: Using low-level Server class (not McpServer) for advanced use case:
+// Dynamic tool registration, custom request handling, and multi-bridge routing
+// require direct access to setRequestHandler which McpServer abstracts away.
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {

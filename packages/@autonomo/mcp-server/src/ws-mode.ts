@@ -7,6 +7,9 @@
  * Apps connect to: ws://localhost:9876
  */
 
+// Note: Using low-level Server class (not McpServer) for advanced use case:
+// WebSocket bridge management and custom request handling require direct access
+// to setRequestHandler which McpServer abstracts away.
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {
