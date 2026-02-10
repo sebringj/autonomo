@@ -1,0 +1,8 @@
+{
+  "name": "Autonomo",
+  "description": "Local MCP server for structured app state observation in agentic dev workflows (web + mobile + desktop). Fast JSON snapshots, semantic IDs, network/errors/logs.",
+  "url": "http://localhost:8765",
+  "transport": "http",
+  "categories": ["devtools", "agents", "observation"],
+  "repo": "https://github.com/sebringj/autonomo"
+}
