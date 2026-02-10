@@ -4,6 +4,9 @@
 
 # Autonomo MCP — AI developing while E2E testing
 
+## Website
+🌐 https://sebringj.github.io/autonomo/
+
 > au·ton·o·mo | \ ä-ˈtä-nə-ˌmō \
 
 > Works with: GitHub Copilot • Claude Code • Cursor • Windsurf • Any MCP-compatible AI
