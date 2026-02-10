@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Autonomo — Give AI agents real eyes on running apps</title>
+  <meta name="description" content="Structured, low-latency JSON state for AI agents — web + iOS + Android + desktop. Local-first. No screenshots. No hallucinations."/>
+
+  <!-- Favicon & social previews -->
+  <link rel="icon" href="https://github.com/sebringj/autonomo/raw/main/favicon.ico" type="image/x-icon"/>
+  <meta property="og:title" content="Autonomo — AI Agents with Real App Eyes"/>
+  <meta property="og:description" content="Let agents observe & control running apps with structured state instead of slow vision models."/>
+  <meta property="og:image" content="https://github.com/sebringj/autonomo/raw/main/logo.png"/>
+  <meta property="og:url" content="https://sebringj.github.io/autonomo/"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+
+  <!-- Tailwind via CDN + custom gradient -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            autonomo: {
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              glow: 'rgba(56, 189, 248, 0.5)',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #0f172a 0%, #0e1a38 100%);
+      color: #e2e8f0;
+    }
+    .gradient-text {
+      background: linear-gradient(90deg, #38bdf8, #0ea5e9, #0284c7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .glow {
+      box-shadow: 0 0 40px rgba(56, 189, 248, 0.4);
+    }
+  </style>
+</head>
+<body class="antialiased">
+
+  <!-- Hero -->
+  <div class="relative min-h-screen flex flex-col items-center justify-center px-4 py-20 md:py-32 overflow-hidden">
+    <!-- Background glow -->
+    <div class="absolute inset-0 opacity-30 pointer-events-none">
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-gradient-radial from-autonomo-500/30 to-transparent blur-3xl"></div>
+    </div>
+
+    <div class="relative z-10 max-w-5xl w-full text-center">
+      <img 
+        src="https://github.com/sebringj/autonomo/raw/main/logo.png" 
+        alt="Autonomo Logo" 
+        class="w-40 md:w-56 mx-auto mb-8 drop-shadow-2xl glow"
+      />
+
+      <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-6">
+        <span class="gradient-text">Autonomo</span>
+      </h1>
+
+      <p class="text-xl md:text-3xl font-medium text-gray-300 mb-10 md:mb-12 max-w-3xl mx-auto leading-relaxed">
+        Give AI agents <span class="text-autonomo-400 font-semibold">real eyes & hands</span> on running apps<br/>
+        <span class="text-lg md:text-2xl text-gray-400 mt-3 block">
+          Structured JSON state • ~50 ms • Local-first • Web + iOS + Android + Desktop
+        </span>
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
+        <a 
+          href="https://github.com/sebringj/autonomo"
+          target="_blank"
+          class="group inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-autonomo-600 to-autonomo-500 rounded-xl text-white font-semibold text-lg shadow-xl hover:shadow-2xl hover:scale-[1.03] transition-all duration-300"
+        >
+          <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.49.5.09.68-.22.68-.48v-1.69c-2.78.61-3.37-1.34-3.37-1.34-.46-1.16-1.12-1.47-1.12-1.47-.91-.62.07-.61.07-.61 1.01.07 1.54 1.04 1.54 1.04.89 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.03A9.56 9.56 0 0112 6.8c.85.004 1.71.11 2.52.33 1.91-1.3 2.75-1.03 2.75-1.03.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .26.18.57.69.49C19.13 20.17 22 16.42 22 12c0-5.52-4.48-10-10-10z"/></svg>
+          Star on GitHub
+        </a>
+
+        <a 
+          href="https://github.com/sebringj/autonomo"
+          target="_blank"
+          class="inline-flex items-center gap-2 px-10 py-5 border border-autonomo-500/50 text-autonomo-400 rounded-xl font-medium text-lg hover:bg-autonomo-900/30 hover:border-autonomo-400 transition-all duration-300"
+        >
+          View README & Docs →
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Demo section -->
+  <section class="py-20 md:py-32 bg-black/40">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+      <h2 class="text-4xl md:text-5xl font-bold mb-10 gradient-text">See it in action</h2>
+      
+      <div class="rounded-2xl overflow-hidden shadow-2xl border border-autonomo-700/30 max-w-5xl mx-auto">
+        <img 
+          src="https://github.com/sebringj/autonomo/raw/main/docs/demo.gif" 
+          alt="Autonomo cross-device demo"
+          class="w-full"
+        />
+      </div>
+
+      <p class="mt-8 text-xl text-gray-300">
+        Watch an agent validate a login flow across web + mobile — in real time, structured, no vision bloat.
+      </p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-12 text-center text-gray-500 border-t border-gray-800">
+    <p>Made with ❤️ in Huntington Beach, CA</p>
+    <p class="mt-2">
+      <a href="https://github.com/sebringj/autonomo" class="text-autonomo-400 hover:underline">GitHub</a>
+      •
+      <a href="mailto:jason@sebringj.com" class="text-autonomo-400 hover:underline">Contact</a>
+    </p>
+  </footer>
+
+</body>
+</html>
