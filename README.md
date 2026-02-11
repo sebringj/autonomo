@@ -217,13 +217,13 @@ Autonomo is designed for the **inner development loop** - the tight cycle where 
 |----------|---------|--------|
 | **React** | `@autonomo/react` | ✅ Production-ready |
 | **React Native** | `@autonomo/react-native` | ✅ Production-ready |
-| **Swift/iOS** | `autonomo-swift` | ✅ Production-ready |
-| **Flutter** | `autonomo_flutter` | ✅ Production-ready |
-| **Python** | `autonomo-python` | ✅ Production-ready |
-| **Ruby** | `autonomo-ruby` | ✅ Production-ready |
-| **Kotlin/Android** | `autonomo-kotlin` | ✅ Production-ready |
-| **C#/.NET** | `Autonomo.CSharp` | ✅ Production-ready |
-| **Angular** | `@autonomo/angular` | ✅ Production-ready |
+| **Swift/iOS** | `autonomo-swift` | 🧪 Tests pass |
+| **Flutter** | `autonomo_flutter` | 🧪 Tests pass |
+| **Python** | `autonomo-python` | 🧪 Tests pass |
+| **Ruby** | `autonomo-ruby` | 🧪 Tests pass |
+| **Kotlin/Android** | `autonomo-kotlin` | 🧪 Tests pass |
+| **C#/.NET** | `Autonomo.CSharp` | 🧪 Tests pass |
+| **Angular** | `@autonomo/angular` | 🧪 Tests pass |
 | **Deno Fresh** | See [docs](./docs/DENO_FRESH_INTEGRATION.md) | ✅ Production-ready |
 
 ## Architecture: Metadata-Based, Not HTML-Based
