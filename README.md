@@ -686,6 +686,20 @@ Autonomo provides packages for multiple platforms and languages:
 - [PRODUCT_ROADMAP.md](./PRODUCT_ROADMAP.md) - Feature roadmap
 - [BUSINESS_PLAN.md](./BUSINESS_PLAN.md) - Open source → Enterprise business model
 
+## License
+
+**Dual License: AGPL-3.0 + Commercial**
+
+| Your Situation | License | Cost |
+|----------------|---------|------|
+| Open source project (AGPL-compatible) | AGPL-3.0 | Free |
+| Company with <$1M annual revenue | Commercial | **Free** |
+| Company with ≥$1M annual revenue | Commercial | [Contact for terms](mailto:mail@jasonsebring.com) |
+
+**TL;DR**: Under $1M revenue? Use it however you want, free. Over $1M and want to keep your code closed? [Get a commercial license](mailto:mail@jasonsebring.com).
+
+See [LICENSE.md](./LICENSE.md) for full details.
+
 ---
 
 **Status**: Production-ready MCP server with packages for React, React Native, Swift, Flutter, Python, Ruby, Kotlin, and C#.
