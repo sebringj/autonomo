@@ -211,6 +211,48 @@ Autonomo is designed for the **inner development loop** - the tight cycle where 
 - 🌐 **Language Agnostic** - HTTP protocol works with any stack
 - 🆓 **Free for Most** - Free under $1M revenue, [see license](LICENSE.md)
 
+## Production Safety (devOnly)
+
+All Autonomo packages include a **`devOnly`** option (default: `true`) that automatically disables the bridge in production environments. This means:
+
+- ✅ **Safe by default** - Bridge won't run in production builds
+- ✅ **No code changes** - Just deploy your app normally
+- ✅ **Zero overhead** - No WebSocket connections, no state reporting
+
+**How it works:**
+
+| Platform | Detection Method |
+|----------|-----------------|
+| **React** | `process.env.NODE_ENV === 'production'` |
+| **React Native** | `__DEV__ === false` |
+| **Angular** | `ngDevMode` or `NODE_ENV` |
+| **Python** | `ENV`, `ENVIRONMENT`, `APP_ENV` variables |
+| **Ruby** | `RACK_ENV`, `RAILS_ENV`, `ENV` variables |
+| **Swift** | `DEBUG` preprocessor flag, env variables |
+| **Kotlin** | `ENV`, `NODE_ENV` environment variables |
+| **Flutter** | `Platform.environment` variables |
+| **C#/.NET** | `ASPNETCORE_ENVIRONMENT`, `DOTNET_ENVIRONMENT` |
+
+**To explicitly enable in production** (rarely needed):
+
+```typescript
+// React/React Native
+useAutonomo({ name: 'my-app', devOnly: false })
+
+// Angular
+autonomo.init({ name: 'my-app', devOnly: false })
+```
+
+```python
+# Python
+transport = create_http_transport(TransportConfig(port=8080, dev_only=False))
+```
+
+```swift
+// Swift
+createHttpTransport(TransportConfig(devOnly: false))
+```
+
 ## Current Status
 
 | Platform | Package | Status |

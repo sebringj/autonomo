@@ -236,6 +236,8 @@ interface UseAutonomoConfig {
   platform?: 'web' | 'mobile' | 'desktop';
   /** Autonomo WebSocket server URL (default: ws://localhost:9876) */
   serverUrl?: string;
+  /** Only enable in development (default: true) */
+  devOnly?: boolean;
   /** Enable debug logging */
   debug?: boolean;
 }
@@ -270,13 +272,16 @@ interface AutonomoConnection {
  * ```
  */
 export function useAutonomo(config: UseAutonomoConfig): AutonomoConnection {
-  const { name, platform = 'web', serverUrl = 'ws://localhost:9876', debug = false } = config;
+  const { name, platform = 'web', serverUrl = 'ws://localhost:9876', devOnly = true, debug = false } = config;
   
   const [connected, setConnected] = useState(false);
   const [bridgeId, setBridgeId] = useState<string | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const instanceIdRef = useRef<string>(Math.random().toString(36).slice(2, 10));
+  
+  // Check if we should skip (production mode with devOnly=true)
+  const shouldSkip = devOnly && typeof process !== 'undefined' && process.env?.NODE_ENV === 'production';
   
   // Collect current state
   const collectState = useCallback(() => {
@@ -426,6 +431,12 @@ export function useAutonomo(config: UseAutonomoConfig): AutonomoConnection {
   
   // Connect to server
   useEffect(() => {
+    // Skip in production if devOnly is true
+    if (shouldSkip) {
+      if (debug) console.log('[Autonomo] Skipped - production mode with devOnly=true');
+      return;
+    }
+    
     let ws: WebSocket;
     
     const connect = () => {
@@ -494,10 +505,12 @@ export function useAutonomo(config: UseAutonomoConfig): AutonomoConnection {
       }
       ws?.close();
     };
-  }, [serverUrl, name, platform, debug, handleCommand, reportState]);
+  }, [serverUrl, name, platform, debug, shouldSkip, handleCommand, reportState]);
   
   // Auto-report state on registry/state changes
   useEffect(() => {
+    if (shouldSkip) return;
+    
     const unsubscribe = state.onChange(() => {
       reportState();
     });

@@ -3,6 +3,37 @@ import Foundation
 import FoundationNetworking
 #endif
 
+// MARK: - Dev Mode Detection
+
+/// Check if running in development mode.
+/// Returns true unless explicitly in production environment.
+public func isDevMode() -> Bool {
+    // Check common environment variables
+    let env = ProcessInfo.processInfo.environment
+    
+    let envValue = env["ENV"] ?? env["ENVIRONMENT"] ?? env["APP_ENV"] ?? ""
+    if envValue.lowercased() == "production" || envValue.lowercased() == "prod" {
+        return false
+    }
+    
+    let nodeEnv = env["NODE_ENV"] ?? ""
+    if nodeEnv.lowercased() == "production" {
+        return false
+    }
+    
+    // Check for DEBUG flag
+    if env["DEBUG"] != nil {
+        return true
+    }
+    
+    // Check if running in Xcode debugger
+    #if DEBUG
+    return true
+    #else
+    return true // Default to dev mode unless explicitly production
+    #endif
+}
+
 // MARK: - Transport Config
 
 /// Configuration for the Autonomo transport
@@ -10,6 +41,8 @@ public struct TransportConfig {
     public var port: UInt16
     public var host: String
     public var cors: Bool
+    /// Only enable in development mode (default: true)
+    public var devOnly: Bool
     public var onStart: ((String) -> Void)?
     public var onCommand: ((String, String?, String?) -> Void)?
     
@@ -17,12 +50,14 @@ public struct TransportConfig {
         port: UInt16 = 8080,
         host: String = "127.0.0.1",
         cors: Bool = true,
+        devOnly: Bool = true,
         onStart: ((String) -> Void)? = nil,
         onCommand: ((String, String?, String?) -> Void)? = nil
     ) {
         self.port = port
         self.host = host
         self.cors = cors
+        self.devOnly = devOnly
         self.onStart = onStart
         self.onCommand = onCommand
     }
@@ -118,7 +153,13 @@ public class TransportInstance {
 }
 
 /// Create and start HTTP transport using Network framework
+/// Returns nil if devOnly is true and running in production mode.
 public func createHttpTransport(_ config: TransportConfig = TransportConfig()) -> TransportInstance? {
+    // Skip in production if devOnly is true
+    if config.devOnly && !isDevMode() {
+        return nil
+    }
+    
     let port = NWEndpoint.Port(rawValue: config.port)!
     
     guard let listener = try? NWListener(using: .tcp, on: port) else {

@@ -25,6 +25,8 @@ export interface AutonomoConfig {
   platform?: 'web' | 'mobile' | 'desktop';
   /** Autonomo WebSocket server URL (default: ws://localhost:9876) */
   serverUrl?: string;
+  /** Only enable in development (default: true) */
+  devOnly?: boolean;
   /** Enable debug logging */
   debug?: boolean;
 }
@@ -59,6 +61,22 @@ export class AutonomoService implements OnDestroy {
   private config: AutonomoConfig | null = null;
   private destroyed$ = new Subject<void>();
   private instance: InstanceInfo | undefined;
+  private shouldSkip = false;
+
+  /**
+   * Check if running in production mode.
+   */
+  private isProduction(): boolean {
+    // Check Angular's isDevMode (if available)
+    if (typeof (globalThis as any).ngDevMode !== 'undefined') {
+      return !(globalThis as any).ngDevMode;
+    }
+    // Check process.env.NODE_ENV
+    if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'production') {
+      return true;
+    }
+    return false;
+  }
 
   /**
    * Initialize Autonomo with the given configuration.
@@ -66,6 +84,16 @@ export class AutonomoService implements OnDestroy {
    */
   init(config: AutonomoConfig): void {
     this.config = config;
+    const devOnly = config.devOnly ?? true;
+    
+    // Skip in production if devOnly is true
+    if (devOnly && this.isProduction()) {
+      this.shouldSkip = true;
+      if (config.debug) {
+        console.log('[Autonomo] Skipped - production mode with devOnly=true');
+      }
+      return;
+    }
     
     // Initialize instance identity
     const existing = getInstance();
@@ -86,7 +114,7 @@ export class AutonomoService implements OnDestroy {
   }
 
   private connect(): void {
-    if (!this.config) return;
+    if (!this.config || this.shouldSkip) return;
     
     const { serverUrl = 'ws://localhost:9876', debug, name, platform = 'web' } = this.config;
     
@@ -295,6 +323,7 @@ export class AutonomoService implements OnDestroy {
    * Called automatically on state changes, but can be called manually.
    */
   reportState(): void {
+    if (this.shouldSkip) return;
     if (this.ws?.readyState === WebSocket.OPEN) {
       const currentState = this.collectState();
       this.ws.send(JSON.stringify({ type: 'state', ...currentState }));

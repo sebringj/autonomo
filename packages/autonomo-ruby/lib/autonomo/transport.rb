@@ -4,14 +4,36 @@ require "webrick"
 require "json"
 
 module Autonomo
+  # Check if running in development mode.
+  # Returns true unless explicitly in production environment.
+  def self.dev_mode?
+    # Check common environment variables
+    env = ENV["ENV"] || ENV["ENVIRONMENT"] || ENV["APP_ENV"] || ""
+    return false if env.downcase == "production" || env.downcase == "prod"
+
+    node_env = ENV["NODE_ENV"] || ""
+    return false if node_env.downcase == "production"
+
+    # Check for RACK_ENV (common in Ruby web apps)
+    rack_env = ENV["RACK_ENV"] || ""
+    return false if rack_env.downcase == "production"
+
+    # Check for RAILS_ENV
+    rails_env = ENV["RAILS_ENV"] || ""
+    return false if rails_env.downcase == "production"
+
+    true
+  end
+
   # Configuration for the Autonomo transport
   class TransportConfig
-    attr_accessor :port, :host, :cors, :on_start, :on_command
+    attr_accessor :port, :host, :cors, :dev_only, :on_start, :on_command
 
-    def initialize(port: 8080, host: "127.0.0.1", cors: true, on_start: nil, on_command: nil)
+    def initialize(port: 8080, host: "127.0.0.1", cors: true, dev_only: true, on_start: nil, on_command: nil)
       @port = port
       @host = host
       @cors = cors
+      @dev_only = dev_only
       @on_start = on_start
       @on_command = on_command
     end
@@ -89,7 +111,11 @@ module Autonomo
       end
 
       # Create and start HTTP transport
+      # Returns nil if dev_only is true and running in production mode.
       def create_http_transport(config = TransportConfig.new)
+        # Skip in production if dev_only is true
+        return nil if config.dev_only && !Autonomo.dev_mode?
+
         url = "http://#{config.host}:#{config.port}"
 
         server = WEBrick::HTTPServer.new(

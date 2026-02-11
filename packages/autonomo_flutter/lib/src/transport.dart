@@ -9,11 +9,40 @@ import 'dart:io';
 import 'commands.dart';
 import 'state.dart' as app_state;
 
+/// Check if running in development mode.
+/// Returns true unless explicitly in production environment.
+bool isDevMode() {
+  // Check common environment variables
+  final env = Platform.environment['ENV'] ??
+      Platform.environment['ENVIRONMENT'] ??
+      Platform.environment['APP_ENV'] ??
+      '';
+  if (env.toLowerCase() == 'production' || env.toLowerCase() == 'prod') {
+    return false;
+  }
+
+  final nodeEnv = Platform.environment['NODE_ENV'] ?? '';
+  if (nodeEnv.toLowerCase() == 'production') {
+    return false;
+  }
+
+  // Check for DEBUG flag
+  if (Platform.environment['DEBUG'] != null) {
+    return true;
+  }
+
+  // Check Flutter's kReleaseMode if available (handled at call site)
+  return true;
+}
+
 /// Configuration for the Autonomo transport
 class TransportConfig {
   final int port;
   final String host;
   final bool cors;
+
+  /// Only enable in development mode (default: true)
+  final bool devOnly;
   final void Function(String url)? onStart;
   final void Function(String command, String? target, String? value)? onCommand;
 
@@ -21,6 +50,7 @@ class TransportConfig {
     this.port = 8080,
     this.host = '127.0.0.1',
     this.cors = true,
+    this.devOnly = true,
     this.onStart,
     this.onCommand,
   });
@@ -40,7 +70,13 @@ class TransportInstance {
 }
 
 /// Create and start HTTP transport
-Future<TransportInstance> createHttpTransport(TransportConfig config) async {
+/// Returns null if devOnly is true and running in production mode.
+Future<TransportInstance?> createHttpTransport(TransportConfig config) async {
+  // Skip in production if devOnly is true
+  if (config.devOnly && !isDevMode()) {
+    return null;
+  }
+
   final server = await HttpServer.bind(config.host, config.port);
   final url = 'http://${config.host}:${config.port}';
 

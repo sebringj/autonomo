@@ -5,6 +5,49 @@ using System.Text.Json;
 namespace Autonomo;
 
 /// <summary>
+/// Check if running in development mode.
+/// Returns true unless explicitly in production environment.
+/// </summary>
+public static class DevMode
+{
+    public static bool IsDevMode()
+    {
+        // Check common environment variables
+        var env = Environment.GetEnvironmentVariable("ENV")
+            ?? Environment.GetEnvironmentVariable("ENVIRONMENT")
+            ?? Environment.GetEnvironmentVariable("APP_ENV")
+            ?? "";
+        if (env.Equals("production", StringComparison.OrdinalIgnoreCase) ||
+            env.Equals("prod", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        var nodeEnv = Environment.GetEnvironmentVariable("NODE_ENV") ?? "";
+        if (nodeEnv.Equals("production", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        // Check ASPNETCORE_ENVIRONMENT (common in .NET web apps)
+        var aspEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "";
+        if (aspEnv.Equals("Production", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        // Check DOTNET_ENVIRONMENT
+        var dotnetEnv = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "";
+        if (dotnetEnv.Equals("Production", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        return true;
+    }
+}
+
+/// <summary>
 /// Configuration for the Autonomo transport
 /// </summary>
 public class TransportConfig
@@ -12,6 +55,10 @@ public class TransportConfig
     public int Port { get; init; } = 8080;
     public string Host { get; init; } = "127.0.0.1";
     public bool Cors { get; init; } = true;
+    /// <summary>
+    /// Only enable in development mode (default: true)
+    /// </summary>
+    public bool DevOnly { get; init; } = true;
     public Action<string>? OnStart { get; init; }
     public Action<string, string?, string?>? OnCommand { get; init; }
 }
@@ -136,9 +183,16 @@ public static class Transport
 
     /// <summary>
     /// Create and start HTTP transport
+    /// Returns null if DevOnly is true and running in production mode.
     /// </summary>
-    public static TransportInstance CreateHttpTransport(TransportConfig config)
+    public static TransportInstance? CreateHttpTransport(TransportConfig config)
     {
+        // Skip in production if DevOnly is true
+        if (config.DevOnly && !DevMode.IsDevMode())
+        {
+            return null;
+        }
+
         var url = $"http://{config.Host}:{config.Port}/";
         var listener = new HttpListener();
         listener.Prefixes.Add(url);

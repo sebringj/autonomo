@@ -5,12 +5,40 @@ import java.io.InputStreamReader
 import java.net.InetSocketAddress
 
 /**
+ * Check if running in development mode.
+ * Returns true unless explicitly in production environment.
+ */
+fun isDevMode(): Boolean {
+    // Check common environment variables
+    val env = System.getenv("ENV") ?: System.getenv("ENVIRONMENT") ?: System.getenv("APP_ENV") ?: ""
+    if (env.equals("production", ignoreCase = true) || env.equals("prod", ignoreCase = true)) {
+        return false
+    }
+    
+    // Check NODE_ENV (for JVM apps using Node tooling)
+    val nodeEnv = System.getenv("NODE_ENV") ?: ""
+    if (nodeEnv.equals("production", ignoreCase = true)) {
+        return false
+    }
+    
+    // Check for debug flag
+    val debug = System.getenv("DEBUG")
+    if (debug != null && debug.isNotEmpty()) {
+        return true
+    }
+    
+    return true
+}
+
+/**
  * Configuration for the Autonomo transport
  */
 data class TransportConfig(
     val port: Int = 8080,
     val host: String = "127.0.0.1",
     val cors: Boolean = true,
+    /** Only enable in development mode (default: true) */
+    val devOnly: Boolean = true,
     val onStart: ((String) -> Unit)? = null,
     val onCommand: ((String, String?, String?) -> Unit)? = null
 )
@@ -95,8 +123,14 @@ object Transport {
 
     /**
      * Create and start HTTP transport
+     * Returns null if devOnly is true and running in production mode.
      */
-    fun createHttpTransport(config: TransportConfig = TransportConfig()): TransportInstance {
+    fun createHttpTransport(config: TransportConfig = TransportConfig()): TransportInstance? {
+        // Skip in production if devOnly is true
+        if (config.devOnly && !isDevMode()) {
+            return null
+        }
+        
         val server = HttpServer.create(InetSocketAddress(config.host, config.port), 0)
         val url = "http://${config.host}:${config.port}"
 

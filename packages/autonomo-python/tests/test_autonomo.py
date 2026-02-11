@@ -186,5 +186,94 @@ def _():
     
     unregister()
 
+# --- dev_only Tests ---
+
+@test("is_dev_mode returns True when DEBUG=true")
+def _():
+    from autonomo.transport import is_dev_mode
+    
+    # Save original
+    orig = os.environ.get("DEBUG")
+    orig_autonomo = os.environ.get("AUTONOMO_DEV")
+    
+    # Clear Autonomo flag, set DEBUG
+    os.environ.pop("AUTONOMO_DEV", None)
+    os.environ["DEBUG"] = "true"
+    assert is_dev_mode() is True
+    
+    # Cleanup
+    if orig is not None:
+        os.environ["DEBUG"] = orig
+    else:
+        os.environ.pop("DEBUG", None)
+    if orig_autonomo is not None:
+        os.environ["AUTONOMO_DEV"] = orig_autonomo
+
+@test("is_dev_mode returns True when AUTONOMO_DEV=1")
+def _():
+    from autonomo.transport import is_dev_mode
+    
+    orig = os.environ.get("AUTONOMO_DEV")
+    os.environ["AUTONOMO_DEV"] = "1"
+    assert is_dev_mode() is True
+    
+    if orig is not None:
+        os.environ["AUTONOMO_DEV"] = orig
+    else:
+        os.environ.pop("AUTONOMO_DEV", None)
+
+@test("is_dev_mode returns False when AUTONOMO_DEV=false")
+def _():
+    from autonomo.transport import is_dev_mode
+    
+    orig = os.environ.get("AUTONOMO_DEV")
+    os.environ["AUTONOMO_DEV"] = "false"
+    assert is_dev_mode() is False
+    
+    if orig is not None:
+        os.environ["AUTONOMO_DEV"] = orig
+    else:
+        os.environ.pop("AUTONOMO_DEV", None)
+
+@test("create_http_transport returns None when dev_only=True and not in dev mode")
+def _():
+    from autonomo.transport import create_http_transport, TransportConfig
+    
+    # Force production mode
+    orig = os.environ.get("AUTONOMO_DEV")
+    os.environ["AUTONOMO_DEV"] = "false"
+    
+    config = TransportConfig(port=19999, dev_only=True)
+    result = create_http_transport(config)
+    
+    assert result is None
+    
+    if orig is not None:
+        os.environ["AUTONOMO_DEV"] = orig
+    else:
+        os.environ.pop("AUTONOMO_DEV", None)
+
+@test("create_http_transport works when dev_only=False in production")
+def _():
+    from autonomo.transport import create_http_transport, TransportConfig
+    
+    # Force production mode
+    orig = os.environ.get("AUTONOMO_DEV")
+    os.environ["AUTONOMO_DEV"] = "false"
+    
+    config = TransportConfig(port=19998, dev_only=False)
+    result = create_http_transport(config)
+    
+    assert result is not None
+    assert result.url == "http://127.0.0.1:19998"
+    
+    # Cleanup
+    if result:
+        result.stop()
+    if orig is not None:
+        os.environ["AUTONOMO_DEV"] = orig
+    else:
+        os.environ.pop("AUTONOMO_DEV", None)
+
 print(f"\n📊 Results: {passed} passed, {failed} failed\n")
 sys.exit(1 if failed > 0 else 0)

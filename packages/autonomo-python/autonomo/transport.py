@@ -8,11 +8,45 @@ This runs inside the application being tested.
 from dataclasses import dataclass
 from typing import Callable, Optional, Dict, Any
 import json
+import os
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import threading
 
 from .commands import execute_command
 from .state import state
+
+
+def is_dev_mode() -> bool:
+    """
+    Check if running in development mode.
+    
+    Returns True if any of:
+    - AUTONOMO_DEV env var is set to 'true' or '1'
+    - FLASK_DEBUG or FLASK_ENV=development
+    - DJANGO_DEBUG is set
+    - DEBUG env var is 'true' or '1'
+    """
+    # Explicit Autonomo flag
+    autonomo_dev = os.environ.get("AUTONOMO_DEV", "").lower()
+    if autonomo_dev in ("true", "1"):
+        return True
+    
+    # Flask
+    if os.environ.get("FLASK_DEBUG") or os.environ.get("FLASK_ENV") == "development":
+        return True
+    
+    # Django
+    if os.environ.get("DJANGO_DEBUG"):
+        return True
+    
+    # Generic DEBUG
+    debug = os.environ.get("DEBUG", "").lower()
+    if debug in ("true", "1"):
+        return True
+    
+    # If none set, assume development (safer for local testing)
+    # Set AUTONOMO_DEV=false explicitly to disable in production
+    return os.environ.get("AUTONOMO_DEV", "").lower() != "false"
 
 
 @dataclass
@@ -21,6 +55,7 @@ class TransportConfig:
     port: int = 8080
     host: str = "127.0.0.1"
     cors: bool = True
+    dev_only: bool = True
     on_start: Optional[Callable[[str], None]] = None
     on_command: Optional[Callable[[str, Optional[str], Optional[str]], None]] = None
 
@@ -95,8 +130,15 @@ def handle_request(
     }
 
 
-def create_http_transport(config: TransportConfig) -> TransportInstance:
-    """Create and start HTTP transport"""
+def create_http_transport(config: TransportConfig) -> Optional[TransportInstance]:
+    """
+    Create and start HTTP transport.
+    
+    Returns None if dev_only=True and not in development mode.
+    """
+    # Skip in production if dev_only is enabled
+    if config.dev_only and not is_dev_mode():
+        return None
     
     class RequestHandler(BaseHTTPRequestHandler):
         def _set_cors_headers(self):
