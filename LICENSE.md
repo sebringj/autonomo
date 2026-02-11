@@ -1,12 +1,51 @@
 # Autonomo License
 
-## GNU Affero General Public License v3.0 (AGPL-3.0)
+## Dual License: AGPL-3.0 + Commercial
 
 Copyright © 2024-2026 Jason Sebring. All rights reserved.
 
 ---
 
-### Why AGPL?
+## License Options
+
+Autonomo is available under **two licensing options**:
+
+### Option 1: AGPL-3.0 (Free/Open Source)
+
+Use Autonomo for free under the GNU Affero General Public License v3.0, provided you:
+- Release your complete source code under AGPL-3.0
+- Make source available to all users of any network service using Autonomo
+- Comply with all AGPL-3.0 terms
+
+**Best for:** Open source projects, personal use, evaluation, education
+
+### Option 2: Commercial License (Proprietary Use)
+
+Use Autonomo in proprietary/closed-source applications without AGPL obligations.
+
+| Your Annual Revenue | License Fee |
+|---------------------|-------------|
+| Under $1,000,000 USD | **FREE** - No fee, no AGPL obligations |
+| $1,000,000+ USD | Contact for commercial license terms |
+
+**Best for:** SaaS products, commercial software, enterprises wanting to keep code private
+
+📧 **Commercial licensing:** mail@jasonsebring.com
+
+---
+
+## Why Dual Licensing?
+
+1. **Open source stays open** - AGPL ensures community contributions flow back
+2. **Startups get a free pass** - Under $1M revenue? Use it however you want, no strings
+3. **Large corps pay their share** - If you're making money with Autonomo, support its development
+4. **Prevents exploitation** - No "take the code and run" without giving back
+
+---
+
+# AGPL-3.0 License Terms
+
+## GNU Affero General Public License v3.0
 
 This project uses the **GNU Affero General Public License v3.0** - the strongest copyleft license available. Unlike permissive licenses or even the standard GPL, AGPL:
 
@@ -129,23 +168,30 @@ IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL ANY C
 
 ### What This Means For You
 
-| Use Case | Allowed? | Requirements |
-|----------|----------|--------------|
-| Personal/hobby use | ✅ Yes | None |
-| Internal company use | ✅ Yes | None (no distribution) |
-| Open source project | ✅ Yes | Your project must also be AGPL |
-| Closed-source product | ❌ No | Must release source under AGPL |
-| SaaS using Autonomo | ⚠️ Conditional | Must release ALL source code |
-| Proprietary fork | ❌ No | Impossible under AGPL |
+| Use Case | AGPL-3.0 | Commercial License |
+|----------|----------|-------------------|
+| Personal/hobby use | ✅ Free | ✅ Free |
+| Internal company use (no distribution) | ✅ Free | ✅ Free |
+| Open source project (AGPL-compatible) | ✅ Free | N/A |
+| Closed-source product (<$1M revenue) | ❌ Must open source | ✅ **Free** |
+| Closed-source product (≥$1M revenue) | ❌ Must open source | 💰 Paid license |
+| SaaS without source disclosure (<$1M) | ❌ Must disclose source | ✅ **Free** |
+| SaaS without source disclosure (≥$1M) | ❌ Must disclose source | 💰 Paid license |
+
+### TL;DR
+
+- **Making under $1M/year?** Use it however you want, free.
+- **Making over $1M/year and want to keep your code closed?** Pay for a commercial license.
+- **Want to open source your project under AGPL?** Always free.
 
 ### Commercial Licensing
 
-If you need to use Autonomo in a way that is incompatible with AGPL (e.g., proprietary software, SaaS without source disclosure), contact:
+For proprietary use by companies with $1M+ annual revenue:
 
 📧 **mail@jasonsebring.com**
 
 ---
 
-**Full license text:** https://www.gnu.org/licenses/agpl-3.0.html
+**Full AGPL-3.0 text:** https://www.gnu.org/licenses/agpl-3.0.html
 
-SPDX-License-Identifier: AGPL-3.0-only
+SPDX-License-Identifier: AGPL-3.0-only OR Commercial
