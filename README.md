@@ -89,6 +89,11 @@ Install Autonomo for my Kotlin app. Read https://github.com/sebringj/autonomo/bl
 Install Autonomo for my C# app. Read https://github.com/sebringj/autonomo/blob/main/packages/Autonomo.CSharp/README.md
 ```
 
+**Angular:**
+```
+Install Autonomo for my Angular app. Read https://github.com/sebringj/autonomo/blob/main/packages/@autonomo/angular/README.md
+```
+
 **Deno Fresh:**
 ```
 Install Autonomo for my Deno Fresh app. Read https://github.com/sebringj/autonomo/blob/main/docs/DENO_FRESH_INTEGRATION.md
@@ -218,6 +223,7 @@ Autonomo is designed for the **inner development loop** - the tight cycle where 
 | **Ruby** | `autonomo-ruby` | ✅ Production-ready |
 | **Kotlin/Android** | `autonomo-kotlin` | ✅ Production-ready |
 | **C#/.NET** | `Autonomo.CSharp` | ✅ Production-ready |
+| **Angular** | `@autonomo/angular` | ✅ Production-ready |
 | **Deno Fresh** | See [docs](./docs/DENO_FRESH_INTEGRATION.md) | ✅ Production-ready |
 
 ## Architecture: Metadata-Based, Not HTML-Based

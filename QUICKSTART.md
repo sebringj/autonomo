@@ -75,6 +75,35 @@ export default function App() {
 }
 ```
 
+### For Angular
+
+```bash
+npm install github:sebringj/autonomo#packages/@autonomo/angular
+```
+
+Add module to your AppModule:
+
+```typescript
+import { AutonomoModule } from '@autonomo/angular';
+
+@NgModule({
+  imports: [
+    AutonomoModule.forRoot({
+      name: 'my-app',
+      debug: !environment.production,
+    }),
+  ],
+})
+export class AppModule {}
+```
+
+Mark elements with directives:
+
+```html
+<input autonomoFill="Login.Email" [(ngModel)]="email" />
+<button autonomoTap="Login.Submit" (click)="onSubmit()">Login</button>
+```
+
 ## Step 4: Mark Interactive Elements
 
 Import `useTestId` and spread it on interactive elements:
@@ -182,7 +211,7 @@ export default function Page() {
 
 ---
 
-For Swift, Flutter, Python, Ruby, Kotlin, or C# — see the platform-specific README:
+For Swift, Flutter, Python, Ruby, Kotlin, C#, or Angular — see the platform-specific README:
 
 - [Swift/iOS](./packages/autonomo-swift/README.md)
 - [Flutter](./packages/autonomo_flutter/README.md)  
@@ -190,6 +219,7 @@ For Swift, Flutter, Python, Ruby, Kotlin, or C# — see the platform-specific RE
 - [Ruby](./packages/autonomo-ruby/README.md)
 - [Kotlin](./packages/autonomo-kotlin/README.md)
 - [C#/.NET](./packages/Autonomo.CSharp/README.md)
+- [Angular](./packages/@autonomo/angular/README.md)
 
 ---
 
