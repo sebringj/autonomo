@@ -46,6 +46,11 @@
     }
     .glow {
       box-shadow: 0 0 40px rgba(56, 189, 248, 0.4);
+      animation: glow-pulse 4s ease-in-out infinite;
+    }
+    @keyframes glow-pulse {
+      0%, 100% { box-shadow: 0 0 40px rgba(56, 189, 248, 0.35); }
+      50% { box-shadow: 0 0 55px rgba(56, 189, 248, 0.55); }
     }
   </style>
 </head>
