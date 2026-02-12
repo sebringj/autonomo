@@ -55,6 +55,7 @@
       color: #e2e8f0;
     }
     .gradient-text {
+      position: relative;
       background: linear-gradient(
         90deg,
         #0284c7 0%,
@@ -69,6 +70,28 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       animation: light-trace 16s ease-in-out infinite alternate;
+    }
+    .gradient-text::before {
+      content: attr(data-text);
+      position: absolute;
+      left: 0;
+      top: 0;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        transparent 40%,
+        rgba(255,255,255,0.4) 47%,
+        rgba(255,255,255,0.7) 50%,
+        rgba(255,255,255,0.4) 53%,
+        transparent 60%,
+        transparent 100%
+      );
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 3px rgba(255,255,255,0.8)) drop-shadow(0 0 8px rgba(56,189,248,0.6));
+      animation: light-trace 16s ease-in-out infinite alternate;
+      pointer-events: none;
     }
     @keyframes light-trace {
       0% { background-position: 100% center; }
@@ -153,7 +176,7 @@
       </script>
 
       <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-6">
-        <span class="gradient-text">Autonomo MCP</span>
+        <span class="gradient-text" data-text="Autonomo MCP">Autonomo MCP</span>
       </h1>
 
       <p class="text-xl md:text-3xl font-medium text-gray-300 mb-10 md:mb-12 max-w-3xl mx-auto leading-relaxed">
