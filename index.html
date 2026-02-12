@@ -74,15 +74,38 @@
       <div class="w-48 md:w-64 mx-auto mb-8 rounded-3xl overflow-hidden glow relative" style="aspect-ratio:1/1;">
         <img src="logo.png" alt="Autonomo" class="absolute inset-0 w-full h-full object-cover" />
         <video 
+          id="hero-video"
           src="animated.mp4" 
-          autoplay 
-          loop 
           muted 
           playsinline
+          preload="auto"
           class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500"
-          onloadeddata="this.playbackRate=0.15;this.style.opacity='1'"
         ></video>
       </div>
+      <script>
+        (function() {
+          var v = document.getElementById('hero-video');
+          var dir = 1;
+          var speed = 0.15;
+          var last = null;
+          v.addEventListener('loadeddata', function() {
+            v.style.opacity = '1';
+            v.pause();
+            requestAnimationFrame(step);
+          });
+          function step(ts) {
+            if (last !== null) {
+              var dt = (ts - last) / 1000;
+              var t = v.currentTime + dir * speed * dt;
+              if (t >= v.duration) { t = v.duration; dir = -1; }
+              if (t <= 0) { t = 0; dir = 1; }
+              v.currentTime = t;
+            }
+            last = ts;
+            requestAnimationFrame(step);
+          }
+        })();
+      </script>
 
       <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-6">
         <span class="gradient-text">Autonomo MCP</span>
