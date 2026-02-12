@@ -56,6 +56,7 @@
     }
     .gradient-text {
       position: relative;
+      display: inline-block;
       background: linear-gradient(
         90deg,
         #0284c7 0%,
@@ -74,12 +75,12 @@
     .gradient-text::before {
       content: attr(data-text);
       position: absolute;
-      left: 0;
-      top: 0;
-      transform: scaleY(1.03);
-      transform-origin: center center;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: scale(1.01, 1.04);
       -webkit-text-fill-color: transparent;
-      -webkit-text-stroke: 0px transparent;
       paint-order: stroke fill;
       background: linear-gradient(
         90deg,
