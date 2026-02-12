@@ -163,8 +163,8 @@
               char: Math.random() > 0.5 ? '1' : '0',
               opacity: 0,
               phase: Math.random() * Math.PI * 2,
-              speed: 0.3 + Math.random() * 0.7,
-              delay: Math.random() * 6,
+              speed: 0.5 + Math.random() * 1.2,
+              delay: Math.random() * 4,
               fontSize: fontSize
             });
           }
@@ -179,7 +179,7 @@
           for (var i = 0; i < cells.length; i++) {
             var cell = cells[i];
             var wave = Math.sin((t - cell.delay) * cell.speed + cell.phase);
-            var o = Math.max(0, wave) * 0.07;
+            var o = Math.max(0, wave) * 0.12;
             if (o < 0.005) continue;
             ctx.fillStyle = 'rgba(56,189,248,' + o + ')';
             ctx.fillText(cell.char, cell.x, cell.y + cell.fontSize);
