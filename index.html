@@ -147,8 +147,9 @@
             if (last !== null) {
               var dt = (ts - last) / 1000;
               var t = v.currentTime + dir * speed * dt;
-              if (t >= v.duration) { t = v.duration; dir = -1; }
-              if (t <= 0) { t = 0; dir = 1; }
+              var end = v.duration - 0.05;
+              if (t >= end) { t = end - (t - end); dir = -1; }
+              if (t <= 0) { t = -t; dir = 1; }
               v.currentTime = t;
             }
             last = ts;
