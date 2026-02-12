@@ -130,8 +130,8 @@
       overflow-x: auto;
     }
     @keyframes bounce-down {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(8px); }
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(8px); }
     }
     .scroll-arrow {
       animation: bounce-down 2s ease-in-out infinite;
@@ -349,7 +349,7 @@
     </div>
 
     <!-- Scroll indicator -->
-    <a href="#demo" class="scroll-arrow absolute bottom-8 left-1/2 -translate-x-1/2 text-gray-400 hover:text-autonomo-400 transition-colors z-10" title="See demo">
+    <a href="#demo" class="scroll-arrow absolute bottom-8 left-1/2 text-gray-400 hover:text-autonomo-400 transition-colors z-10" title="See demo">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
         <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
       </svg>
