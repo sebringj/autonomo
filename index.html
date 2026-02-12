@@ -165,14 +165,18 @@
           var speed = 0.30;
           var pos = 0;
           var dir = 1;
+          var seeking = false;
           v.addEventListener('loadedmetadata', function() {
             v.style.opacity = '1';
             v.pause();
+            v.addEventListener('seeked', function() { seeking = false; });
             setInterval(function() {
+              if (seeking) return;
               pos += dir * speed * (1 / 30);
-              var end = v.duration;
-              if (pos >= end) { pos = end - (pos - end); dir = -1; }
-              if (pos <= 0) { pos = -pos; dir = 1; }
+              var end = v.duration - 0.1;
+              if (pos >= end) { pos = end; dir = -1; }
+              if (pos <= 0) { pos = 0; dir = 1; }
+              seeking = true;
               v.currentTime = pos;
             }, 33);
           });
