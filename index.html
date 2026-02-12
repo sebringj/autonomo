@@ -75,11 +75,11 @@
     .gradient-text::before {
       content: attr(data-text);
       position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transform: scale(1.01, 1.04);
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(1.01, 1.04);
+      width: 100%;
+      text-align: center;
       -webkit-text-fill-color: transparent;
       paint-order: stroke fill;
       background: linear-gradient(
