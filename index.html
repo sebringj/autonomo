@@ -76,20 +76,20 @@
       position: absolute;
       left: 0;
       top: 0;
+      -webkit-text-fill-color: transparent;
+      -webkit-text-stroke: 1px transparent;
       background: linear-gradient(
         90deg,
         transparent 0%,
         transparent 40%,
-        rgba(255,255,255,0.4) 47%,
-        rgba(255,255,255,0.7) 50%,
-        rgba(255,255,255,0.4) 53%,
+        rgba(56,189,248,0.3) 47%,
+        rgba(255,255,255,0.5) 50%,
+        rgba(56,189,248,0.3) 53%,
         transparent 60%,
         transparent 100%
       );
       background-size: 200% 100%;
       -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 0 1px rgba(255,255,255,0.3)) drop-shadow(0 0 3px rgba(56,189,248,0.25));
       animation: light-trace 16s ease-in-out infinite alternate;
       pointer-events: none;
     }
