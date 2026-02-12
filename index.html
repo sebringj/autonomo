@@ -55,16 +55,24 @@
       color: #e2e8f0;
     }
     .gradient-text {
-      background: linear-gradient(90deg, #38bdf8, #0ea5e9, #0284c7, #0ea5e9, #38bdf8);
-      background-size: 200% auto;
+      background: linear-gradient(
+        90deg,
+        #0284c7 0%,
+        #0284c7 30%,
+        #7dd3fc 45%,
+        #ffffff 50%,
+        #7dd3fc 55%,
+        #0284c7 70%,
+        #0284c7 100%
+      );
+      background-size: 300% auto;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      animation: gradient-shift 6s ease-in-out infinite;
+      animation: light-trace 4s linear infinite;
     }
-    @keyframes gradient-shift {
-      0% { background-position: 0% center; }
-      50% { background-position: 100% center; }
-      100% { background-position: 0% center; }
+    @keyframes light-trace {
+      0% { background-position: 100% center; }
+      100% { background-position: -100% center; }
     }
     .glow {
       box-shadow: 0 0 40px rgba(56, 189, 248, 0.4);
