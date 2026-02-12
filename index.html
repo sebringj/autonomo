@@ -135,10 +135,11 @@
       <script>
         (function() {
           var v = document.getElementById('hero-video');
-          var dir = 1;
           var speed = 0.30;
+          var pos = 0;
+          var dir = 1;
           var last = null;
-          v.addEventListener('loadeddata', function() {
+          v.addEventListener('loadedmetadata', function() {
             v.style.opacity = '1';
             v.pause();
             requestAnimationFrame(step);
@@ -146,11 +147,11 @@
           function step(ts) {
             if (last !== null) {
               var dt = (ts - last) / 1000;
-              var t = v.currentTime + dir * speed * dt;
-              var end = v.duration - 0.05;
-              if (t >= end) { t = end - (t - end); dir = -1; }
-              if (t <= 0) { t = -t; dir = 1; }
-              v.currentTime = t;
+              pos += dir * speed * dt;
+              var end = v.duration;
+              if (pos >= end) { pos = end - (pos - end); dir = -1; }
+              if (pos <= 0) { pos = -pos; dir = 1; }
+              v.currentTime = pos;
             }
             last = ts;
             requestAnimationFrame(step);
