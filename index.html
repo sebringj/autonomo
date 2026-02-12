@@ -142,6 +142,54 @@
 
   <!-- Hero -->
   <div class="relative min-h-screen flex flex-col items-center justify-center px-4 py-20 md:py-32 overflow-hidden">
+    <!-- Binary rain background -->
+    <canvas id="binary-bg" class="absolute inset-0 w-full h-full pointer-events-none" style="z-index:0;"></canvas>
+    <script>
+      (function() {
+        var c = document.getElementById('binary-bg');
+        var ctx = c.getContext('2d');
+        var cols, cells;
+        function resize() {
+          c.width = c.offsetWidth;
+          c.height = c.offsetHeight;
+          var fontSize = 10;
+          cols = Math.floor(c.width / (fontSize * 0.7));
+          var rows = Math.floor(c.height / fontSize);
+          cells = [];
+          for (var i = 0; i < cols * rows; i++) {
+            cells.push({
+              x: (i % cols) * (fontSize * 0.7),
+              y: Math.floor(i / cols) * fontSize,
+              char: Math.random() > 0.5 ? '1' : '0',
+              opacity: 0,
+              phase: Math.random() * Math.PI * 2,
+              speed: 0.3 + Math.random() * 0.7,
+              delay: Math.random() * 6,
+              fontSize: fontSize
+            });
+          }
+        }
+        resize();
+        window.addEventListener('resize', resize);
+        var t = 0;
+        function draw() {
+          t += 1 / 60;
+          ctx.clearRect(0, 0, c.width, c.height);
+          ctx.font = '10px monospace';
+          for (var i = 0; i < cells.length; i++) {
+            var cell = cells[i];
+            var wave = Math.sin((t - cell.delay) * cell.speed + cell.phase);
+            var o = Math.max(0, wave) * 0.07;
+            if (o < 0.005) continue;
+            ctx.fillStyle = 'rgba(56,189,248,' + o + ')';
+            ctx.fillText(cell.char, cell.x, cell.y + cell.fontSize);
+          }
+          requestAnimationFrame(draw);
+        }
+        draw();
+      })();
+    </script>
+
     <!-- Background glow -->
     <div class="absolute inset-0 opacity-30 pointer-events-none">
       <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-gradient-radial from-autonomo-500/30 to-transparent blur-3xl"></div>
