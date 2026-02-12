@@ -118,27 +118,33 @@
         </span>
       </p>
 
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
+      <div class="flex flex-wrap items-center justify-center gap-3">
+        <!-- Star -->
         <a 
           href="https://github.com/sebringj/autonomo"
           target="_blank"
-          class="group inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-autonomo-600 to-autonomo-500 rounded-xl text-white font-semibold text-lg shadow-xl hover:shadow-2xl hover:scale-[1.03] transition-all duration-300"
+          class="inline-flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-autonomo-600 to-autonomo-500 rounded-lg text-white font-semibold text-sm shadow-lg hover:shadow-xl hover:scale-[1.03] transition-all duration-300"
+          title="Star on GitHub"
         >
-          <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.49.5.09.68-.22.68-.48v-1.69c-2.78.61-3.37-1.34-3.37-1.34-.46-1.16-1.12-1.47-1.12-1.47-.91-.62.07-.61.07-.61 1.01.07 1.54 1.04 1.54 1.04.89 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.03A9.56 9.56 0 0112 6.8c.85.004 1.71.11 2.52.33 1.91-1.3 2.75-1.03 2.75-1.03.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .26.18.57.69.49C19.13 20.17 22 16.42 22 12c0-5.52-4.48-10-10-10z"/></svg>
-          Star on GitHub
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.49.5.09.68-.22.68-.48v-1.69c-2.78.61-3.37-1.34-3.37-1.34-.46-1.16-1.12-1.47-1.12-1.47-.91-.62.07-.61.07-.61 1.01.07 1.54 1.04 1.54 1.04.89 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.03A9.56 9.56 0 0112 6.8c.85.004 1.71.11 2.52.33 1.91-1.3 2.75-1.03 2.75-1.03.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .26.18.57.69.49C19.13 20.17 22 16.42 22 12c0-5.52-4.48-10-10-10z"/></svg>
+          Star
         </a>
 
+        <!-- Docs -->
         <a 
-          href="https://github.com/sebringj/autonomo"
+          href="https://github.com/sebringj/autonomo#readme"
           target="_blank"
-          class="inline-flex items-center gap-2 px-10 py-5 border border-autonomo-500/50 text-autonomo-400 rounded-xl font-medium text-lg hover:bg-autonomo-900/30 hover:border-autonomo-400 transition-all duration-300"
+          class="inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-gray-600/50 text-gray-300 text-sm font-medium hover:border-autonomo-400 hover:text-autonomo-400 transition-all duration-300"
+          title="View documentation"
         >
-          View README & Docs →
+          <!-- Heroicons: book-open (outline) -->
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+          </svg>
+          Docs
         </a>
-      </div>
 
-      <!-- Share & MCP Config buttons -->
-      <div class="flex items-center justify-center gap-4 mt-6">
+        <!-- Share -->
         <button
           onclick="shareAutonomo()"
           class="inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-gray-600/50 text-gray-300 text-sm font-medium hover:border-autonomo-400 hover:text-autonomo-400 transition-all duration-300"
@@ -151,6 +157,21 @@
           Share
         </button>
 
+        <!-- Install -->
+        <button
+          onclick="copyInstallCmd()"
+          id="install-copy-btn"
+          class="inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-gray-600/50 text-gray-300 text-sm font-medium hover:border-autonomo-400 hover:text-autonomo-400 transition-all duration-300"
+          title="Copy install command to clipboard"
+        >
+          <!-- Heroicons: arrow-down-tray (outline) -->
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+          </svg>
+          Install
+        </button>
+
+        <!-- MCP Config -->
         <button
           onclick="copyMcpConfig()"
           id="mcp-copy-btn"
@@ -161,7 +182,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
           </svg>
-          Copy MCP Config
+          MCP Config
         </button>
       </div>
 
@@ -192,6 +213,20 @@
           }, null, 2);
           navigator.clipboard.writeText(config).then(function() {
             var btn = document.getElementById('mcp-copy-btn');
+            var orig = btn.innerHTML;
+            btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg> Copied!';
+            btn.classList.add('text-green-400', 'border-green-400/50');
+            setTimeout(function() {
+              btn.innerHTML = orig;
+              btn.classList.remove('text-green-400', 'border-green-400/50');
+            }, 2000);
+          });
+        }
+
+        function copyInstallCmd() {
+          var cmd = 'npm install github:sebringj/autonomo#packages/@autonomo/react';
+          navigator.clipboard.writeText(cmd).then(function() {
+            var btn = document.getElementById('install-copy-btn');
             var orig = btn.innerHTML;
             btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg> Copied!';
             btn.classList.add('text-green-400', 'border-green-400/50');
