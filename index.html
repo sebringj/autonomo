@@ -94,6 +94,13 @@
       line-height: 1.6;
       overflow-x: auto;
     }
+    @keyframes bounce-down {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(8px); }
+    }
+    .scroll-arrow {
+      animation: bounce-down 2s ease-in-out infinite;
+    }
   </style>
 </head>
 <body class="antialiased">
@@ -257,6 +264,13 @@
         });
       </script>
     </div>
+
+    <!-- Scroll indicator -->
+    <a href="#demo" class="scroll-arrow absolute bottom-8 left-1/2 -translate-x-1/2 text-gray-400 hover:text-autonomo-400 transition-colors z-10" title="See demo">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+        <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+      </svg>
+    </a>
   </div>
 
   <!-- Install Modal -->
@@ -319,7 +333,7 @@
   </div>
 
   <!-- Demo section -->
-  <section class="py-20 md:py-32 bg-black/40">
+  <section id="demo" class="py-20 md:py-32 bg-black/40">
     <div class="max-w-6xl mx-auto px-4 text-center">
       <h2 class="text-4xl md:text-5xl font-bold mb-10 gradient-text">See it in action</h2>
       
