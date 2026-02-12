@@ -136,6 +136,72 @@
           View README & Docs →
         </a>
       </div>
+
+      <!-- Share & MCP Config buttons -->
+      <div class="flex items-center justify-center gap-4 mt-6">
+        <button
+          onclick="shareAutonomo()"
+          class="inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-gray-600/50 text-gray-300 text-sm font-medium hover:border-autonomo-400 hover:text-autonomo-400 transition-all duration-300"
+          title="Share Autonomo"
+        >
+          <!-- Heroicons: share (outline) -->
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z" />
+          </svg>
+          Share
+        </button>
+
+        <button
+          onclick="copyMcpConfig()"
+          id="mcp-copy-btn"
+          class="inline-flex items-center gap-2 px-5 py-3 rounded-lg border border-gray-600/50 text-gray-300 text-sm font-medium hover:border-autonomo-400 hover:text-autonomo-400 transition-all duration-300"
+          title="Copy MCP config to clipboard"
+        >
+          <!-- Heroicons: code-bracket (outline) -->
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
+          </svg>
+          Copy MCP Config
+        </button>
+      </div>
+
+      <script>
+        function shareAutonomo() {
+          var data = {
+            title: 'Autonomo MCP',
+            text: 'Give AI agents real eyes & hands on running apps — structured JSON state, ~50ms, local-first.',
+            url: 'https://sebringj.github.io/autonomo/'
+          };
+          if (navigator.share) {
+            navigator.share(data).catch(function() {});
+          } else {
+            navigator.clipboard.writeText(data.url).then(function() {
+              alert('Link copied to clipboard!');
+            });
+          }
+        }
+
+        function copyMcpConfig() {
+          var config = JSON.stringify({
+            servers: {
+              autonomo: {
+                command: "autonomo-mcp",
+                args: ["--multi"]
+              }
+            }
+          }, null, 2);
+          navigator.clipboard.writeText(config).then(function() {
+            var btn = document.getElementById('mcp-copy-btn');
+            var orig = btn.innerHTML;
+            btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg> Copied!';
+            btn.classList.add('text-green-400', 'border-green-400/50');
+            setTimeout(function() {
+              btn.innerHTML = orig;
+              btn.classList.remove('text-green-400', 'border-green-400/50');
+            }, 2000);
+          });
+        }
+      </script>
     </div>
   </div>
 
