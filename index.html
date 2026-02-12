@@ -40,9 +40,16 @@
       color: #e2e8f0;
     }
     .gradient-text {
-      background: linear-gradient(90deg, #38bdf8, #0ea5e9, #0284c7);
+      background: linear-gradient(90deg, #38bdf8, #0ea5e9, #0284c7, #0ea5e9, #38bdf8);
+      background-size: 200% auto;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      animation: gradient-shift 6s ease-in-out infinite;
+    }
+    @keyframes gradient-shift {
+      0% { background-position: 0% center; }
+      50% { background-position: 100% center; }
+      100% { background-position: 0% center; }
     }
     .glow {
       box-shadow: 0 0 40px rgba(56, 189, 248, 0.4);
@@ -64,14 +71,16 @@
     </div>
 
     <div class="relative z-10 max-w-5xl w-full text-center">
-      <div class="w-48 md:w-64 mx-auto mb-8 rounded-3xl overflow-hidden glow">
+      <div class="w-48 md:w-64 mx-auto mb-8 rounded-3xl overflow-hidden glow relative" style="aspect-ratio:1/1;">
+        <img src="logo.png" alt="Autonomo" class="absolute inset-0 w-full h-full object-cover" />
         <video 
           src="animated.mp4" 
           autoplay 
           loop 
           muted 
           playsinline
-          class="w-full"
+          class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500"
+          onloadeddata="this.style.opacity='1'"
         ></video>
       </div>
 
