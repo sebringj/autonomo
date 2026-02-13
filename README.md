@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="logo.jpeg" alt="Autonomo" width="200" />
+  <img src="logo.png" alt="Autonomo MCP" width="200" />
 </p>
 
-# Autonomo
+# Autonomo MCP
 
 **Give your AI eyes.**
 
