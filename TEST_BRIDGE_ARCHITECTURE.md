@@ -1,10 +1,10 @@
-# Test Bridge Architecture
+# Bridge Architecture
 
-> Deep dive into how AI test bridges work and how to implement them
+> Deep dive into how Autonomo bridges work and how to implement them
 
 ## Overview
 
-A Test Bridge creates a bidirectional communication channel between an AI agent (like GitHub Copilot) and a running application. The bridge runs **only in development mode** and provides semantic control over the application.
+A bridge creates a bidirectional communication channel between an AI assistant (like GitHub Copilot) and a running application. The bridge runs **only in development mode** and gives your AI structured visibility into — and control over — the live app.
 
 ## Core Architecture
 

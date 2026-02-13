@@ -27,7 +27,7 @@ This means the Autonomo bridge must be included in actual **route components**, 
 ```
 
 **Why WebSocket (not HTTP endpoints):**
-- Direct connection from browser to Autonomo server
+- Direct connection from browser to Autonomo server gives your AI live, real-time visibility
 - Survives Fresh's full page navigations when using single-island pattern
 - No need for Deno server to proxy commands
 - Same protocol as React/React Native packages

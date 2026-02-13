@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Autonomo MCP — AI developing while E2E testing</title>
-  <meta name="description" content="Structured, low-latency JSON state for AI agents — web + iOS + Android + desktop. Local-first. No screenshots. No hallucinations."/>
+  <title>Autonomo — Give Your AI Eyes</title>
+  <meta name="description" content="Give your AI coding assistant live visibility into your running app. Structured JSON state in ~50ms. No screenshots. No hallucinations. Web + iOS + Android + Desktop."/>
 
   <!-- Favicon & social previews -->
   <link rel="icon" href="https://raw.githubusercontent.com/sebringj/autonomo/main/favicon.ico" type="image/x-icon"/>
@@ -14,8 +14,8 @@
 
   <!-- Open Graph -->
   <meta property="og:type" content="website"/>
-  <meta property="og:title" content="Autonomo — AI Agents with Real App Eyes"/>
-  <meta property="og:description" content="Let agents observe & control running apps with structured state instead of slow vision models."/>
+  <meta property="og:title" content="Autonomo — Give Your AI Eyes"/>
+  <meta property="og:description" content="Your AI coding assistant can finally see what it's building. Structured app state, ~50ms, local-first."/>
   <meta property="og:image" content="https://raw.githubusercontent.com/sebringj/autonomo/main/logo.png"/>
   <meta property="og:image:width" content="512"/>
   <meta property="og:image:height" content="512"/>
@@ -25,8 +25,8 @@
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image"/>
-  <meta name="twitter:title" content="Autonomo — AI Agents with Real App Eyes"/>
-  <meta name="twitter:description" content="Let agents observe & control running apps with structured state instead of slow vision models."/>
+  <meta name="twitter:title" content="Autonomo — Give Your AI Eyes"/>
+  <meta name="twitter:description" content="Your AI coding assistant can finally see what it's building. Structured app state, ~50ms, local-first."/>
   <meta name="twitter:image" content="https://raw.githubusercontent.com/sebringj/autonomo/main/logo.png"/>
 
   <!-- Tailwind via CDN + custom gradient -->
@@ -136,6 +136,15 @@
     .scroll-arrow {
       animation: bounce-down 2s ease-in-out infinite;
     }
+    .how-card {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(56, 189, 248, 0.15);
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .how-card:hover {
+      border-color: rgba(56, 189, 248, 0.4);
+      transform: translateY(-2px);
+    }
   </style>
 </head>
 <body class="antialiased">
@@ -233,14 +242,16 @@
       </script>
 
       <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-6">
-        <span class="gradient-text" data-text="Autonomo MCP">Autonomo MCP</span>
+        <span class="gradient-text" data-text="Autonomo">Autonomo</span>
       </h1>
 
-      <p class="text-xl md:text-3xl font-medium text-gray-300 mb-10 md:mb-12 max-w-3xl mx-auto leading-relaxed">
-        Give AI agents <span class="text-autonomo-400 font-semibold">real eyes & hands</span> on running apps<br/>
-        <span class="text-lg md:text-2xl text-gray-400 mt-3 block">
-          Structured JSON state • ~50 ms • Local-first • Web + iOS + Android + Desktop
-        </span>
+      <p class="text-2xl md:text-4xl font-bold text-white mb-4">
+        Give your AI <span class="text-autonomo-400">eyes.</span>
+      </p>
+
+      <p class="text-lg md:text-2xl text-gray-400 mb-10 md:mb-12 max-w-3xl mx-auto leading-relaxed">
+        Your AI coding assistant can finally see your running app.<br/>
+        Structured JSON state &bull; ~50 ms &bull; Local-first &bull; Web + iOS + Android + Desktop
       </p>
 
       <div class="flex flex-wrap items-center justify-center gap-3">
@@ -262,7 +273,6 @@
           class="inline-flex items-center justify-center gap-2 min-w-[7rem] px-5 py-3 rounded-lg border border-gray-600/50 text-gray-300 text-sm font-medium hover:border-autonomo-400 hover:text-autonomo-400 transition-all duration-300"
           title="View documentation"
         >
-          <!-- Heroicons: book-open (outline) -->
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
           </svg>
@@ -275,7 +285,6 @@
           class="inline-flex items-center justify-center gap-2 min-w-[7rem] px-5 py-3 rounded-lg border border-gray-600/50 text-gray-300 text-sm font-medium hover:border-autonomo-400 hover:text-autonomo-400 transition-all duration-300"
           title="Share Autonomo"
         >
-          <!-- Heroicons: share (outline) -->
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z" />
           </svg>
@@ -288,7 +297,6 @@
           class="inline-flex items-center justify-center gap-2 min-w-[7rem] px-5 py-3 rounded-lg border border-gray-600/50 text-gray-300 text-sm font-medium hover:border-autonomo-400 hover:text-autonomo-400 transition-all duration-300"
           title="Install instructions"
         >
-          <!-- Heroicons: arrow-down-tray (outline) -->
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
           </svg>
@@ -300,8 +308,8 @@
       <script>
         function shareAutonomo() {
           var data = {
-            title: 'Autonomo MCP',
-            text: 'Give AI agents real eyes & hands on running apps — structured JSON state, ~50ms, local-first.',
+            title: 'Autonomo',
+            text: 'Give your AI coding assistant live eyes on your running app. Structured JSON state, ~50ms, local-first.',
             url: 'https://sebringj.github.io/autonomo/'
           };
           if (navigator.share) {
@@ -337,7 +345,6 @@
           });
         }
 
-        // Close on Escape
         document.addEventListener('keydown', function(e) {
           if (e.key === 'Escape') {
             document.querySelectorAll('.snippet-modal').forEach(function(m) {
@@ -349,7 +356,7 @@
     </div>
 
     <!-- Scroll indicator -->
-    <a href="#demo" class="scroll-arrow absolute bottom-8 left-1/2 text-gray-400 hover:text-autonomo-400 transition-colors z-10" title="See demo">
+    <a href="#how" class="scroll-arrow absolute bottom-8 left-1/2 text-gray-400 hover:text-autonomo-400 transition-colors z-10" title="How it works">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
         <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
       </svg>
@@ -360,7 +367,6 @@
   <div id="install-modal" class="snippet-modal hidden fixed inset-0 z-50 flex items-center justify-center p-4" onclick="if(event.target===this)closeModal('install-modal')">
     <div class="modal-backdrop absolute inset-0"></div>
     <div class="modal-enter relative max-w-lg w-full bg-[#161b22] border border-gray-700/60 rounded-2xl shadow-2xl overflow-hidden">
-      <!-- Header -->
       <div class="flex items-center justify-between px-6 py-4 border-b border-gray-700/50">
         <h3 class="text-lg font-semibold text-white flex items-center gap-2">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-autonomo-400">
@@ -372,7 +378,6 @@
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
         </button>
       </div>
-      <!-- Body -->
       <div class="px-6 py-5 space-y-4">
         <p class="text-sm text-gray-300">Tell your AI assistant:</p>
         <div class="relative">
@@ -415,10 +420,63 @@
     </div>
   </div>
 
+  <!-- How It Works -->
+  <section id="how" class="py-20 md:py-28 bg-black/20">
+    <div class="max-w-5xl mx-auto px-4">
+      <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">
+        <span class="gradient-text" data-text="How it works">How it works</span>
+      </h2>
+      <p class="text-gray-400 text-center mb-12 max-w-2xl mx-auto">
+        Three MCP tools. That's it. Your AI sees the app, acts on it, and verifies the result.
+      </p>
+
+      <div class="grid md:grid-cols-3 gap-6">
+        <!-- Detect -->
+        <div class="how-card rounded-xl p-6 text-center">
+          <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-autonomo-600/20 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7 text-autonomo-400">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-white mb-2">See</h3>
+          <p class="text-gray-400 text-sm"><code class="text-autonomo-400 text-xs">get_state</code> returns the current screen, every interactive element, errors, and user info as structured JSON.</p>
+        </div>
+
+        <!-- Act -->
+        <div class="how-card rounded-xl p-6 text-center">
+          <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-autonomo-600/20 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7 text-autonomo-400">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.042 21.672 13.684 16.6m0 0-2.51 2.225.569-9.47 5.227 7.917-3.286-.672ZM12 2.25V4.5m5.834.166-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243-1.59-1.59" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-white mb-2">Act</h3>
+          <p class="text-gray-400 text-sm"><code class="text-autonomo-400 text-xs">send_command</code> presses buttons, fills inputs, navigates screens — just like a real user.</p>
+        </div>
+
+        <!-- Iterate -->
+        <div class="how-card rounded-xl p-6 text-center">
+          <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-autonomo-600/20 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7 text-autonomo-400">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-white mb-2">Iterate</h3>
+          <p class="text-gray-400 text-sm">See &rarr; Act &rarr; See again. Your AI closes the loop — building, checking, and fixing in a continuous cycle.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Demo section -->
   <section id="demo" class="py-20 md:py-32 bg-black/40">
     <div class="max-w-6xl mx-auto px-4 text-center">
-      <h2 class="text-4xl md:text-5xl font-bold mb-10 gradient-text">See it in action</h2>
+      <h2 class="text-4xl md:text-5xl font-bold mb-4">
+        <span class="gradient-text" data-text="See it in action">See it in action</span>
+      </h2>
+      <p class="text-gray-400 mb-10 max-w-2xl mx-auto">
+        Watch an AI assistant interact with a live app across web and mobile — observing state, sending commands, and verifying results in real time.
+      </p>
       
       <div class="rounded-2xl overflow-hidden shadow-2xl border border-autonomo-700/30 max-w-2xl mx-auto">
         <img 
@@ -428,24 +486,51 @@
         />
       </div>
 
-      <p class="mt-8 text-xl text-gray-300">
-        Watch an agent validate chat communication across web + mobile — in real time, structured, no vision bloat.
+      <p class="mt-8 text-lg text-gray-300 max-w-2xl mx-auto">
+        No screenshots. No vision models. No 2-second delays.<br/>
+        <span class="text-autonomo-400">Structured JSON in ~50ms.</span>
       </p>
+    </div>
+  </section>
+
+  <!-- Why This Matters -->
+  <section class="py-20 md:py-28 bg-black/20">
+    <div class="max-w-4xl mx-auto px-4 text-center">
+      <h2 class="text-3xl md:text-4xl font-bold mb-6">
+        <span class="gradient-text" data-text="Why this matters">Why this matters</span>
+      </h2>
+      <p class="text-lg text-gray-300 max-w-2xl mx-auto mb-10">
+        Right now, your AI writes code <em>blind</em>. It generates markup it can't see, styles it can't verify, and interactions it can't test. Then you become the eyes — manually checking every change, copy-pasting errors back, describing what went wrong.
+      </p>
+      <p class="text-lg text-gray-300 max-w-2xl mx-auto mb-10">
+        Autonomo closes that loop. Your AI sees the running app, acts on it, and confirms its own work. The result: fewer round-trips, fewer hallucinations, and development that actually flows.
+      </p>
+      <div class="grid sm:grid-cols-3 gap-6 text-left max-w-3xl mx-auto">
+        <div class="p-4 rounded-lg bg-black/30 border border-gray-700/30">
+          <p class="text-2xl font-bold text-autonomo-400 mb-1">~50ms</p>
+          <p class="text-sm text-gray-400">State response time. No vision model overhead.</p>
+        </div>
+        <div class="p-4 rounded-lg bg-black/30 border border-gray-700/30">
+          <p class="text-2xl font-bold text-autonomo-400 mb-1">10+</p>
+          <p class="text-sm text-gray-400">Platforms supported. Web, iOS, Android, desktop.</p>
+        </div>
+        <div class="p-4 rounded-lg bg-black/30 border border-gray-700/30">
+          <p class="text-2xl font-bold text-autonomo-400 mb-1">100%</p>
+          <p class="text-sm text-gray-400">Local. No cloud. No API keys. No data leaves your machine.</p>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- Footer -->
   <footer class="py-12 text-center text-gray-500 border-t border-gray-800">
     <div class="flex items-center justify-center gap-5">
-      <!-- GitHub -->
       <a href="https://github.com/sebringj/autonomo" target="_blank" class="text-gray-400 hover:text-autonomo-400 transition-colors" title="GitHub">
         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.49.5.09.68-.22.68-.48v-1.69c-2.78.61-3.37-1.34-3.37-1.34-.46-1.16-1.12-1.47-1.12-1.47-.91-.62.07-.61.07-.61 1.01.07 1.54 1.04 1.54 1.04.89 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.03A9.56 9.56 0 0112 6.8c.85.004 1.71.11 2.52.33 1.91-1.3 2.75-1.03 2.75-1.03.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .26.18.57.69.49C19.13 20.17 22 16.42 22 12c0-5.52-4.48-10-10-10z"/></svg>
       </a>
-      <!-- X (Twitter) -->
       <a href="https://x.com/randomjason" target="_blank" class="text-gray-400 hover:text-autonomo-400 transition-colors" title="@randomjason on X">
         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
       </a>
-      <!-- Website -->
       <a href="https://jasonsebring.com" target="_blank" class="text-gray-400 hover:text-autonomo-400 transition-colors" title="jasonsebring.com">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5a17.92 17.92 0 0 1-8.716-2.247m0 0A8.966 8.966 0 0 1 3 12c0-1.264.26-2.466.733-3.559"/></svg>
       </a>

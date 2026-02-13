@@ -1,10 +1,10 @@
 # Autonomo Integration Architecture
 
-> **MCP-Native Infrastructure for AI-Powered Testing**
+> **MCP-Native Infrastructure for Real-Time Visual Development**
 >
 > Works with: GitHub Copilot, Claude Code, Cursor, Windsurf, Cody, and any MCP-compatible AI
 
-## Positioning: Enabler, Not Competitor
+## Positioning: The Bridge, Not the Competitor
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -58,7 +58,7 @@
 
 ## Why MCP?
 
-MCP (Model Context Protocol) is becoming the standard for AI tool integration:
+MCP (Model Context Protocol) is the standard for giving AI tools new capabilities. Autonomo uses it to give your AI assistant live eyes and hands on the running app:
 
 | AI Tool | MCP Support |
 |---------|-------------|
@@ -69,7 +69,7 @@ MCP (Model Context Protocol) is becoming the standard for AI tool integration:
 | Continue | ✅ MCP compatible |
 | Cody | 🔄 Adding support |
 
-**By building on MCP, Autonomo works with ALL of them automatically.**
+**By building on MCP, Autonomo gives all of them eyes automatically.**
 
 ## 100% Local Architecture
 
@@ -370,115 +370,119 @@ Get comprehensive documentation and guides. Fetches content directly from GitHub
 ### GitHub Copilot
 
 ```
-User: Test the checkout flow in my React app
+User: Build the checkout flow and verify it works
 
-Copilot: I'll test the checkout flow using the connected React app.
+Copilot: I'll build the checkout flow and verify it live.
 
-[Uses autonomo/get_state to check current state]
+[Writes the component code, then uses autonomo/get_state to see the result]
 
-The app is on the home screen. Let me navigate through checkout:
+The app is showing the checkout screen. Let me interact with it:
 
-[Uses autonomo/run_scenario with checkout steps]
+[Uses autonomo/run_scenario to walk through the flow]
 
-✅ Checkout flow completed successfully:
+✅ Checkout flow working:
 1. Added item to cart (245ms)
 2. Navigated to checkout (180ms)  
 3. Filled shipping info (320ms)
 4. Submitted order (1.2s)
 5. Reached confirmation screen
 
-Final state: Order #12345 confirmed
+Final state: Order #12345 confirmed. The flow works end to end.
 ```
 
 ### Claude Code
 
 ```
-User: There's a bug in login - can you reproduce it?
+User: There's a bug in login - can you find and fix it?
 
-Claude: I'll try to reproduce the login issue.
+Claude: I'll look at the running app and find the issue.
 
 [Uses autonomo/list_bridges]
 
-I see your app is running on localhost:3000. Let me test login:
+I see your app is running on localhost:3000. Let me try the login flow:
 
 [Uses autonomo/send_command for each step]
 
-I found the issue! When I enter an email with a "+" character:
+Found it. When I enter an email with a "+" character:
 
 - Input: "test+staging@example.com"
 - Error: "Invalid email format"
 
 The validation regex doesn't allow "+" characters which are valid in emails.
-Looking at your code in src/utils/validation.ts:
+Fixing src/utils/validation.ts now...
 
-[Shows the problematic regex and fix]
+[Fixes the code, then re-runs the login flow via Autonomo]
+
+✅ Fixed and verified — login now accepts "+" in emails.
 ```
 
 ### Cursor
 
 ```
-User: @autonomo run the test scenarios in tests/e2e/
+User: @autonomo verify all the main flows still work after my refactor
 
-Cursor: Running E2E scenarios through Autonomo...
+Cursor: Running through the main flows on the live app...
 
-[Uses autonomo/run_scenario for each test file]
+[Uses autonomo/run_scenario for each flow]
 
 Results:
-✅ login.scenario.json (2.3s)
-✅ checkout.scenario.json (4.1s)
-❌ profile-update.scenario.json (failed at step 4)
+✅ login flow (2.3s)
+✅ checkout flow (4.1s)
+❌ profile update (failed at step 4)
    Error: Element "Profile.SaveButton" is disabled
    
-Looking at the profile screen state, the button is disabled because
-the phone number field has a validation error. Let me check the code...
+The save button is disabled because the phone number field has a validation error after your refactor. I can see the issue in the state — let me fix it...
 ```
 
 ## Integration Patterns
 
-### Pattern 1: Ad-hoc Testing
+### Pattern 1: Build and Verify
 
-Developer asks AI to test something specific:
+AI writes code and immediately sees the result in the running app:
 
 ```
-"Test what happens when I submit an empty form"
-"Try logging in with wrong password 3 times"
-"Check if the cart persists after refresh"
+"Build a signup form with email validation"
+→ AI writes the component
+→ AI sees it rendered in the app
+→ AI fills in test data, submits, verifies behavior
+→ AI spots a validation edge case, fixes it, confirms
 ```
 
-### Pattern 2: Bug Reproduction
+### Pattern 2: Bug Hunting
 
-AI uses bridge to reproduce reported issues:
+AI uses the live app to find and fix bugs:
 
 ```
 "The user reported checkout fails with international addresses"
 → AI fills in international address
-→ AI finds the specific failure
-→ AI suggests fix
+→ AI sees the specific failure in real time
+→ AI fixes the code
+→ AI re-runs the flow to confirm the fix
 ```
 
-### Pattern 3: Code + Test Loop
+### Pattern 3: Code + Verify Loop
 
-AI writes code and immediately verifies:
+Every change is immediately validated:
 
 ```
 AI: "I've updated the validation logic. Let me verify it works..."
-[Uses autonomo to test the change]
+[Interacts with the live app via Autonomo]
 AI: "Confirmed - the fix handles the edge case correctly."
 ```
 
 ### Pattern 4: Regression Detection
 
-AI notices something broke:
+AI catches breakage while developing:
 
 ```
-AI: "While testing your new feature, I noticed the login
-     flow now fails at step 3. This might be a regression
-     from your recent changes to auth.ts"
+AI: "While working on your new feature, I noticed the login
+     flow now fails at step 3. This is a regression from
+     your recent changes to auth.ts. Fixing now..."
 ```
 
 ## Comparison: Why MCP + Local?
 
-| Approach | Autonomo (MCP + Local) | Cloud Testing Service |
+| Approach | Autonomo (MCP + Local) | Cloud-Based Tools |
 |----------|------------------------|----------------------|
 | **Privacy** | 100% local | Data sent to cloud |
 | **Latency** | <50ms | 200-500ms |
@@ -538,4 +542,4 @@ Ask your AI assistant:
 
 ---
 
-**Autonomo doesn't compete with AI tools. It makes them all better at testing.**
+**Autonomo doesn't compete with AI tools. It gives them all eyes.**
