@@ -166,6 +166,32 @@ async function runTests() {
     assert(result.waited < 1000, 'Should not timeout');
   });
 
+  await test('waitFor works with negated screen condition', async () => {
+    // Screen is 'test-screen', so !screen:other-screen should succeed immediately
+    const result = await registry.waitFor('app-one-abc123', '!screen:other-screen', 1000);
+    assert(result.success, 'Should succeed when screen does NOT match');
+    assert(result.waited < 100, 'Should succeed quickly');
+  });
+
+  await test('waitFor works with element condition', async () => {
+    const result = await registry.waitFor('app-one-abc123', 'element:Test.Button', 1000);
+    assert(result.success, 'Should succeed when element exists');
+    assert(result.waited < 100, 'Should succeed quickly');
+  });
+
+  await test('waitFor works with negated element condition', async () => {
+    // Test.Button exists, so !element:Test.Button should timeout
+    const result = await registry.waitFor('app-one-abc123', '!element:Test.Button', 500);
+    assert(!result.success, 'Should timeout because element exists');
+  });
+
+  await test('waitFor negated element succeeds when element missing', async () => {
+    // NonExistent.Element does not exist, so !element should succeed
+    const result = await registry.waitFor('app-one-abc123', '!element:NonExistent.Element', 1000);
+    assert(result.success, 'Should succeed when element does NOT exist');
+    assert(result.waited < 100, 'Should succeed quickly');
+  });
+
   await test('runScenario executes steps', async () => {
     const result = await registry.runScenario('app-two-def456', [
       { action: 'press', target: 'Test.Button' },
