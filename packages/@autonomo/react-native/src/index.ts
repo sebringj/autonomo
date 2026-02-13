@@ -19,7 +19,7 @@ export {
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { AppState as RNAppState, Platform } from 'react-native';
-import { handleRequest, getInstance, initInstance, registry, type InstanceInfo } from '@autonomo/core';
+import { handleRequest, getInstance, initInstance, type InstanceInfo } from '@autonomo/core';
 
 // Try to import expo-constants (optional peer dependency)
 let ExpoConstants: { expoConfig?: { hostUri?: string }; manifest?: { debuggerHost?: string } } | null = null;
@@ -335,9 +335,10 @@ export function useAutonomoMcp(config: McpClientConfig): {
           }
 
           case 'getState':
+          case 'requestState':
+            // Server is requesting fresh state for waitFor polling
             ws.send(JSON.stringify({
-              type: 'state',
-              requestId: msg.requestId,
+              type: 'stateUpdate',
               state: getState(),
             }));
             break;
@@ -383,24 +384,6 @@ export function useAutonomoMcp(config: McpClientConfig): {
       }
     };
   }, [connect]);
-
-  // Auto-report state when registry changes (elements added/removed)
-  useEffect(() => {
-    let debounceTimer: ReturnType<typeof setTimeout> | null = null;
-    
-    const unsubscribe = registry.onChange(() => {
-      // Debounce to avoid flooding on rapid changes (e.g., screen transitions)
-      if (debounceTimer) clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => {
-        reportState();
-      }, 50);
-    });
-    
-    return () => {
-      unsubscribe();
-      if (debounceTimer) clearTimeout(debounceTimer);
-    };
-  }, [reportState]);
 
   return { isConnected, bridgeId, serverUrl, reportState };
 }

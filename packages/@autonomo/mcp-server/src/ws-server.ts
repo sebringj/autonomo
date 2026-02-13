@@ -105,8 +105,11 @@ export interface AutonomoWSServer extends EventEmitter {
   // Get list of connected bridges
   listBridges(): BridgeInfo[];
   
-  // Get state from a bridge
+  // Get state from a bridge (cached)
   getState(bridgeId: string): AppState | null;
+  
+  // Request fresh state from a bridge (asks client to report current state)
+  requestState(bridgeId: string, timeout?: number): Promise<AppState | null>;
   
   // Send command and wait for result
   sendCommand(bridgeId: string, command: Command): Promise<CommandResult>;
@@ -314,6 +317,38 @@ export function createWSServer(port: number = DEFAULT_PORT): AutonomoWSServer {
   emitter.getState = (bridgeId: string): AppState | null => {
     const bridge = bridges.get(bridgeId);
     return bridge?.state || null;
+  };
+  
+  // Request fresh state from client (server-initiated polling)
+  emitter.requestState = (bridgeId: string, timeout: number = 5000): Promise<AppState | null> => {
+    return new Promise((resolve) => {
+      const bridge = bridges.get(bridgeId);
+      
+      if (!bridge || bridge.ws.readyState !== WebSocket.OPEN) {
+        resolve(null);
+        return;
+      }
+      
+      // Listen for next state update from this bridge
+      const onState = (id: string, state: AppState) => {
+        if (id === bridgeId) {
+          emitter.removeListener('bridge:state', onState);
+          clearTimeout(timeoutId);
+          resolve(state);
+        }
+      };
+      
+      emitter.on('bridge:state', onState);
+      
+      const timeoutId = setTimeout(() => {
+        emitter.removeListener('bridge:state', onState);
+        // Return cached state on timeout
+        resolve(bridge.state);
+      }, timeout);
+      
+      // Ask client to report its current state
+      bridge.ws.send(JSON.stringify({ type: 'requestState' }));
+    });
   };
   
   /**

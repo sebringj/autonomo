@@ -350,30 +350,23 @@ export async function startWSModeServer(config: WSModeConfig = {}): Promise<void
             return { content: [{ type: 'text', text: `✓ Condition met: ${condition} (0ms)` }] };
           }
           
-          // Use event-based waiting instead of polling
-          return new Promise((resolve) => {
-            let resolved = false;
+          // Poll for state changes using server-initiated requests
+          // This doesn't require clients to push updates - server asks for fresh state
+          const pollInterval = 100; // ms between polls
+          
+          while (Date.now() - startTime < timeout) {
+            // Request fresh state from client
+            const freshState = await wsServer.requestState(bridgeId, Math.min(pollInterval * 2, timeout - (Date.now() - startTime)));
             
-            const onState = (id: string, state: any) => {
-              if (id !== bridgeId || resolved) return;
-              
-              if (checkCondition(state)) {
-                resolved = true;
-                wsServer.removeListener('bridge:state', onState);
-                clearTimeout(timeoutId);
-                resolve({ content: [{ type: 'text', text: `✓ Condition met: ${condition} (${Date.now() - startTime}ms)` }] });
-              }
-            };
+            if (checkCondition(freshState)) {
+              return { content: [{ type: 'text', text: `✓ Condition met: ${condition} (${Date.now() - startTime}ms)` }] };
+            }
             
-            wsServer.on('bridge:state', onState);
-            
-            const timeoutId = setTimeout(() => {
-              if (resolved) return;
-              resolved = true;
-              wsServer.removeListener('bridge:state', onState);
-              resolve({ content: [{ type: 'text', text: `✗ Timeout waiting for: ${condition}` }] });
-            }, timeout);
-          });
+            // Brief pause before next poll
+            await sleep(pollInterval);
+          }
+          
+          return { content: [{ type: 'text', text: `✗ Timeout waiting for: ${condition}` }] };
         }
         
         case 'autonomo_run_scenario': {

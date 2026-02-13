@@ -71,8 +71,9 @@ export class AutonomoService implements OnDestroy {
     if (typeof (globalThis as any).ngDevMode !== 'undefined') {
       return !(globalThis as any).ngDevMode;
     }
-    // Check process.env.NODE_ENV
-    if (typeof process !== 'undefined' && process.env?.NODE_ENV === 'production') {
+    // Check process.env.NODE_ENV via globalThis
+    const nodeEnv = typeof globalThis !== 'undefined' && (globalThis as any).process?.env?.NODE_ENV;
+    if (nodeEnv === 'production') {
       return true;
     }
     return false;

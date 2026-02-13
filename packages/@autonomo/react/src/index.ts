@@ -281,7 +281,9 @@ export function useAutonomo(config: UseAutonomoConfig): AutonomoConnection {
   const instanceIdRef = useRef<string>(Math.random().toString(36).slice(2, 10));
   
   // Check if we should skip (production mode with devOnly=true)
-  const shouldSkip = devOnly && typeof process !== 'undefined' && process.env?.NODE_ENV === 'production';
+  // deno-lint-ignore no-explicit-any
+  const nodeEnv = typeof globalThis !== 'undefined' && (globalThis as any).process?.env?.NODE_ENV;
+  const shouldSkip = devOnly && nodeEnv === 'production';
   
   // Collect current state
   const collectState = useCallback(() => {
@@ -472,6 +474,11 @@ export function useAutonomo(config: UseAutonomoConfig): AutonomoConnection {
               
             case 'command':
               handleCommand(msg);
+              break;
+              
+            case 'requestState':
+              // Server is requesting fresh state for waitFor polling
+              reportState();
               break;
               
             case 'ping':
