@@ -32,6 +32,10 @@ interface StateSnapshot {
 
 const stateHistory: Map<string, StateSnapshot> = new Map();
 
+// Pre-action state: captured BEFORE send_command executes
+// Used by wait_for 'changed' condition to detect any state change
+const preActionState: Map<string, StateSnapshot> = new Map();
+
 function snapshotState(state: any): StateSnapshot {
   return {
     screen: state.screen || 'unknown',
@@ -147,7 +151,7 @@ export async function startWSModeServer(config: WSModeConfig = {}): Promise<void
     },
     {
       name: 'autonomo_wait_for',
-      description: 'Wait for a condition. Conditions: "screen:name", "element:id", "noError".',
+      description: 'Wait for a condition. Conditions: "screen:name", "element:id", "noError", "changed" (any state change since last send_command). Prefix with ! to negate (e.g., "!element:X"). Note: LLM timing gaps mean the condition may already be met when called - this is expected for fast apps.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -157,7 +161,7 @@ export async function startWSModeServer(config: WSModeConfig = {}): Promise<void
           },
           condition: {
             type: 'string',
-            description: 'Condition to wait for. Format: "screen:home", "element:Button.ID", "noError"',
+            description: 'Condition to wait for. Format: "screen:home", "element:Button.ID", "noError", "changed" (detects any state change since last send_command)',
           },
           timeout: {
             type: 'number',
@@ -276,6 +280,12 @@ export async function startWSModeServer(config: WSModeConfig = {}): Promise<void
         case 'autonomo_send_command': {
           const { bridge: bridgeId, action, target, value } = args as any;
           
+          // Snapshot state BEFORE command for wait_for 'changed' condition
+          const preState = wsServer.getState(bridgeId);
+          if (preState) {
+            preActionState.set(bridgeId, snapshotState(preState));
+          }
+          
           try {
             const result = await wsServer.sendCommand(bridgeId, { action, target, value });
             
@@ -317,6 +327,18 @@ export async function startWSModeServer(config: WSModeConfig = {}): Promise<void
               case 'noError':
                 matched = !state.errors?.length;
                 break;
+              case 'changed': {
+                // Check if state differs from pre-action snapshot
+                const baseline = preActionState.get(bridgeId);
+                if (!baseline) {
+                  matched = true; // No baseline = consider changed
+                } else {
+                  const curr = snapshotState(state);
+                  const diff = computeDiff(baseline, curr);
+                  matched = diff.added.length > 0 || diff.removed.length > 0 || diff.screenChanged || diff.newErrors.length > 0;
+                }
+                break;
+              }
             }
             
             return isNegated ? !matched : matched;
