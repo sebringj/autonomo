@@ -2,9 +2,11 @@
 
 > **For AI Assistants**: This document contains installation instructions. Follow each step in order.
 
-## What to Install
+## What You're Installing
 
-Autonomo has two parts:
+Autonomo gives your AI coding assistant live eyes and hands on your running app. After setup, your AI can see every screen, interact with every element, and verify its own work — in real time.
+
+Two parts:
 1. **MCP Server** - Connects your AI tool to apps (install once globally)
 2. **App Bridge** - Embedded in your app to expose UI elements (install per-project)
 
@@ -128,15 +130,17 @@ function LoginScreen() {
 
 **Naming convention**: Use `Screen.Element` format (e.g., `Login.Submit`, `Home.ProfileButton`).
 
-## Step 5: Verify Installation
+## Step 5: Start Developing with Eyes
 
 1. Start the app (`npm run dev` or `expo start`)
-2. The AI can now use Autonomo tools to interact with the app
+2. Your AI can now see and interact with the running app
 
-**Test commands to try:**
-- "List all connected bridges" → Should show your app
-- "Get state from my app" → Should show registered elements
-- "Press Login.Submit" → Should trigger the button
+**Try these:**
+- "What elements can you see in my app?" → Should show registered elements
+- "Get state from my app" → Should show current screen and UI state
+- "Press Login.Submit" → Should trigger the button and show what happened
+
+Your AI sees the result of every action. No more guessing.
 
 ---
 
@@ -214,7 +218,7 @@ export default function Page() {
 For Swift, Flutter, Python, Ruby, Kotlin, C#, or Angular — see the platform-specific README:
 
 - [Swift/iOS](./packages/autonomo-swift/README.md)
-- [Flutter](./packages/autonomo_flutter/README.md)  
+- [Flutter](./packages/autonomo_flutter/README.md)
 - [Python](./packages/autonomo-python/README.md)
 - [Ruby](./packages/autonomo-ruby/README.md)
 - [Kotlin](./packages/autonomo-kotlin/README.md)

@@ -1,6 +1,6 @@
 # Custom Actions Guide
 
-Custom actions are a powerful feature in Autonomo that let you define **fast-path operations** for complex interactions that would otherwise require multiple slow, sequential commands.
+Custom actions are a powerful feature in Autonomo that let you define **fast-path operations** for complex interactions that would otherwise require multiple slow, sequential commands. They keep your AI's development flow fast and reliable.
 
 ## Why Custom Actions Matter
 

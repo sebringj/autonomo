@@ -1,19 +1,19 @@
 # Autonomo Product Roadmap
 
-> **Vision**: Enable any LLM to test any application through a standardized test bridge protocol
+> **Vision**: Give every AI coding assistant live eyes and hands on any running application
 
 ## The Opportunity
 
-Today, AI coding assistants like GitHub Copilot can write code, but they can't easily **verify** that code works. When testing requires:
+Today, AI coding assistants like GitHub Copilot can write code, but they can't **see** what they built. When developing requires:
 
 - Launching the app
-- Clicking through UI flows
+- Interacting with UI flows
 - Verifying state changes
-- Debugging failures
+- Debugging visual issues
 
 ...developers still do this manually, even when AI wrote the code.
 
-**Autonomo bridges this gap** by giving AI the ability to control and observe running applications directly.
+**Autonomo bridges this gap** by giving AI the ability to see, interact with, and verify running applications directly — turning blind coding into visual development.
 
 ## Product Positioning
 
@@ -21,10 +21,10 @@ Today, AI coding assistants like GitHub Copilot can write code, but they can't e
 
 | Segment | Pain Point | Value Prop |
 |---------|------------|------------|
-| **Solo developers** | Manual QA is tedious | "Let Copilot test while you work" |
-| **Small teams** | Can't afford QA staff | "AI QA engineer included" |
-| **Enterprise** | Flaky E2E tests are expensive | "Semantic tests that don't break" |
-| **AI companies** | Building AI agents | "Standard protocol for app control" |
+| **Solo developers** | AI codes blind, you verify manually | "Your AI sees what it builds" |
+| **Small teams** | Can't afford QA staff | "AI that verifies its own work" |
+| **Enterprise** | Flaky E2E tests are expensive | "Semantic, stable, AI-native" |
+| **AI companies** | Building AI agents | "Standard protocol for app vision" |
 
 ### Competitive Landscape
 
@@ -35,7 +35,7 @@ Today, AI coding assistants like GitHub Copilot can write code, but they can't e
 | Traditional E2E | Scripted tests | No AI, high maintenance |
 | **Autonomo** | Semantic bridge | App integration required |
 
-**Key differentiator**: Semantic control with structured state, not pixel-based guessing.
+**Key differentiator**: Your AI sees structured app state and interacts semantically — not pixel-based guessing.
 
 ---
 

@@ -2,40 +2,93 @@
   <img src="logo.jpeg" alt="Autonomo" width="200" />
 </p>
 
-# Autonomo MCP — AI developing while E2E testing
+# Autonomo
 
-## Website
-🌐 https://sebringj.github.io/autonomo/
+**Give your AI eyes.**
 
-> au·ton·o·mo | \ ä-ˈtä-nə-ˌmō \
+Watch your coding assistant build the app in real time —
+see the UI, click buttons, type text, verify behavior —
+all while you're still writing the code.
+
+No screenshots. No hallucinations. No "trust me bro."
+
+Just real, live, visual pair programming.
 
 > Works with: GitHub Copilot • Claude Code • Cursor • Windsurf • Any MCP-compatible AI
 
-Autonomo enables AI coding assistants to observe app state, drive multiple devices simultaneously, and validate cross-device interactions — all in one iterative development loop.
+🌐 https://sebringj.github.io/autonomo/
 
 <p align="center">
   <img src="autonomo-demo.gif" alt="Autonomo Demo" width="100%" />
 </p>
 
-### Why Autonomo?
+---
 
-| Vision-Based Testing | Autonomo |
-|---------------------|----------|
+## What is Autonomo?
+
+Your AI coding assistant is brilliant. It can write code, refactor systems, and reason about architecture. But it's been doing all of that **blind**.
+
+It writes a component, tells you "that should work," and moves on. You compile. You run. You squint at the screen. You report back: "Nope, still broken."
+
+Autonomo fixes this.
+
+It gives your AI **live eyes and hands** on the actual running app — web, iOS, Android, desktop — so it can see what it's building, interact with it, and fix issues **while you're still developing**. Not after.
+
+**The old loop:**
+```
+Write code → Compile → Run → Squint at screen → Describe what you see → Hope the AI understands
+```
+
+**The Autonomo loop:**
+```
+Tell the AI what you want → Watch it build and interact live → Correct in real time
+```
+
+### How It Works
+
+After every action, your AI gets a unified snapshot of everything that happened:
+
+```
+AI sends command: {"action": "press", "target": "Submit"}
+                              ↓
+            ═══ UNIFIED SNAPSHOT RETURNED ═══
+
+UI State:
+  screen: "confirmation"
+  elements: ["Order.Number", "Order.Details", "Home.Button"]
+
+App State:
+  orderId: "ORD-12345"
+  cartCleared: true
+
+Network:
+  POST /api/orders → 201 (245ms)
+  response: { id: "ORD-12345", status: "confirmed" }
+
+Errors:
+  [] (none)
+
+Console:
+  ["Order created successfully"]
+```
+
+Your AI doesn't guess what happened. It **sees everything**. And if something broke, it fixes it immediately.
+
+### Why Not Screenshots?
+
+| Vision-Based (Screenshots) | Autonomo |
+|----------------------------|----------|
 | 🐢 ~2-5s per screenshot analysis | ⚡ ~50ms structured response |
 | 💸 1000+ tokens per image | 🪶 ~50 tokens per state report |
 | 🖥️ Different tools per platform | 🌐 One protocol for web, iOS, Android, desktop |
 | 👁️ Only sees pixels on screen | 🔍 Sees app state, network calls, errors, auth |
 | 🎯 Coordinates break on resize | 🏷️ Semantic IDs survive redesigns |
-| 👤 Single device at a time | 👥 **Multi-device**: test User A → User B flows |
-| 🔐 Struggles with OTP/OAuth | 🎬 **Custom actions**: bypass auth flows in local testing |
-
-**Multi-user testing example**: "On Device A, send a message. On Device B, verify it arrives."
-
-**Custom actions example**: Register a `devLogin` action that bypasses OTP/OAuth during local testing — AI calls it like any other action.
+| 👤 Single device at a time | 👥 **Multi-device**: develop User A → User B flows |
+| 🔐 Struggles with OTP/OAuth | 🎬 **Custom actions**: bypass auth flows locally |
 
 ---
 
-## ⚡ Quick Start
+## ⚡ Get Started in 30 Seconds
 
 **Just tell your AI assistant:**
 
@@ -43,7 +96,7 @@ Autonomo enables AI coding assistants to observe app state, drive multiple devic
 Install Autonomo in my project. Read https://github.com/sebringj/autonomo/blob/main/QUICKSTART.md
 ```
 
-Your AI will handle the rest — installing packages, configuring MCP, and adding the bridge to your app.
+Your AI handles the rest — installing packages, configuring MCP, and adding the bridge to your app.
 
 ### Platform-Specific Prompts
 
@@ -123,73 +176,35 @@ Topics include: `overview`, `recommend`, `elements`, `custom-actions`, `troubles
 
 ---
 
-## The Core Insight
+## Why This Matters: The End of Blind Coding
 
-**After every action, the LLM gets a unified snapshot of what happened across all levels:**
+AI coding assistants have a dirty secret: they hallucinate. They write code, say "that should work," and move on. Without eyes on the running app, they can't prove anything.
 
-```
-LLM sends command: {"action": "press", "target": "Submit"}
-                              ↓
-            ═══ UNIFIED SNAPSHOT RETURNED ═══
-
-UI State:
-  screen: "confirmation"
-  elements: ["Order.Number", "Order.Details", "Home.Button"]
-
-App State:
-  orderId: "ORD-12345"
-  cartCleared: true
-
-Network:
-  POST /api/orders → 201 (245ms)
-  response: { id: "ORD-12345", status: "confirmed" }
-
-Errors:
-  [] (none)
-
-Console:
-  ["Order created successfully"]
-                              ↓
-LLM can now:
-  • Verify the action worked
-  • See exactly what failed if it didn't
-  • Iterate with the next command
-  • Fix code if there's an error
-```
-
-**This enables the Detect → Act → Iterate loop:**
-
-1. **DETECT** - Get current state (UI + app + network + errors)
-2. **ACT** - Send command (navigate, press, fill, call API)
-3. **ITERATE** - See unified result, decide next step or fix
-
-The LLM doesn't guess what happened. It **sees everything** and can fix issues immediately.
-
-## Why This Matters: Eliminating AI Hallucinations
-
-**The problem with AI coding today:**
+Autonomo changes the equation:
 
 | Without Autonomo | With Autonomo |
 |------------------|---------------|
-| LLM says "that should work" | LLM **proves** it works by running it |
+| AI says "that should work" | AI **proves** it works by interacting with the live app |
 | False confidence in untested code | Validated outcomes, real results |
-| Hallucinated fixes that don't compile | Iterates until tests actually pass |
 | "I've updated the code" (hope it's right) | "I've verified the fix works" (proved it) |
+| You describe the bug, AI guesses the fix | AI sees the bug, AI fixes the bug |
 
-**Autonomo turns "I think" into "I verified":**
+**Your AI goes from "I think" to "I verified":**
 
 ```
-Before: LLM writes code → hopes it works → moves on → bugs found later
+Before: AI writes code → hopes it works → moves on → bugs found later
 
-After:  LLM writes code → tests it → sees failure → fixes → tests again → 
+After:  AI writes code → sees the result → spots the failure → fixes it →
         confirms success → moves on with confidence
 ```
 
-This **dramatically reduces hallucinations** because the LLM can't claim success without proof. It must iterate until the actual app behaves correctly.
+This is the missing sense. Vision. The thing that makes AI coding actually reliable and joyful.
 
-## Built for Local Development
+---
 
-Autonomo is designed for the **inner development loop** - the tight cycle where you write code, test it, and fix issues:
+## Built for the Inner Loop
+
+Autonomo lives where you develop — your local machine, your running app, your tight iteration cycle:
 
 ```
                       YOUR LOCAL MACHINE
@@ -198,7 +213,7 @@ Autonomo is designed for the **inner development loop** - the tight cycle where 
     + AI Tool    ◄───►  Server     ◄───►  (localhost)
         │
         ▼
-    Write code → Test immediately → See results → Fix → Repeat
+    Write code → AI interacts immediately → See results → Fix → Repeat
 
     ════════════════════════════════════════════════════════
     100% LOCAL • NO CLOUD • NO LATENCY • NO DATA LEAVING
@@ -210,6 +225,50 @@ Autonomo is designed for the **inner development loop** - the tight cycle where 
 - 🔒 **100% Local** - Nothing leaves your machine, ever
 - 🌐 **Language Agnostic** - HTTP protocol works with any stack
 - 🆓 **Free for Most** - Free under $1M revenue, [see license](LICENSE.md)
+
+## Detect → Act → Iterate
+
+This is the development loop your AI runs continuously:
+
+1. **DETECT** - Get current state (UI + app + network + errors)
+2. **ACT** - Send command (navigate, press, fill, call API)
+3. **ITERATE** - See unified result, decide next step or fix code
+
+The AI doesn't guess what happened. It **sees everything** and can fix issues immediately.
+
+## Multi-Device Development
+
+Building a chat feature? A multiplayer game? Anything with multiple users?
+
+Autonomo supports **multiple simultaneous app instances** — browser tabs, simulator windows, separate processes. Your AI can drive them all:
+
+```
+🟢 my-app-a3f7c2d1 (web)     ← Browser Tab 1
+   Screen: checkout
+   Elements: 12
+
+🟢 my-app-b8e4f9a2 (web)     ← Browser Tab 2
+   Screen: settings
+   Elements: 8
+
+🟢 my-app-c1d6e3b7 (mobile)  ← iOS Simulator
+   Screen: home
+   Elements: 15
+```
+
+**Example**: "On Device A, send a message. On Device B, verify it arrives."
+
+Your AI sees both sides. In real time. One development session.
+
+## Custom Actions
+
+Some interactions are complex — OTP entry, OAuth flows, multi-step wizards. Custom actions let you create shortcuts your AI can call like any other command:
+
+**Example**: Register a `devLogin` action that bypasses OTP/OAuth during local development — your AI calls it like any other action.
+
+See [Custom Actions Guide](./docs/CUSTOM_ACTIONS.md) for details.
+
+---
 
 ## Production Safety (devOnly)
 
@@ -253,7 +312,7 @@ transport = create_http_transport(TransportConfig(port=8080, dev_only=False))
 createHttpTransport(TransportConfig(devOnly: false))
 ```
 
-## Current Status
+## Platform Support
 
 | Platform | Package | Status |
 |----------|---------|--------|
@@ -326,7 +385,7 @@ That's basically every UI framework ever built.
 // Register a tappable element
 registerTapHandler("Checkout.Submit", () => handleSubmit());
 
-// Register a fillable input  
+// Register a fillable input
 registerFillHandler("Checkout.Email", (value) => setEmail(value));
 
 // Register a screen/view
@@ -335,124 +394,18 @@ registerScreen("checkout", { cartItems: 3, total: 45.99 });
 
 **If your framework has lifecycle hooks and callbacks, Autonomo works.**
 
-## Integration Model: Docs + AI, Not SDKs
-
-**Traditional approach:** Ship an SDK per framework, maintain 20 packages, version hell
-
-**Autonomo approach:** Ship **integration guides** (markdown) that AI coding agents use to integrate
-
-```
-Developer: "Add Autonomo to my Vue app"
-                    ↓
-AI Agent reads: autonomo/guides/vue.md
-
-  Contains:
-    • Vue lifecycle patterns (onMounted, onUnmounted)
-    • Composable template for registration
-    • Example integration code
-    • Testing verification steps
-                    ↓
-AI Agent writes the integration code tailored to YOUR app
-
-    • Creates autonomo.ts composable
-    • Wraps your existing components
-    • Adds testIDs to key elements
-    • Verifies integration works via Autonomo itself!
-```
-
-**Why this is better:**
-
-| Traditional SDK | Docs + AI |
-|-----------------|-----------|
-| Generic, one-size-fits-all | Tailored to your codebase |
-| You read docs, you integrate | AI reads docs, AI integrates |
-| Breaking changes = your problem | AI adapts to your versions |
-| 20 packages to maintain | 20 markdown files to maintain |
-| Versioning complexity | Always uses your framework version |
-
-**The AI verifies its own work:**
-
-```
-AI: "I've added Autonomo to your Vue app. Let me verify it works..."
-
-[AI uses Autonomo MCP tools to test the integration]
-
-AI: "✅ Confirmed - I can see 12 elements registered. 
-     Tested pressing LoginButton - works correctly."
-```
-
-### Framework Guides (The "SDKs")
-
-Each guide contains:
-- Pattern explanation for that framework
-- Registration composable/hook/directive template
-- Wrapper component examples
-- State reporting patterns
-- Verification steps
-
-```
-autonomo/
-  guides/
-    react.md          # useEffect, hooks pattern
-    react-native.md   # Same + native considerations
-    vue.md            # Composables, onMounted
-    svelte.md         # Actions, onMount
-    angular.md        # Directives, ngOnInit
-    solid.md          # createEffect, onMount
-    swiftui.md        # View modifiers, onAppear
-    flutter.md        # initState, dispose
-    ...
-```
-
-**The documentation IS the product.** The AI does the integration work.
-
-## Multi-Instance Support
-
-Autonomo supports **multiple simultaneous app instances** - multiple browser tabs, simulator windows, or app processes. Each instance gets a unique identity:
-
-```typescript
-// In your app's root component (React/React Native)
-import { useInstance } from '@autonomo/react';
-
-function App() {
-  // Initialize once at app mount - generates unique instance ID per window/process
-  useInstance({ 
-    name: 'my-app', 
-    platform: 'web'  // or 'mobile'
-  });
-  
-  return <MyApp />;
-}
-```
-
-The MCP server can then distinguish between instances:
-
-```
-🟢 my-app-a3f7c2d1 (web)     ← Browser Tab 1
-   Screen: checkout
-   Elements: 12
-
-🟢 my-app-b8e4f9a2 (web)     ← Browser Tab 2  
-   Screen: settings
-   Elements: 8
-
-🟢 my-app-c1d6e3b7 (mobile)  ← iOS Simulator
-   Screen: home
-   Elements: 15
-```
-
-**MCP Tools (Multi-Bridge Mode):**
+## MCP Tools
 
 | Tool | Description |
 |------|-------------|
-| `autonomo_validate` | **Primary validation tool** - Test features end-to-end with clear PASS/FAIL results |
+| `autonomo_validate` | **Primary validation tool** - Interact with features and see clear PASS/FAIL results |
 | `autonomo_help` | Get documentation, recommendations, and guidance on any topic |
 | `autonomo_restore_context` | Restore AI context after summarization - returns recent actions and current state |
 | `autonomo_list_bridges` | List all connected apps with status |
 | `autonomo_get_state` | Get state from one or all bridges (supports `expand` parameter) |
 | `autonomo_send_command` | Send command to specific bridge |
 | `autonomo_wait_for` | Wait for condition on a bridge |
-| `autonomo_run_scenario` | Execute multi-step test scenario |
+| `autonomo_run_scenario` | Execute multi-step interaction scenario |
 | `autonomo_register_bridge` | Connect a new app by URL |
 
 ### Smart Element Grouping
@@ -467,19 +420,12 @@ Elements:
 - WebApp.Nav.teams → tap
 ```
 
-**Collapse Rules:**
-- Groups with 5+ items sharing a namespace prefix are collapsed
-- Data-like suffixes trigger grouping: dates (2026-02-01), UUIDs, numeric IDs, hashes
-- Semantic suffixes (like `schedule`, `teams`) are NOT collapsed
-
 **Expanding Groups:**
 Use the `expand` parameter to drill into a collapsed group:
 
 ```
 get_state(bridge: "web", expand: "WebApp.Schedule.Day")
 ```
-
-This returns all 44 individual day elements for detailed inspection.
 
 ### Errors-First Display
 
@@ -493,32 +439,43 @@ Elements:
 - ...
 ```
 
-**Start MCP server in multi-bridge mode:**
-```bash
-autonomo-mcp --multi
-# Or with initial bridges:
-autonomo-mcp --multi --bridge http://localhost:3000/autonomo --bridge http://localhost:8081/autonomo
+## Integration Model: Docs + AI, Not SDKs
+
+**Traditional approach:** Ship an SDK per framework, maintain 20 packages, version hell.
+
+**Autonomo approach:** Ship **integration guides** (markdown) that AI coding agents use to integrate.
+
+```
+Developer: "Add Autonomo to my Vue app"
+                    ↓
+AI Agent reads: autonomo/guides/vue.md
+
+  Contains:
+    • Vue lifecycle patterns (onMounted, onUnmounted)
+    • Composable template for registration
+    • Example integration code
+    • Verification steps
+                    ↓
+AI Agent writes the integration code tailored to YOUR app
+
+    • Creates autonomo.ts composable
+    • Wraps your existing components
+    • Adds IDs to key elements
+    • Verifies integration works via Autonomo itself!
 ```
 
-## Platform Support
+**The AI verifies its own work:**
 
-**SDKs:**
+```
+AI: "I've added Autonomo to your Vue app. Let me verify..."
 
-| Platform | Package | Status |
-|----------|---------|--------|
-| TypeScript/JS Core | `@autonomo/core` | ✅ Done |
-| MCP Server | `@autonomo/mcp-server` | ✅ Done |
-| React | `@autonomo/react` | ✅ Done |
-| React Native | `@autonomo/react-native` | ✅ Done |
-| Swift/iOS | `autonomo-swift` | ✅ Done |
-| Flutter/Dart | `autonomo_flutter` | ✅ Done |
-| Python | `autonomo-python` | ✅ Done |
-| Ruby | `autonomo-ruby` | ✅ Done |
-| Kotlin/Android | `autonomo-kotlin` | 📋 TODO (needs JitPack) |
-| C#/.NET | `Autonomo.CSharp` | 📋 TODO (needs NuGet) |
-| CLI | `autonomo-cli` | ✅ Done |
+[AI uses Autonomo tools to interact with the integration]
 
-### Installation
+AI: "✅ Confirmed - I can see 12 elements registered.
+     Pressed LoginButton - works correctly."
+```
+
+## Installation
 
 **npm (install from GitHub):**
 ```bash
@@ -561,150 +518,14 @@ dependencies:
       path: packages/autonomo_flutter
 ```
 
-**JS/TS Frameworks** (use `@autonomo/core` with thin lifecycle wrapper):
-
-| Platform | Effort | Notes |
-|----------|--------|-------|
-| Vue | ~1 day | Composables for registration |
-| Svelte | ~1 day | Actions/stores pattern |
-| Angular | ~1 day | Directives for registration |
-| Solid | ~1 day | Similar to React hooks |
-| Next.js / Remix | ✅ Works | Uses React impl directly |
-| Vanilla JS | ~hours | Direct registration calls |
-
-**Backend/API Testing** (just HTTP, no UI):
-
-| Platform | Effort | Notes |
-|----------|--------|-------|
-| Node.js (Express/Fastify/Koa) | ~hours | Middleware that exposes routes as "elements" |
-| Deno (Fresh/Oak/Hono) | ~hours | Same pattern |
-| Bun | ~hours | Same pattern |
-| Go | ~1 day | net/http + middleware |
-| Rust | ~2 days | reqwest + macros |
-
-For backends, "elements" become API endpoints:
-```json
-{
-  "elements": [
-    { "id": "POST /api/users", "type": "endpoint", "methods": ["POST"] },
-    { "id": "GET /api/orders/:id", "type": "endpoint", "methods": ["GET"] }
-  ]
-}
-```
-
-AI can then test: `{"action": "call", "target": "POST /api/users", "value": {"name": "Test"}}`
-
-## The Problem
-
-Current AI-assisted testing approaches have significant limitations:
-
-| Approach | Limitation |
-|----------|------------|
-| Screenshot + Vision | Slow, expensive, brittle to UI changes |
-| DOM parsing | Web-only, doesn't work for native apps |
-| Record/Playback | Requires human recording, can't adapt |
-| Traditional automation | Complex setup, limited AI integration |
-
-**What we need**: A way for AI to _understand_ application state and _control_ it directly, like a human developer using dev tools.
-
-## The Solution: Test Bridges
-
-A **Test Bridge** is a lightweight HTTP interface embedded in an application (dev mode only) that:
-
-1. **Exposes semantic state** - Current screen, active elements, user context
-2. **Accepts control commands** - Navigate, tap, fill inputs, trigger actions
-3. **Reports results** - Success/failure, errors, timing
-
-```
-              LLM / AI Agent (VS Code + Copilot)
-                            │
-    POST /api/test-command ─┼──────► Command Queue
-                            │              │
-    GET /api/test-result  ◄─┼────── Result + State
-                            │
-              Running Application
-                            │
-         [Screen]      [Elements]      [Actions]
-         [State ]      [Registry]      [Handlers]
-```
-
-## Core Concepts
-
-### 1. Command/Result Pattern
-
-Commands are posted to a queue, processed by the app, results retrieved:
-
+**Start MCP server in multi-bridge mode:**
 ```bash
-# Send command
-curl -X POST http://localhost:8006/api/test-command \
-  -H "Content-Type: application/json" \
-  -d '{"action":"press","target":"Login.SubmitButton"}'
-
-# Get result (after brief delay)
-curl http://localhost:8006/api/test-result
-# → {"screen":"home","success":true,"elements":["Home.Feed","Home.Profile"]}
+autonomo-mcp --multi
+# Or with initial bridges:
+autonomo-mcp --multi --bridge http://localhost:3000/autonomo --bridge http://localhost:8081/autonomo
 ```
-
-### 2. Semantic Element Identification
-
-Elements are identified by **testID** (not XPath, CSS selectors, or coordinates):
-
-```json
-{"action": "press", "target": "Schedule.AddEventButton"}
-{"action": "fillIn", "target": "Registration.EmailInput", "value": "test@example.com"}
-{"action": "navigate", "target": "/settings/profile"}
-```
-
-### 3. State Introspection
-
-The bridge reports rich, structured state:
-
-```json
-{
-  "screen": "league-dashboard",
-  "isLoggedIn": true,
-  "activeRole": "league_manager",
-  "elements": [
-    "Dashboard.StatsCard",
-    "Dashboard.RecentActivity",
-    "Dashboard.QuickActions.CreateEvent"
-  ],
-  "errors": [],
-  "timestamp": 1706745600000
-}
-```
-
-### 4. The Detect→Act→Iterate Loop
-
-The AI testing mantra:
-
-1. **DETECT** - Get current state: `GET /api/test-result`
-2. **ACT** - Send command: `POST /api/test-command`
-3. **ITERATE** - Check result, repeat
-
-```
-DETECT ──► ACT ──► DETECT ──► ACT ──► DETECT ──► ...
-  │         │        │         │        │
-  │         │        │         │        └─ Verify final state
-  │         │        │         └─ Second action
-  │         │        └─ Verify first action worked
-  │         └─ First action
-  └─ Initial state check
-```
-
-## Why This Works for AI
-
-| Feature | Benefit for LLM |
-|---------|-----------------|
-| **Structured JSON** | No vision/parsing needed |
-| **Semantic IDs** | Stable across UI changes |
-| **Explicit state** | No guessing what user sees |
-| **Error reporting** | AI can diagnose failures |
-| **Platform agnostic** | Same commands for web/mobile/desktop |
 
 ## Packages
-
-Autonomo provides packages for multiple platforms and languages:
 
 | Package | Platform | Install |
 |---------|----------|---------|
@@ -724,7 +545,7 @@ Autonomo provides packages for multiple platforms and languages:
 
 ## Documentation
 
-- [QUICKSTART.md](./QUICKSTART.md) - **Fastest path** - Get running in 5 minutes
+- [QUICKSTART.md](./QUICKSTART.md) - **Fastest path** - Get running in 30 seconds
 - [CONTRIBUTING.md](./CONTRIBUTING.md) - **Contributing** - How to contribute to Autonomo
 - [docs/CUSTOM_ACTIONS.md](./docs/CUSTOM_ACTIONS.md) - **Custom actions** - Fast-path operations for complex interactions
 - [MCP_INTEGRATION.md](./MCP_INTEGRATION.md) - How Autonomo works with AI tools
@@ -750,10 +571,12 @@ See [LICENSE.md](./LICENSE.md) for full details.
 
 ---
 
-**Status**: Production-ready MCP server with packages for React, React Native, Swift, Flutter, Python, Ruby, Kotlin, and C#.
+**Develop by seeing, not guessing.**
+
+Your AI can finally watch what it's building.
 
 ---
 
 <p align="center">
-  <sub>If Autonomo saves you debugging time, a ⭐ or <a href="https://github.com/sponsors/sebringj">sponsorship</a> helps keep it moving.</sub>
+  <sub>If Autonomo makes your AI coding better, a ⭐ or <a href="https://github.com/sponsors/sebringj">sponsorship</a> helps keep it moving.</sub>
 </p>

@@ -1,10 +1,10 @@
 # Autonomo Protocol Specification
 
-> **Universal HTTP API for AI-Native Application Testing**
+> **Universal HTTP API for AI-Native Application Interaction**
 
 ## The Insight
 
-Instead of requiring framework-specific SDKs, Autonomo can work through a **universal HTTP protocol** that any application can speak, regardless of language or framework.
+Instead of requiring framework-specific SDKs, Autonomo works through a **universal HTTP protocol** that any application can speak, regardless of language or framework. Your AI gets a consistent interface to see and control any app.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐

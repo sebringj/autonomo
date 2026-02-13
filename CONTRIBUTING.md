@@ -1,6 +1,6 @@
 # Contributing to Autonomo
 
-We welcome contributions! Whether it's bug fixes, new platform SDKs, documentation, or ideas — your help makes Autonomo better for everyone.
+We welcome contributions! Whether it's bug fixes, new platform bridges, documentation, or ideas — your help makes Autonomo better for everyone.
 
 ## 📜 Contribution License Agreement
 
