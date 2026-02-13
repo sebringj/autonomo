@@ -4,11 +4,10 @@
 
 # Autonomo MCP
 
-**Give your AI eyes.**
+**Give your AI eyes and hands.**
 
-Watch your coding assistant build the app in real time —
-see the UI, click buttons, type text, verify behavior —
-all while you're still writing the code.
+Your AI can finally see and drive your running apps — all of them, at once.
+It reads structured JSON state, interacts with UI elements, and knows instantly whether something worked or broke.
 
 No screenshots. No hallucinations. No "trust me bro."
 
