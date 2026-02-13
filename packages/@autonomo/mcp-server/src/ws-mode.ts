@@ -296,16 +296,15 @@ export async function startWSModeServer(config: WSModeConfig = {}): Promise<void
         case 'autonomo_wait_for': {
           const { bridge: bridgeId, condition, timeout = 5000 } = args as any;
           const startTime = Date.now();
-          const pollInterval = 100;
           
-          const [type, value] = condition.split(':');
+          // Support negation: !element:X, !screen:X
+          const isNegated = condition.startsWith('!');
+          const normalizedCondition = isNegated ? condition.slice(1) : condition;
+          const [type, value] = normalizedCondition.split(':');
           
-          while (Date.now() - startTime < timeout) {
-            const state = wsServer.getState(bridgeId);
-            if (!state) {
-              await sleep(pollInterval);
-              continue;
-            }
+          // Helper to check condition
+          const checkCondition = (state: any): boolean => {
+            if (!state) return false;
             
             let matched = false;
             switch (type) {
@@ -313,21 +312,46 @@ export async function startWSModeServer(config: WSModeConfig = {}): Promise<void
                 matched = state.screen === value || state.screen.includes(value);
                 break;
               case 'element':
-                matched = state.elements?.some(e => e.id === value) ?? false;
+                matched = state.elements?.some((e: any) => e.id === value) ?? false;
                 break;
               case 'noError':
                 matched = !state.errors?.length;
                 break;
             }
             
-            if (matched) {
-              return { content: [{ type: 'text', text: `✓ Condition met: ${condition} (${Date.now() - startTime}ms)` }] };
-            }
-            
-            await sleep(pollInterval);
+            return isNegated ? !matched : matched;
+          };
+          
+          // Check initial state
+          const initialState = wsServer.getState(bridgeId);
+          if (checkCondition(initialState)) {
+            return { content: [{ type: 'text', text: `✓ Condition met: ${condition} (0ms)` }] };
           }
           
-          return { content: [{ type: 'text', text: `✗ Timeout waiting for: ${condition}` }] };
+          // Use event-based waiting instead of polling
+          return new Promise((resolve) => {
+            let resolved = false;
+            
+            const onState = (id: string, state: any) => {
+              if (id !== bridgeId || resolved) return;
+              
+              if (checkCondition(state)) {
+                resolved = true;
+                wsServer.removeListener('bridge:state', onState);
+                clearTimeout(timeoutId);
+                resolve({ content: [{ type: 'text', text: `✓ Condition met: ${condition} (${Date.now() - startTime}ms)` }] });
+              }
+            };
+            
+            wsServer.on('bridge:state', onState);
+            
+            const timeoutId = setTimeout(() => {
+              if (resolved) return;
+              resolved = true;
+              wsServer.removeListener('bridge:state', onState);
+              resolve({ content: [{ type: 'text', text: `✗ Timeout waiting for: ${condition}` }] });
+            }, timeout);
+          });
         }
         
         case 'autonomo_run_scenario': {
