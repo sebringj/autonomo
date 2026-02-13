@@ -28,11 +28,11 @@ Just real, live, visual pair programming.
 
 Your AI coding assistant is brilliant. It can write code, refactor systems, and reason about architecture. But it's been doing all of that **blind**.
 
-It writes a component, tells you "that should work," and moves on. You compile. You run. You squint at the screen. You report back: "Nope, still broken."
+It writes a component, tells you "that should work," and moves on. You compile. You run. You check the screen. You report back: "Nope, still broken."
 
 Autonomo fixes this.
 
-It gives your AI **live eyes and hands** on the actual running app — web, iOS, Android, desktop — so it can see what it's building, interact with it, and fix issues **while you're still developing**. Not after.
+It gives your AI **live access to your app's structured JSON state** — screens, elements, errors, user info — across web, iOS, Android, and desktop. Your AI can read that state, interact with UI elements, and know instantly whether something worked or broke. Not by looking at pixels — by reading real data. **While you're still developing**. Not after.
 
 **The old loop:**
 ```
