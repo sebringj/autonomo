@@ -23,9 +23,9 @@ Just real, live, visual pair programming.
 
 ---
 
-## What is Autonomo?
+## What is Autonomo MCP?
 
-Your AI coding assistant is brilliant. It can write code, refactor systems, and reason about architecture. But it's been doing all of that **blind**.
+Your AI coding assistant is brilliant. It can write code, refactor systems, and reason about architecture. But it's been doing all of that **blind** — unable to see what it built or drive the interfaces it created.
 
 It writes a component, tells you "that should work," and moves on. You compile. You run. You check the screen. You report back: "Nope, still broken."
 
