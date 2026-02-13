@@ -6,6 +6,8 @@
 
 **Give your AI eyes and hands.**
 
+Tired of "it works" lies? Autonomo MCP makes your AI prove it—on real hardware, right in your favorite editor.
+
 Your AI can finally see and drive your running apps — all of them, at once.
 It reads structured JSON state, interacts with UI elements, and knows instantly whether something worked or broke.
 
