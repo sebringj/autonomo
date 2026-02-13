@@ -323,7 +323,10 @@ export class BridgeRegistry {
     const pollInterval = 100;
 
     // Parse condition: "screen:home", "element:Dashboard.Stats", "data:isLoaded"
-    const [type, value] = condition.split(':');
+    // Support negation: "!element:X" means wait until element X is NOT present
+    const isNegated = condition.startsWith('!');
+    const normalizedCondition = isNegated ? condition.slice(1) : condition;
+    const [type, value] = normalizedCondition.split(':');
 
     while (Date.now() - startTime < timeout) {
       const result = await client.getState();
@@ -346,7 +349,12 @@ export class BridgeRegistry {
           break;
         default:
           // Generic condition - try to evaluate as property path
-          conditionMet = Boolean(state.data?.[condition]);
+          conditionMet = Boolean(state.data?.[normalizedCondition]);
+      }
+
+      // Apply negation if specified
+      if (isNegated) {
+        conditionMet = !conditionMet;
       }
 
       if (conditionMet) {
