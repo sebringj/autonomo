@@ -1,5 +1,5 @@
 /**
- * @autonomo/core
+ * @sebringj/autonomo-core
  * 
  * Core library for Autonomo - AI-powered application testing.
  * 
@@ -8,7 +8,7 @@
  * - Custom action definitions for complex operations
  * - State management for unified snapshots
  * - Command processing for AI control
- * - Transport utilities for HTTP/WebSocket communication
+ * - WebSocket communication (primary method)
  */
 
 // Registry - element tracking
@@ -80,7 +80,7 @@ export type {
   NavigationHandler,
 } from './commands.js';
 
-// Transport - HTTP/WebSocket server utilities
+// Transport - HTTP server utilities (optional, for custom integrations)
 export {
   createHttpTransport,
   handleRequest,

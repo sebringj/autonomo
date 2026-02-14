@@ -1,8 +1,9 @@
 /**
- * Transport - HTTP server for AI communication
+ * Transport - HTTP server utilities (optional)
  * 
- * Provides a simple HTTP API that the MCP server can call.
- * This runs inside the application being tested.
+ * NOTE: WebSocket is the primary communication method for Autonomo.
+ * These HTTP utilities are provided for custom integrations or testing.
+ * Most apps should use the WebSocket connection via useAutonomo() hook.
  */
 
 import { executeCommand, type CommandResult } from './commands.js';
