@@ -1,6 +1,10 @@
 # autonomo_flutter
 
+> ⚠️ **Testing/Source Package** - This package is currently used from source and is not published as a standalone package.
+
 Flutter integration for [Autonomo](https://github.com/sebringj/autonomo) - AI-powered application testing.
+
+WebSocket is the primary integration path. HTTP transport helpers are legacy/optional.
 
 ## Installation
 
@@ -76,21 +80,14 @@ class _MyWidgetState extends State<MyWidget> {
 }
 ```
 
-### 4. Start the bridge (dev only)
+### 4. Connect to MCP WebSocket server
 
 ```dart
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Start Autonomo bridge in debug mode
-  if (kDebugMode) {
-    final transport = await createHttpTransport(
-      TransportConfig(
-        port: 8080,
-        onStart: (url) => print('Autonomo ready at $url'),
-      ),
-    );
-  }
+
+  // No in-app HTTP server required.
+  // Register handlers and run with MCP server configured on AUTONOMO_PORT.
   
   runApp(MyApp());
 }
@@ -98,14 +95,17 @@ void main() async {
 
 ### 5. Connect your AI tool
 
-Add to VS Code settings or claude_desktop_config.json:
+Add to `.vscode/mcp.json`:
 
 ```json
 {
-  "mcpServers": {
+  "servers": {
     "autonomo": {
       "command": "npx",
-      "args": ["autonomo", "serve", "--url", "http://localhost:8080"]
+      "args": ["-y", "github:sebringj/autonomo/packages/@autonomo/mcp-server"],
+      "env": {
+        "AUTONOMO_PORT": "9876"
+      }
     }
   }
 }

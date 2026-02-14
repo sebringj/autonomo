@@ -64,7 +64,7 @@ class TransportInstance(
 }
 
 /**
- * HTTP transport for AI communication
+ * HTTP transport utilities (optional). WebSocket is the primary mode.
  */
 object Transport {
     /**
@@ -261,5 +261,5 @@ object Transport {
 /**
  * Create and start HTTP transport
  */
-fun createHttpTransport(config: TransportConfig = TransportConfig()): TransportInstance =
+fun createHttpTransport(config: TransportConfig = TransportConfig()): TransportInstance? =
     Transport.createHttpTransport(config)

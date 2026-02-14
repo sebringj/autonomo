@@ -1,6 +1,10 @@
 # Autonomo Swift
 
+> ⚠️ **Testing/Source Package** - This package is currently used from source and is not published as a standalone package.
+
 Swift integration for [Autonomo](https://github.com/sebringj/autonomo) - AI-powered application testing.
+
+WebSocket is the primary integration path. HTTP transport helpers are legacy/optional.
 
 ## Installation
 
@@ -43,33 +47,29 @@ state.setScreen("login")
 unregister()
 ```
 
-### 2. Start the bridge
+### 2. Connect to MCP WebSocket server
 
 ```swift
 import Autonomo
 
-// Start in development
-#if DEBUG
-let transport = createHttpTransport(TransportConfig(
-    port: 8080,
-    onStart: { url in print("Autonomo ready at \(url)") }
-))
-#endif
-
-// Later, to stop:
-transport?.stop()
+// No in-app HTTP server required.
+// Start your app with Autonomo handlers registered,
+// and run the MCP server configured with AUTONOMO_PORT (default 9876).
 ```
 
 ### 3. Connect your AI tool
 
-Add to VS Code settings or claude_desktop_config.json:
+Add to `.vscode/mcp.json`:
 
 ```json
 {
-  "mcpServers": {
-    "autonomo": {
-      "command": "npx",
-      "args": ["autonomo", "serve", "--url", "http://localhost:8080"]
+    "servers": {
+        "autonomo": {
+            "command": "npx",
+            "args": ["-y", "github:sebringj/autonomo/packages/@autonomo/mcp-server"],
+            "env": {
+                "AUTONOMO_PORT": "9876"
+            }
     }
   }
 }
@@ -243,7 +243,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 ### Transport
 
-- `createHttpTransport(_:)` - Start HTTP server
+- `createHttpTransport(_:)` - Legacy optional HTTP server helper
 - `Transport.handleRequest(method:path:body:)` - Handle request manually
 
 ## Requirements

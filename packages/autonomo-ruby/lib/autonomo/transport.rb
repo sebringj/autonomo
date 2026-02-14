@@ -55,7 +55,7 @@ module Autonomo
     end
   end
 
-  # HTTP transport for AI communication
+  # HTTP transport utilities (optional). WebSocket is the primary mode.
   module Transport
     class << self
       # Handle an incoming HTTP request

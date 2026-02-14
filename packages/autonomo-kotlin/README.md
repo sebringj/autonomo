@@ -1,6 +1,10 @@
 # Autonomo Kotlin
 
+> ⚠️ **Testing/Source Package** - This package is currently used from source and is not published as a standalone package.
+
 Kotlin/JVM integration for [Autonomo](https://github.com/sebringj/autonomo) - AI-powered application testing.
+
+WebSocket is the primary integration path. HTTP transport helpers are legacy/optional.
 
 ## Installation
 
@@ -63,31 +67,28 @@ state.setScreen("login")
 unregister()
 ```
 
-### 2. Start the bridge
+### 2. Connect to MCP WebSocket server
 
 ```kotlin
 import com.autonomo.*
 
-// Start in development
-val transport = createHttpTransport(TransportConfig(
-    port = 8080,
-    onStart = { url -> println("Autonomo ready at $url") }
-))
-
-// Later, to stop:
-transport.stop()
+// No in-app HTTP server required.
+// Register handlers and run with MCP server configured on AUTONOMO_PORT.
 ```
 
 ### 3. Connect your AI tool
 
-Add to VS Code settings or claude_desktop_config.json:
+Add to `.vscode/mcp.json`:
 
 ```json
 {
-  "mcpServers": {
-    "autonomo": {
-      "command": "npx",
-      "args": ["autonomo", "serve", "--url", "http://localhost:8080"]
+    "servers": {
+        "autonomo": {
+            "command": "npx",
+            "args": ["-y", "github:sebringj/autonomo/packages/@autonomo/mcp-server"],
+            "env": {
+                "AUTONOMO_PORT": "9876"
+            }
     }
   }
 }
@@ -297,7 +298,7 @@ class HomeController {
 
 ### Transport
 
-- `createHttpTransport(config)` - Start HTTP server
+- `createHttpTransport(config)` - Legacy optional HTTP server helper
 - `Transport.handleRequest(method, path, body)` - Handle request manually
 
 ## Requirements

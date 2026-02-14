@@ -67,13 +67,13 @@ class AutonomoTest {
     
     @Test
     fun `custom actions work`() {
-        val unregister = registerCustomAction("testAction") { value ->
+        val unregister = registerCustomAction("testAction", handler = { value ->
             if (value == "fail") {
                 ActionResult.fail("Intentional failure")
             } else {
                 ActionResult.ok("Got: $value")
             }
-        }
+        })
         
         var result = CustomActionsRegistry.execute("testAction", "hello")
         assertTrue(result.success, "Should succeed")
@@ -155,9 +155,9 @@ class AutonomoTest {
             example = mapOf("name" to "World")
         )
         
-        val unregister = registerCustomAction("greetAction", meta) { value ->
+        val unregister = registerCustomAction("greetAction", handler = { value ->
             ActionResult.ok("Hello, $value!")
-        }
+        }, meta = meta)
         
         // Verify action works
         val result = CustomActionsRegistry.execute("greetAction", "World")

@@ -73,7 +73,7 @@ public struct RequestResult {
 
 // MARK: - Transport
 
-/// HTTP transport for AI communication
+/// HTTP transport utilities (optional). WebSocket is the primary mode.
 public class Transport {
     
     /// Handle an incoming HTTP request

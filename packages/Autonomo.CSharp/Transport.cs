@@ -105,7 +105,7 @@ public class RequestResult
 }
 
 /// <summary>
-/// HTTP transport for AI communication
+/// HTTP transport utilities (optional). WebSocket is the primary mode.
 /// </summary>
 public static class Transport
 {

@@ -1,6 +1,10 @@
 # autonomo
 
+> ⚠️ **Testing/Source Package** - This package is currently installed from source and is not published as a standalone PyPI package.
+
 Python integration for [Autonomo](https://github.com/sebringj/autonomo) - AI-powered application testing.
+
+WebSocket is the primary integration path. HTTP transport helpers are legacy/optional.
 
 ## Installation
 
@@ -33,33 +37,26 @@ unregister = register_fill_handler(
 state.set_screen("login")
 ```
 
-### 2. Start the bridge
+### 2. Connect to MCP WebSocket server
 
 ```python
-from autonomo import create_http_transport, TransportConfig
-
-# Start in development
-transport = create_http_transport(TransportConfig(
-    port=8080,
-    on_start=lambda url: print(f"Autonomo ready at {url}"),
-))
-
-# Your app runs here...
-
-# When done
-transport.stop()
+# No in-app HTTP server required.
+# Register handlers and run with MCP server configured on AUTONOMO_PORT.
 ```
 
 ### 3. Connect your AI tool
 
-Add to VS Code settings or claude_desktop_config.json:
+Add to `.vscode/mcp.json`:
 
 ```json
 {
-  "mcpServers": {
-    "autonomo": {
-      "command": "npx",
-      "args": ["autonomo", "serve", "--url", "http://localhost:8080"]
+    "servers": {
+        "autonomo": {
+            "command": "npx",
+            "args": ["-y", "github:sebringj/autonomo/packages/@autonomo/mcp-server"],
+            "env": {
+                "AUTONOMO_PORT": "9876"
+            }
     }
   }
 }
@@ -154,7 +151,7 @@ transport.stop()
 
 ### Transport
 
-- `create_http_transport(config)` - Start HTTP server
+- `create_http_transport(config)` - Legacy optional HTTP server helper
 - `handle_request(method, path, body)` - Handle request manually
 
 ## License

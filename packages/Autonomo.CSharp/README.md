@@ -1,6 +1,10 @@
 # Autonomo.CSharp
 
+> ⚠️ **Testing/Source Package** - This package is currently used from source and is not published as a standalone NuGet package.
+
 C# integration for [Autonomo](https://github.com/sebringj/autonomo) - AI-powered application testing.
+
+WebSocket is the primary integration path. HTTP transport helpers are legacy/optional.
 
 ## Installation
 
@@ -37,32 +41,28 @@ var unregister = Registry.RegisterFillHandler(
 State.SetScreen("login");
 ```
 
-### 2. Start the bridge
+### 2. Connect to MCP WebSocket server
 
 ```csharp
 using Autonomo;
 
-// Start in development
-using var transport = Transport.CreateHttpTransport(new TransportConfig
-{
-    Port = 8080,
-    OnStart = url => Console.WriteLine($"Autonomo ready at {url}")
-});
-
-// Your app runs here...
-Console.ReadLine();
+// No in-app HTTP server required.
+// Register handlers and run with MCP server configured on AUTONOMO_PORT.
 ```
 
 ### 3. Connect your AI tool
 
-Add to VS Code settings or claude_desktop_config.json:
+Add to `.vscode/mcp.json`:
 
 ```json
 {
-  "mcpServers": {
-    "autonomo": {
-      "command": "npx",
-      "args": ["autonomo", "serve", "--url", "http://localhost:8080"]
+    "servers": {
+        "autonomo": {
+            "command": "npx",
+            "args": ["-y", "github:sebringj/autonomo/packages/@autonomo/mcp-server"],
+            "env": {
+                "AUTONOMO_PORT": "9876"
+            }
     }
   }
 }
@@ -202,7 +202,7 @@ var transport = Transport.CreateHttpTransport(new TransportConfig { Port = 8080 
 
 ### Transport
 
-- `Transport.CreateHttpTransport(config)` - Start HTTP server
+- `Transport.CreateHttpTransport(config)` - Legacy optional HTTP server helper
 - `Transport.HandleRequest(method, path, body)` - Handle request manually
 
 ## License

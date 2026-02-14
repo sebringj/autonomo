@@ -1,6 +1,10 @@
 # autonomo
 
+> ⚠️ **Testing/Source Package** - This package is currently used from source and is not published as a standalone RubyGems package.
+
 Ruby integration for [Autonomo](https://github.com/sebringj/autonomo) - AI-powered application testing.
+
+WebSocket is the primary integration path. HTTP transport helpers are legacy/optional.
 
 ## Installation
 
@@ -40,35 +44,28 @@ end
 Autonomo.state.set_screen('login')
 ```
 
-### 2. Start the bridge
+### 2. Connect to MCP WebSocket server
 
 ```ruby
 require 'autonomo'
 
-# Start in development
-transport = Autonomo.create_http_transport(
-  Autonomo::TransportConfig.new(
-    port: 8080,
-    on_start: ->(url) { puts "Autonomo ready at #{url}" }
-  )
-)
-
-# Your app runs here...
-
-# When done
-transport.stop
+# No in-app HTTP server required.
+# Register handlers and run with MCP server configured on AUTONOMO_PORT.
 ```
 
 ### 3. Connect your AI tool
 
-Add to VS Code settings or claude_desktop_config.json:
+Add to `.vscode/mcp.json`:
 
 ```json
 {
-  "mcpServers": {
+  "servers": {
     "autonomo": {
       "command": "npx",
-      "args": ["autonomo", "serve", "--url", "http://localhost:8080"]
+      "args": ["-y", "github:sebringj/autonomo/packages/@autonomo/mcp-server"],
+      "env": {
+        "AUTONOMO_PORT": "9876"
+      }
     }
   }
 }
@@ -200,7 +197,7 @@ end
 
 ### Transport
 
-- `Autonomo.create_http_transport(config)` - Start HTTP server
+- `Autonomo.create_http_transport(config)` - Legacy optional HTTP server helper
 - `Autonomo.handle_request(method, path, body)` - Handle request manually
 
 ## License
