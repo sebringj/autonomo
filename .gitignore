@@ -5,6 +5,9 @@ node_modules/
 # Build output
 dist/
 *.tsbuildinfo
+packages/autonomo_flutter/.dart_tool/
+packages/autonomo_flutter/build/
+packages/autonomo_flutter/pubspec.lock
 
 # IDE
 .vscode/
