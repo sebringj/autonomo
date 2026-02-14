@@ -336,30 +336,22 @@ useAutonomo({ name: 'my-app', devOnly: false })
 autonomo.init({ name: 'my-app', devOnly: false })
 ```
 
-```python
-# Python
-transport = create_http_transport(TransportConfig(port=8080, dev_only=False))
-```
-
-```swift
-// Swift
-createHttpTransport(TransportConfig(devOnly: false))
-```
-
 ## Platform Support
 
 | Platform | Package | Status |
 |----------|---------|--------|
 | **React** | `@autonomo/react` | ✅ Production-ready |
 | **React Native** | `@autonomo/react-native` | ✅ Production-ready |
-| **Swift/iOS** | `autonomo-swift` | 🧪 Tests pass |
-| **Flutter** | `autonomo_flutter` | 🧪 Tests pass |
-| **Python** | `autonomo-python` | 🧪 Tests pass |
-| **Ruby** | `autonomo-ruby` | 🧪 Tests pass |
-| **Kotlin/Android** | `autonomo-kotlin` | 🧪 Tests pass |
-| **C#/.NET** | `Autonomo.CSharp` | 🧪 Tests pass |
-| **Angular** | `@autonomo/angular` | 🧪 Tests pass |
+| **Angular** | `@autonomo/angular` | ✅ Production-ready |
 | **Deno Fresh** | See [docs](./docs/DENO_FRESH_INTEGRATION.md) | ✅ Production-ready |
+| **Swift/iOS** | `autonomo-swift` | 🔄 WebSocket update needed |
+| **Flutter** | `autonomo_flutter` | 🔄 WebSocket update needed |
+| **Python** | `autonomo-python` | 🔄 WebSocket update needed |
+| **Ruby** | `autonomo-ruby` | 🔄 WebSocket update needed |
+| **Kotlin/Android** | `autonomo-kotlin` | 🔄 WebSocket update needed |
+| **C#/.NET** | `Autonomo.CSharp` | 🔄 WebSocket update needed |
+
+> **Note:** Non-JavaScript packages were built for an older HTTP polling architecture. They need WebSocket client implementations to work with the current MCP server. The JS/TS packages (@autonomo/react, @autonomo/angular, @autonomo/react-native) are fully updated and production-ready.
 
 ## Architecture: Metadata-Based, Not HTML-Based
 
