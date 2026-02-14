@@ -89,19 +89,25 @@ Your AI doesn't guess what happened. It **sees everything**. And if something br
 
 ---
 
-## ⚠️ Installation Warning
+## Installation
 
-> **Autonomo is NOT published on npm.** It's a pnpm monorepo hosted only on GitHub.
->
-> **These will FAIL:**
-> ```
-> npm install autonomo          # ❌ Nothing on npm
-> npm install @autonomo/react   # ❌ Not published
-> yarn add autonomo             # ❌ Doesn't exist
-> pnpm add autonomo             # ❌ Won't work
-> ```
->
-> **Use ONLY the exact GitHub subpath URLs** shown in [Installation](#installation) or [QUICKSTART.md](./QUICKSTART.md).
+### JavaScript/TypeScript (npm)
+
+```bash
+# React
+npm install @sebringj/autonomo-react
+
+# Core (for vanilla JS/TS)
+npm install @sebringj/autonomo-core
+```
+
+### MCP Server (Global)
+
+```bash
+npm install -g github:sebringj/autonomo#packages/@autonomo/mcp-server
+```
+
+> See [QUICKSTART.md](./QUICKSTART.md) for complete setup instructions.
 
 ---
 
@@ -340,8 +346,8 @@ autonomo.init({ name: 'my-app', devOnly: false })
 
 | Platform | Package | Status |
 |----------|---------|--------|
-| **React** | `@autonomo/react` | ✅ Production-ready |
-| **React Native** | `@autonomo/react-native` | ✅ Production-ready |
+| **React** | `@sebringj/autonomo-react` | ✅ Production-ready |
+| **React Native** | `@sebringj/autonomo-react` | ✅ Production-ready |
 | **Angular** | `@autonomo/angular` | ✅ Production-ready |
 | **Deno Fresh** | See [docs](./docs/DENO_FRESH_INTEGRATION.md) | ✅ Production-ready |
 | **Swift/iOS** | `autonomo-swift` | 🔄 WebSocket update needed |
@@ -351,7 +357,7 @@ autonomo.init({ name: 'my-app', devOnly: false })
 | **Kotlin/Android** | `autonomo-kotlin` | 🔄 WebSocket update needed |
 | **C#/.NET** | `Autonomo.CSharp` | 🔄 WebSocket update needed |
 
-> **Note:** Non-JavaScript packages were built for an older HTTP polling architecture. They need WebSocket client implementations to work with the current MCP server. The JS/TS packages (@autonomo/react, @autonomo/angular, @autonomo/react-native) are fully updated and production-ready.
+> **Note:** Non-JavaScript packages were built for an older HTTP polling architecture. They need WebSocket client implementations to work with the current MCP server. The JS/TS packages (@sebringj/autonomo-react, @autonomo/angular) are fully updated and production-ready.
 
 ## Architecture: Metadata-Based, Not HTML-Based
 
@@ -503,21 +509,18 @@ AI: "✅ Confirmed - I can see 12 elements registered.
 
 ## Installation
 
-> ⚠️ **Autonomo is NOT on npm.** You must install from GitHub using the exact URLs below.
-
-**npm (install from GitHub):**
+**npm:**
 ```bash
 # Core
-npm install github:sebringj/autonomo#packages/@autonomo/core
+npm install @sebringj/autonomo-core
 
 # React
-npm install github:sebringj/autonomo#packages/@autonomo/react
+npm install @sebringj/autonomo-react
+```
 
-# React Native
-npm install github:sebringj/autonomo#packages/@autonomo/react-native
-
-# MCP Server
-npm install github:sebringj/autonomo#packages/@autonomo/mcp-server
+**MCP Server (global):**
+```bash
+npm install -g github:sebringj/autonomo#packages/@autonomo/mcp-server
 ```
 
 **Python:**
@@ -561,19 +564,15 @@ Apps connect automatically via WebSocket. No need for `--bridge` flags or HTTP e
 
 | Package | Platform | Install |
 |---------|----------|---------|
-| [@autonomo/core](./packages/@autonomo/core) | **JavaScript / TypeScript** | `npm install github:sebringj/autonomo#packages/@autonomo/core` |
-| [@autonomo/mcp-server](./packages/@autonomo/mcp-server) | MCP Server | `npm install github:sebringj/autonomo#packages/@autonomo/mcp-server` |
-| [@autonomo/react](./packages/@autonomo/react) | React | `npm install github:sebringj/autonomo#packages/@autonomo/react` |
-| [@autonomo/react-native](./packages/@autonomo/react-native) | React Native / Expo | `npm install github:sebringj/autonomo#packages/@autonomo/react-native` |
-| [autonomo-cli](./packages/autonomo-cli) | CLI | `npm install -g github:sebringj/autonomo#packages/autonomo-cli` |
+| [@sebringj/autonomo-core](https://npmjs.com/package/@sebringj/autonomo-core) | **JavaScript / TypeScript** | `npm install @sebringj/autonomo-core` |
+| [@sebringj/autonomo-react](https://npmjs.com/package/@sebringj/autonomo-react) | React | `npm install @sebringj/autonomo-react` |
+| [@autonomo/mcp-server](./packages/@autonomo/mcp-server) | MCP Server | `npm install -g github:sebringj/autonomo#packages/@autonomo/mcp-server` |
 | [autonomo_flutter](./packages/autonomo_flutter) | Flutter / Dart | See [Installation](#installation) |
 | [autonomo-python](./packages/autonomo-python) | Python | See [Installation](#installation) |
 | [autonomo-ruby](./packages/autonomo-ruby) | Ruby | See [Installation](#installation) |
-| [Autonomo.CSharp](./packages/Autonomo.CSharp) | C# / .NET | 📋 TODO (needs NuGet) |
 | [autonomo-swift](./packages/autonomo-swift) | Swift / iOS / macOS | See [Installation](#installation) |
-| [autonomo-kotlin](./packages/autonomo-kotlin) | Kotlin / JVM / Android | 📋 TODO (needs JitPack) |
 
-**Note:** `@autonomo/core` is the base JS/TS package - use it for vanilla JavaScript, Node.js, web components, Electron, or any framework without a dedicated package. The React and React Native packages are thin wrappers around core.
+**Note:** `@sebringj/autonomo-core` is the base JS/TS package - use it for vanilla JavaScript, Node.js, web components, Electron, or any framework without a dedicated package. The React package is a thin wrapper around core.
 
 ## Documentation
 

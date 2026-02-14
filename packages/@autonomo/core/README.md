@@ -1,4 +1,4 @@
-# @autonomo/core
+# @sebringj/autonomo-core
 
 Framework-agnostic core for [Autonomo](https://github.com/sebringj/autonomo) - AI-powered application testing.
 
@@ -7,11 +7,7 @@ This is the core TypeScript/JavaScript library that all Autonomo integrations ar
 ## Installation
 
 ```bash
-npm install github:sebringj/autonomo#packages/@autonomo/core
-# or
-yarn add github:sebringj/autonomo#packages/@autonomo/core
-# or
-pnpm add github:sebringj/autonomo#packages/@autonomo/core
+npm install @sebringj/autonomo-core
 ```
 
 ## Quick Start
@@ -23,7 +19,7 @@ import {
   registerTapHandler, 
   registerFillHandler, 
   state 
-} from '@autonomo/core';
+} from '@sebringj/autonomo-core';
 
 // Register a button
 const unregister = registerTapHandler(
