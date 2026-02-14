@@ -179,6 +179,23 @@ Ask your AI:
 
 The AI will actually interact with your running app and report results. 🎉
 
+### Demo Project
+
+Want to see Autonomo in action? Check out the **[LocalStack Todo App](https://github.com/sebringj/localstack)** — a full-stack React + AWS Lambda app with Autonomo integration:
+
+```bash
+git clone https://github.com/sebringj/localstack.git
+cd localstack
+```
+
+The demo includes:
+- React 19 frontend with `useAutonomo` hook
+- Python Lambda functions on LocalStack (local AWS emulator)
+- Pre-configured MCP settings
+- VS Code tasks for one-click startup
+
+Try prompting your AI: *"Login with testuser/testpass, add a todo, mark it complete, then delete it"*
+
 ### Need Help?
 
 Ask your AI to call the help tool for documentation:
