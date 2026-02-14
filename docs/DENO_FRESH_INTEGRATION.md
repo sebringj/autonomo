@@ -67,7 +67,9 @@ Or if installed globally:
   "servers": {
     "autonomo": {
       "command": "autonomo-mcp",
-      "args": ["--multi"]
+      "env": {
+        "AUTONOMO_PORT": "9876"
+      }
     }
   }
 }

@@ -2,19 +2,18 @@
 /**
  * Autonomo MCP Server CLI
  *
- * WebSocket mode (RECOMMENDED - apps connect directly):
+ * Apps connect directly via WebSocket:
  *   autonomo-mcp
  *   autonomo-mcp --port 9876
+ *   AUTONOMO_PORT=9876 autonomo-mcp
  *
- * Legacy HTTP mode (apps expose endpoints):
- *   autonomo-mcp --url http://localhost:8080/autonomo
- *   autonomo-mcp --multi --bridge http://localhost:3000/autonomo
+ * The server will automatically find an available port if the default is in use.
+ * Apps read the same AUTONOMO_PORT env var to connect.
  */
 
-import { startServer } from './index.js';
-import { startMultiBridgeServer, type BridgeConfig } from './multi-bridge.js';
 import { startWSModeServer } from './ws-mode.js';
 import { closeWSServer } from './ws-server.js';
+import * as net from 'net';
 
 // Graceful shutdown handler
 function setupGracefulShutdown(): void {
@@ -42,63 +41,50 @@ function getArg(name: string): string | undefined {
   return args[index + 1];
 }
 
-function getAllArgs(name: string): string[] {
-  const results: string[] = [];
-  for (let i = 0; i < args.length; i++) {
-    if (args[i] === `--${name}` || args[i] === `-${name[0]}`) {
-      if (args[i + 1]) {
-        results.push(args[i + 1]);
-      }
+/**
+ * Check if a port is available
+ */
+function isPortAvailable(port: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    const server = net.createServer();
+    server.once('error', () => resolve(false));
+    server.once('listening', () => {
+      server.close();
+      resolve(true);
+    });
+    server.listen(port, '127.0.0.1');
+  });
+}
+
+/**
+ * Find an available port starting from the given port
+ */
+async function findAvailablePort(startPort: number, maxAttempts = 10): Promise<number> {
+  for (let i = 0; i < maxAttempts; i++) {
+    const port = startPort + i;
+    if (await isPortAvailable(port)) {
+      return port;
     }
   }
-  return results;
+  throw new Error(`Could not find available port starting from ${startPort}`);
 }
 
-function hasFlag(name: string): boolean {
-  return args.includes(`--${name}`) || args.includes(`-${name[0]}`);
-}
+const requestedPort = parseInt(getArg('port') || process.env.AUTONOMO_PORT || '9876', 10);
 
-const isMultiBridge = hasFlag('multi');
-const isHttpMode = hasFlag('http');
-const url = getArg('url') ?? process.env.AUTONOMO_URL;
-const port = parseInt(getArg('port') || '9876', 10);
-const bridgeUrls = getAllArgs('bridge');
-
-// Default to WebSocket mode (simplest)
-if (!isHttpMode && !url && !isMultiBridge) {
-  // WebSocket mode - apps connect directly
-  console.error('Autonomo MCP Server starting (WebSocket mode)...');
-  console.error(`Apps connect to: ws://localhost:${port}`);
-  
-  startWSModeServer({ port }).catch((error) => {
+// Start WebSocket mode server
+(async () => {
+  try {
+    const port = await findAvailablePort(requestedPort);
+    if (port !== requestedPort) {
+      console.error(`Port ${requestedPort} in use, using port ${port}`);
+    }
+    
+    console.error('Autonomo MCP Server starting (WebSocket mode)...');
+    console.error(`Apps connect to: ws://localhost:${port}`);
+    
+    await startWSModeServer({ port });
+  } catch (error) {
     console.error('Failed to start server:', error);
     process.exit(1);
-  });
-} else if (isMultiBridge) {
-  // Multi-bridge HTTP mode (legacy)
-  console.error('Autonomo MCP Server starting (multi-bridge HTTP mode)...');
-
-  const bridges: BridgeConfig[] = bridgeUrls.map((bridgeUrl) => ({
-    url: bridgeUrl,
-  }));
-
-  if (bridges.length > 0) {
-    console.error(`Initial bridges: ${bridges.map((b) => b.url).join(', ')}`);
-  } else {
-    console.error('No initial bridges. Use autonomo_register_bridge to add apps.');
   }
-
-  startMultiBridgeServer({ bridges }).catch((error) => {
-    console.error('Failed to start server:', error);
-    process.exit(1);
-  });
-} else if (url) {
-  // Single-app HTTP mode (legacy)
-  console.error('Autonomo MCP Server starting (single-app HTTP mode)...');
-  console.error(`App URL: ${url}`);
-
-  startServer({ appUrl: url }).catch((error) => {
-    console.error('Failed to start server:', error);
-    process.exit(1);
-  });
-}
+})();

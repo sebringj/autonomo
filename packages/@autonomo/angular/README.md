@@ -122,7 +122,9 @@ Add to `.vscode/mcp.json`:
   "servers": {
     "autonomo": {
       "command": "autonomo-mcp",
-      "args": ["--multi"]
+      "env": {
+        "AUTONOMO_PORT": "9876"
+      }
     }
   }
 }

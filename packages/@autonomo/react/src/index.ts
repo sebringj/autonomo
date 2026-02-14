@@ -229,12 +229,29 @@ export function useInstance(config: InstanceConfig): InstanceInfo | undefined {
 // WebSocket Mode - Apps connect directly to Autonomo server
 // ============================================================
 
+/**
+ * Get default server URL from environment or use default port
+ */
+function getDefaultServerUrl(): string {
+  // Check for Vite env var (VITE_AUTONOMO_PORT)
+  // deno-lint-ignore no-explicit-any
+  const viteEnv = typeof import.meta !== 'undefined' && (import.meta as any).env;
+  const vitePort = viteEnv?.VITE_AUTONOMO_PORT;
+  
+  // Check for Node.js env var (AUTONOMO_PORT)
+  // deno-lint-ignore no-explicit-any
+  const nodePort = typeof globalThis !== 'undefined' && (globalThis as any).process?.env?.AUTONOMO_PORT;
+  
+  const port = vitePort || nodePort || '9876';
+  return `ws://localhost:${port}`;
+}
+
 interface UseAutonomoConfig {
   /** App name (used for bridge ID) */
   name: string;
   /** Platform type */
   platform?: 'web' | 'mobile' | 'desktop';
-  /** Autonomo WebSocket server URL (default: ws://localhost:9876) */
+  /** Autonomo WebSocket server URL (reads AUTONOMO_PORT env var, default: ws://localhost:9876) */
   serverUrl?: string;
   /** Only enable in development (default: true) */
   devOnly?: boolean;
@@ -272,7 +289,10 @@ interface AutonomoConnection {
  * ```
  */
 export function useAutonomo(config: UseAutonomoConfig): AutonomoConnection {
-  const { name, platform = 'web', serverUrl = 'ws://localhost:9876', devOnly = true, debug = false } = config;
+  const { name, platform = 'web', serverUrl, devOnly = true, debug = false } = config;
+  
+  // Use provided serverUrl or get from environment
+  const effectiveServerUrl = serverUrl || getDefaultServerUrl();
   
   const [connected, setConnected] = useState(false);
   const [bridgeId, setBridgeId] = useState<string | null>(null);
@@ -442,9 +462,9 @@ export function useAutonomo(config: UseAutonomoConfig): AutonomoConnection {
     let ws: WebSocket;
     
     const connect = () => {
-      if (debug) console.log('[Autonomo] Connecting to', serverUrl);
+      if (debug) console.log('[Autonomo] Connecting to', effectiveServerUrl);
       
-      ws = new WebSocket(serverUrl);
+      ws = new WebSocket(effectiveServerUrl);
       wsRef.current = ws;
       
       ws.onopen = () => {
@@ -512,7 +532,7 @@ export function useAutonomo(config: UseAutonomoConfig): AutonomoConnection {
       }
       ws?.close();
     };
-  }, [serverUrl, name, platform, debug, shouldSkip, handleCommand, reportState]);
+  }, [effectiveServerUrl, name, platform, debug, shouldSkip, handleCommand, reportState]);
   
   // Auto-report state on registry/state changes
   useEffect(() => {

@@ -31,10 +31,10 @@
   "devDependencies": {
     "@autonomo/core": "workspace:*",
     "@autonomo/react": "workspace:*",
-    "@types/react": "^18.2.0",
-    "react": "^18.2.0",
-    "react-native": "^0.74.0",
-    "typescript": "^5.4.0"
+    "@types/react": "^19.2.14",
+    "react": "^19.2.4",
+    "react-native": "^0.84.0",
+    "typescript": "^5.9.3"
   },
   "keywords": [
     "react-native",

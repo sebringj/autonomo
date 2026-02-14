@@ -19,23 +19,22 @@
     "dev": "tsc --watch",
     "start": "node dist/cli.js",
     "typecheck": "tsc --noEmit",
-    "test": "npx tsx test/help.test.ts && npx tsx test/registry.test.ts && npx tsx test/schema.test.ts && npx tsx test/shutdown.test.ts",
+    "test": "npx tsx test/help.test.ts && npx tsx test/schema.test.ts && npx tsx test/shutdown.test.ts",
     "test:help": "npx tsx test/help.test.ts",
-    "test:registry": "npx tsx test/registry.test.ts",
     "test:schema": "npx tsx test/schema.test.ts",
     "test:shutdown": "npx tsx test/shutdown.test.ts"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0",
-    "ws": "^8.16.0"
+    "@modelcontextprotocol/sdk": "^1.26.0",
+    "ws": "^8.19.0"
   },
   "peerDependencies": {
     "@autonomo/core": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
-    "@types/ws": "^8.5.10",
-    "typescript": "^5.4.0"
+    "@types/node": "^25.2.3",
+    "@types/ws": "^8.18.1",
+    "typescript": "^5.9.3"
   },
   "keywords": [
     "mcp",

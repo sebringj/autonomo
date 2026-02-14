@@ -537,12 +537,16 @@ dependencies:
       path: packages/autonomo_flutter
 ```
 
-**Start MCP server in multi-bridge mode:**
+**Start MCP server (WebSocket mode):**
 ```bash
-autonomo-mcp --multi
-# Or with initial bridges:
-autonomo-mcp --multi --bridge http://localhost:3000/autonomo --bridge http://localhost:8081/autonomo
+autonomomo-mcp
+# Or with custom port:
+autonomomo-mcp --port 9877
+# Or via env var:
+AUTONOMO_PORT=9877 autonomomo-mcp
 ```
+
+Apps connect automatically via WebSocket. No need for `--bridge` flags or HTTP endpoints.
 
 ## Packages
 

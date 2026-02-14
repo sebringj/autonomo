@@ -45,13 +45,17 @@ Create or update `.vscode/mcp.json` in the project root:
   "servers": {
     "autonomo": {
       "command": "autonomo-mcp",
-      "args": ["--multi"]
+      "env": {
+        "AUTONOMO_PORT": "9876"
+      }
     }
   }
 }
 ```
 
 For **Cursor** or **Windsurf**: Add the same server config to your MCP settings.
+
+> **Multiple VS Code instances:** Each workspace should use a different port (9876, 9877, etc.).
 
 ## Step 3: Install App Bridge
 
@@ -61,18 +65,30 @@ For **Cursor** or **Windsurf**: Add the same server config to your MCP settings.
 npm install github:sebringj/autonomo#packages/@autonomo/react
 ```
 
-Add provider to your app root (e.g., `App.tsx`, `layout.tsx`, or `_app.tsx`):
+Add to your app root (e.g., `App.tsx`, `layout.tsx`, or `_app.tsx`):
 
 ```tsx
-import { AutonomoProvider } from '@autonomo/react';
+import { useAutonomo } from '@autonomo/react';
 
 export default function App({ children }) {
+  // Connect to Autonomo WebSocket server
+  const { connected } = useAutonomo({ 
+    name: 'my-app', 
+    devOnly: true  // Only runs in development
+  });
+  
   return (
-    <AutonomoProvider name="my-app" enabled={process.env.NODE_ENV === 'development'}>
+    <div>
+      {connected && <span style={{ position: 'fixed', bottom: 8, right: 8 }}>🟢</span>}
       {children}
-    </AutonomoProvider>
+    </div>
   );
 }
+```
+
+Create a `.env` file in your project root:
+```bash
+VITE_AUTONOMO_PORT=9876
 ```
 
 ### For React Native / Expo
@@ -81,17 +97,18 @@ export default function App({ children }) {
 npm install github:sebringj/autonomo#packages/@autonomo/react-native
 ```
 
-Add provider to your app root:
+Add to your app root:
 
 ```tsx
-import { AutonomoProvider } from '@autonomo/react-native';
+import { useAutonomo } from '@autonomo/react-native';
 
 export default function App() {
-  return (
-    <AutonomoProvider name="my-app" enabled={__DEV__}>
-      <Navigation />
-    </AutonomoProvider>
-  );
+  const { connected } = useAutonomo({ 
+    name: 'my-app', 
+    devOnly: true  // Only runs when __DEV__ is true
+  });
+  
+  return <Navigation />;
 }
 ```
 
@@ -124,23 +141,47 @@ Mark elements with directives:
 <button autonomoTap="Login.Submit" (click)="onSubmit()">Login</button>
 ```
 
-## Step 4: Mark Interactive Elements
+## Step 4: Register Interactive Elements
 
-Import `useTestId` and spread it on interactive elements:
+Use hooks to register elements the AI can interact with:
 
 ```tsx
-import { useTestId } from '@autonomo/react'; // or '@autonomo/react-native'
+import { useTapHandler, useFillHandler, useScreen } from '@autonomo/react';
+import { useState } from 'react';
 
 function LoginScreen() {
-  const emailTestId = useTestId('Login.Email');
-  const passwordTestId = useTestId('Login.Password');
-  const submitTestId = useTestId('Login.Submit');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  
+  // Set current screen name
+  useScreen('Login');
+  
+  // Register input handlers
+  useFillHandler('Login.Email', setEmail, { hint: 'Email input' });
+  useFillHandler('Login.Password', setPassword, { hint: 'Password input' });
+  
+  // Register button handler
+  useTapHandler('Login.Submit', () => handleSubmit(), { hint: 'Submit login' });
+  
+  const handleSubmit = () => {
+    // Your login logic
+  };
 
   return (
-    <form>
-      <input {...emailTestId} type="email" placeholder="Email" />
-      <input {...passwordTestId} type="password" placeholder="Password" />
-      <button {...submitTestId} type="submit">Login</button>
+    <form onSubmit={handleSubmit}>
+      <input 
+        type="email" 
+        value={email} 
+        onChange={e => setEmail(e.target.value)} 
+        placeholder="Email" 
+      />
+      <input 
+        type="password" 
+        value={password} 
+        onChange={e => setPassword(e.target.value)} 
+        placeholder="Password" 
+      />
+      <button type="submit">Login</button>
     </form>
   );
 }
@@ -173,18 +214,19 @@ npm install -g github:sebringj/autonomo#packages/@autonomo/mcp-server
 ```
 
 ### App Not Connecting
-1. Ensure `AutonomoProvider` has `enabled={true}` (or `__DEV__` / `process.env.NODE_ENV === 'development'`)
-2. Check browser console / React Native logs for connection errors
-3. Restart VS Code to reload MCP server
+1. Ensure `useAutonomo` has `devOnly: false` if testing in production mode
+2. Check that `VITE_AUTONOMO_PORT` in `.env` matches `AUTONOMO_PORT` in `mcp.json`
+3. Check browser console for connection errors
+4. Restart VS Code to reload MCP server
 
 ### Elements Not Appearing
 ```tsx
-// ✅ Correct - use useTestId hook
-const testId = useTestId('Button.Submit');
-return <button {...testId}>Submit</button>;
+// ✅ Correct - use handler hooks to register elements
+useTapHandler('Button.Submit', () => handleSubmit(), { hint: 'Submit form' });
+useFillHandler('Input.Email', setEmail, { hint: 'Email input' });
 
 // ❌ Wrong - plain data attribute won't register
-return <button data-testid="submit">Submit</button>;
+return <button data-testid=\"submit\">Submit</button>;
 ```
 
 ---
