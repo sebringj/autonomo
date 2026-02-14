@@ -347,17 +347,18 @@ autonomo.init({ name: 'my-app', devOnly: false })
 | Platform | Package | Status |
 |----------|---------|--------|
 | **React** | `@sebringj/autonomo-react` | ✅ Production-ready |
-| **React Native** | `@sebringj/autonomo-react` | ✅ Production-ready |
-| **Angular** | `@autonomo/angular` | ✅ Production-ready |
+| **Core (JS/TS)** | `@sebringj/autonomo-core` | ✅ Production-ready |
+| **React Native** | `@autonomo/react-native` | 🧪 Testing-only (GitHub/source) |
+| **Angular** | `@autonomo/angular` | 🧪 Testing-only (GitHub/source) |
 | **Deno Fresh** | See [docs](./docs/DENO_FRESH_INTEGRATION.md) | ✅ Production-ready |
-| **Swift/iOS** | `autonomo-swift` | 🔄 WebSocket update needed |
-| **Flutter** | `autonomo_flutter` | 🔄 WebSocket update needed |
-| **Python** | `autonomo-python` | 🔄 WebSocket update needed |
-| **Ruby** | `autonomo-ruby` | 🔄 WebSocket update needed |
-| **Kotlin/Android** | `autonomo-kotlin` | 🔄 WebSocket update needed |
-| **C#/.NET** | `Autonomo.CSharp` | 🔄 WebSocket update needed |
+| **Swift/iOS** | `autonomo-swift` | 🧪 Testing/source package |
+| **Flutter** | `autonomo_flutter` | 🧪 Testing/source package |
+| **Python** | `autonomo-python` | 🧪 Testing/source package |
+| **Ruby** | `autonomo-ruby` | 🧪 Testing/source package |
+| **Kotlin/Android** | `autonomo-kotlin` | 🧪 Testing/source package |
+| **C#/.NET** | `Autonomo.CSharp` | 🧪 Testing/source package |
 
-> **Note:** Non-JavaScript packages were built for an older HTTP polling architecture. They need WebSocket client implementations to work with the current MCP server. The JS/TS packages (@sebringj/autonomo-react, @autonomo/angular) are fully updated and production-ready.
+> **Note:** WebSocket is the primary architecture across packages. Only `@sebringj/autonomo-core` and `@sebringj/autonomo-react` are currently published packages; other platform SDKs are currently GitHub/source testing packages.
 
 ## Architecture: Metadata-Based, Not HTML-Based
 
