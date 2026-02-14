@@ -89,6 +89,22 @@ Your AI doesn't guess what happened. It **sees everything**. And if something br
 
 ---
 
+## ⚠️ Installation Warning
+
+> **Autonomo is NOT published on npm.** It's a pnpm monorepo hosted only on GitHub.
+>
+> **These will FAIL:**
+> ```
+> npm install autonomo          # ❌ Nothing on npm
+> npm install @autonomo/react   # ❌ Not published
+> yarn add autonomo             # ❌ Doesn't exist
+> pnpm add autonomo             # ❌ Won't work
+> ```
+>
+> **Use ONLY the exact GitHub subpath URLs** shown in [Installation](#installation) or [QUICKSTART.md](./QUICKSTART.md).
+
+---
+
 ## ⚡ Get Started in 30 Seconds
 
 **Just tell your AI assistant:**
@@ -477,6 +493,8 @@ AI: "✅ Confirmed - I can see 12 elements registered.
 ```
 
 ## Installation
+
+> ⚠️ **Autonomo is NOT on npm.** You must install from GitHub using the exact URLs below.
 
 **npm (install from GitHub):**
 ```bash

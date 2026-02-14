@@ -2,6 +2,22 @@
 
 > **For AI Assistants**: This document contains installation instructions. Follow each step in order.
 
+## ⚠️ Critical: Not on npm
+
+**Autonomo is NOT published to npm.** It's a pnpm monorepo hosted only on GitHub.
+
+**These commands will FAIL:**
+```bash
+npm install autonomo            # ❌ Nothing exists on npm
+npm install @autonomo/react     # ❌ Not published to registry
+yarn add autonomo               # ❌ Will not find anything
+pnpm add autonomo               # ❌ Does not work
+```
+
+**You MUST use the exact GitHub subpath URLs below.** No shortcuts, no variations.
+
+---
+
 ## What You're Installing
 
 Autonomo gives your AI coding assistant live eyes and hands on your running app. After setup, your AI can see every screen, interact with every element, and verify its own work — in real time.
@@ -13,6 +29,8 @@ Two parts:
 ---
 
 ## Step 1: Install MCP Server (Global)
+
+**Use this exact command** (the `github:` prefix and `#packages/...` path are required):
 
 ```bash
 npm install -g github:sebringj/autonomo#packages/@autonomo/mcp-server
