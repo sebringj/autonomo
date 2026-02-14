@@ -1,6 +1,6 @@
 {
   "name": "@sebringj/autonomo-react",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "React hooks and components for Autonomo integration",
   "type": "module",
   "main": "./dist/index.js",
