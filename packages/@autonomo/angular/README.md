@@ -1,11 +1,20 @@
 # @autonomo/angular
 
+> ⚠️ **Testing Only** - This package is not yet published to npm. It is included for testing and development purposes only.
+
 Angular integration for [Autonomo](https://github.com/sebringj/autonomo) - AI-powered application testing.
 
 ## Installation
 
+For local development/testing, link the package from this monorepo:
+
 ```bash
-npm install github:sebringj/autonomo#packages/@autonomo/angular
+# From the autonomo repo root
+cd packages/@autonomo/angular
+npm link
+
+# In your Angular project
+npm link @autonomo/angular
 ```
 
 ## Quick Start
