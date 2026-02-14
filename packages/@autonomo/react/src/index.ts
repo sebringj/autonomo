@@ -1,5 +1,5 @@
 /**
- * @autonomo/react
+ * @sebringj/autonomo-react
  * 
  * React hooks and components for Autonomo integration.
  */
@@ -21,7 +21,7 @@ import {
   type NavigationHandler,
   type InstanceConfig,
   type InstanceInfo,
-} from '@autonomo/core';
+} from '@sebringj/autonomo-core';
 
 export {
   registry,
@@ -34,7 +34,7 @@ export {
   requireInstance,
   getBridgeId,
   resetInstance,
-} from '@autonomo/core';
+} from '@sebringj/autonomo-core';
 
 export type {
   ElementType,
@@ -45,7 +45,7 @@ export type {
   // Instance types
   InstanceConfig,
   InstanceInfo,
-} from '@autonomo/core';
+} from '@sebringj/autonomo-core';
 
 /**
  * Register a tap handler for a component
