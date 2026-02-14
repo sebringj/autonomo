@@ -18,6 +18,18 @@ class ActionResult {
     this.data,
   });
 
+  static ActionResult ok([String? message, dynamic data]) => ActionResult(
+        success: true,
+        message: message,
+        data: data,
+      );
+
+  static ActionResult fail(String error, [dynamic data]) => ActionResult(
+        success: false,
+        error: error,
+        data: data,
+      );
+
   Map<String, dynamic> toJson() => {
         'success': success,
         if (message != null) 'message': message,
@@ -123,6 +135,12 @@ class CustomActionsRegistry {
   /// List all action names
   List<String> list() => _actions.keys.toList();
 
+  /// Clear all custom actions
+  void clear() {
+    _actions.clear();
+    _notifyChange();
+  }
+
   /// Get rich info about all actions (for AI discoverability)
   List<CustomActionInfo> getAll() {
     return _actions.entries.map((entry) {
@@ -155,5 +173,4 @@ final customActions = CustomActionsRegistry();
 void Function() registerCustomAction(String name, CustomActionHandler handler,
     {CustomActionMeta? meta}) {
   return customActions.register(name, handler, meta: meta);
-}
 }

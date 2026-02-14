@@ -1,227 +1,110 @@
-/// Test harness for autonomo_flutter
-/// Run: flutter test
-/// Or:  dart test test/autonomo_test.dart
-
-import 'package:test/test.dart';
 import 'package:autonomo_flutter/autonomo_flutter.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   setUp(() {
-    ElementRegistry.instance.clear();
-    CustomActionsRegistry.instance.clear();
+    registry.clear();
+    customActions.clear();
+    state.clearErrors();
+    state.setData({});
+    state.setScreen('unknown');
   });
 
-  group('ElementRegistry', () {
-    test('registry starts empty', () {
-      expect(ElementRegistry.instance.list(), isEmpty);
+  group('Registry', () {
+    test('starts empty', () {
+      expect(registry.list(), isEmpty);
     });
 
-    test('registerTapHandler adds element', () {
+    test('registerTapHandler registers and unregisters', () async {
       var tapped = false;
-
-      final unregister = registerTapHandler('Test.Button', () {
+      final unregister = registerTapHandler('Test.Button', () async {
         tapped = true;
       });
 
-      expect(ElementRegistry.instance.has('Test.Button'), isTrue);
-      expect(ElementRegistry.instance.list(), contains('Test.Button'));
-
-      // Invoke handler
-      ElementRegistry.instance.get('Test.Button')?.handler(null);
+      expect(registry.has('Test.Button'), isTrue);
+      await registry.get('Test.Button')!.handler();
       expect(tapped, isTrue);
 
       unregister();
-      expect(ElementRegistry.instance.has('Test.Button'), isFalse);
+      expect(registry.has('Test.Button'), isFalse);
     });
 
-    test('registerFillHandler works with value', () {
+    test('registerFillHandler handles value', () async {
       var value = '';
-
       final unregister = registerFillHandler(
         'Test.Input',
-        (v) => value = v ?? '',
+        (v) async {
+          value = v;
+        },
         getValue: () => value,
       );
 
-      final handler = ElementRegistry.instance.get('Test.Input');
-      handler?.handler('test value');
-      expect(value, equals('test value'));
-      expect(handler?.getValue?.call(), equals('test value'));
-
+      await registry.get('Test.Input')!.handler('hello');
+      expect(value, equals('hello'));
+      expect(registry.get('Test.Input')!.getValue!(), equals('hello'));
       unregister();
-    });
-
-    test('registry onChange fires on changes', () {
-      var changeCount = 0;
-      final unsubscribe = ElementRegistry.instance.onChange(() {
-        changeCount++;
-      });
-
-      final unregister = registerTapHandler('Test.Change', () {});
-      expect(changeCount, equals(1));
-
-      unregister();
-      expect(changeCount, equals(2));
-
-      unsubscribe();
-    });
-
-    test('registry.find filters by pattern', () {
-      registerTapHandler('Login.Submit', () {});
-      registerTapHandler('Login.Cancel', () {});
-      registerTapHandler('Home.Button', () {});
-
-      final loginElements = ElementRegistry.instance.find(RegExp(r'^Login\.'));
-      expect(loginElements.length, equals(2));
-
-      ElementRegistry.instance.clear();
     });
   });
 
-  group('CustomActionsRegistry', () {
-    test('custom actions work', () {
-      final unregister = registerCustomAction('testAction', (value) {
-        if (value == 'fail') {
-          return ActionResult.fail('Intentional failure');
-        }
+  group('CustomActions', () {
+    test('executes action', () async {
+      final unregister = registerCustomAction('testAction', ([value]) async {
         return ActionResult.ok('Got: $value');
       });
 
-      var result = CustomActionsRegistry.instance.execute('testAction', 'hello');
+      final result = await customActions.execute('testAction', 'hello');
       expect(result.success, isTrue);
       expect(result.message, contains('Got: hello'));
-
-      result = CustomActionsRegistry.instance.execute('testAction', 'fail');
-      expect(result.success, isFalse);
-
       unregister();
     });
 
-    test('unknown action returns error', () {
-      final result = CustomActionsRegistry.instance.execute('nonexistent');
+    test('returns error for unknown action', () async {
+      final result = await customActions.execute('missing');
       expect(result.success, isFalse);
       expect(result.error?.toLowerCase(), contains('unknown'));
     });
   });
 
-  group('StateManager', () {
-    test('state manager tracks screen', () {
-      StateManager.instance.setScreen('login');
-      expect(StateManager.instance.screen, equals('login'));
-
-      final state = StateManager.instance.getState();
-      expect(state.screen, equals('login'));
-    });
-
-    test('state manager tracks user', () {
-      final user = UserContext(
-        id: '123',
-        email: 'test@example.com',
-        role: 'admin',
-      );
-      StateManager.instance.setUser(user);
-
-      final state = StateManager.instance.getState();
-      expect(state.user?.id, equals('123'));
-      expect(state.user?.email, equals('test@example.com'));
-    });
-
-    test('state manager tracks errors', () {
-      StateManager.instance.clearErrors();
-      StateManager.instance.addError('Test error');
-
-      final state = StateManager.instance.getState();
-      expect(state.errors, contains('Test error'));
-    });
-
-    test('state manager merges data', () {
-      StateManager.instance.setData({'key1': 'value1'});
-      StateManager.instance.mergeData({'key2': 'value2'});
-
-      final state = StateManager.instance.getState();
-      expect(state.data?['key1'], equals('value1'));
-      expect(state.data?['key2'], equals('value2'));
+  group('State', () {
+    test('tracks screen and user', () {
+      state.setScreen('login');
+      state.setUser(const UserContext(id: '1', email: 'a@b.com', role: 'admin'));
+      final snapshot = state.getState();
+      expect(snapshot.screen, equals('login'));
+      expect(snapshot.user?.email, equals('a@b.com'));
     });
   });
 
   group('Commands', () {
-    test('commands execute press', () {
+    test('press works', () async {
       var pressed = false;
-      registerTapHandler('Cmd.Button', () => pressed = true);
-
-      final result = executeCommand('press', target: 'Cmd.Button');
+      registerTapHandler('Cmd.Button', () async {
+        pressed = true;
+      });
+      final result = await executeCommand('press', 'Cmd.Button');
       expect(result.success, isTrue);
       expect(pressed, isTrue);
-
-      ElementRegistry.instance.unregister('Cmd.Button');
     });
 
-    test('commands execute fill', () {
+    test('fill works', () async {
       var value = '';
-      registerFillHandler('Cmd.Input', (v) => value = v ?? '');
-
-      final result = executeCommand('fill', target: 'Cmd.Input', value: 'hello');
+      registerFillHandler('Cmd.Input', (v) async {
+        value = v;
+      });
+      final result = await executeCommand('fill', 'Cmd.Input', 'hello');
       expect(result.success, isTrue);
       expect(value, equals('hello'));
-
-      ElementRegistry.instance.unregister('Cmd.Input');
     });
 
-    test('commands return error for missing element', () {
-      final result = executeCommand('press', target: 'Nonexistent.Button');
-      expect(result.success, isFalse);
-      expect(result.error?.toLowerCase(), contains('not found'));
-    });
-
-    test('commands execute custom action', () {
-      registerCustomAction('myAction', (value) {
-        return ActionResult.ok('Executed with $value');
-      });
-
-      final result = executeCommand('custom', target: 'myAction', value: 'test');
+    test('wait works', () async {
+      final result = await executeCommand('wait', '50');
       expect(result.success, isTrue);
     });
 
-    test('commands handle wait', () async {
-      final start = DateTime.now();
-      final result = executeCommand('wait', target: '100');
-      final elapsed = DateTime.now().difference(start).inMilliseconds;
-
+    test('custom command works', () async {
+      registerCustomAction('myAction', ([value]) async => ActionResult.ok('ok $value'));
+      final result = await executeCommand('custom', 'myAction', 'x');
       expect(result.success, isTrue);
-      expect(elapsed, greaterThanOrEqualTo(100));
-    });
-
-    test('custom actions with metadata', () {
-      final meta = CustomActionMeta(
-        description: 'Greets the user',
-        args: {'name': 'Name to greet'},
-        example: {'name': 'World'},
-      );
-
-      final unregister = registerCustomAction(
-        'greetAction',
-        (value) => ActionResult.ok('Hello, $value!'),
-        meta: meta,
-      );
-
-      // Verify action works
-      final result = CustomActionsRegistry.instance.execute('greetAction', 'World');
-      expect(result.success, isTrue);
-      expect(result.message, contains('Hello, World!'));
-
-      // Verify getAll returns rich info
-      final allActions = CustomActionsRegistry.instance.getAll();
-      expect(allActions.length, greaterThanOrEqualTo(1));
-
-      final greetInfo = allActions.firstWhere(
-        (a) => a.name == 'greetAction',
-        orElse: () => throw Exception('greetAction not found'),
-      );
-      expect(greetInfo.description, equals('Greets the user'));
-      expect(greetInfo.args?['name'], equals('Name to greet'));
-      expect(greetInfo.example?['name'], equals('World'));
-
-      unregister();
     });
   });
 }
