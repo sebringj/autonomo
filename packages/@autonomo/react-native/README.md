@@ -1,18 +1,16 @@
-# @autonomo/react-native
-
-> ⚠️ **GitHub/Source Package** - This package is not published to npm yet.
+# @sebringj/autonomo-react-native
 
 React Native integration for [Autonomo](https://github.com/sebringj/autonomo) - AI-powered application testing.
 
 ## Installation
 
-Install directly from GitHub:
+Install from npm:
 
 ```bash
-npm install github:sebringj/autonomo#packages/@autonomo/react-native
+npm install @sebringj/autonomo-react-native
 ```
 
-For production, pin to a specific commit SHA for reproducible builds:
+Optional GitHub install (if you need unreleased commits):
 
 ```bash
 npm install github:sebringj/autonomo#<commit-sha>:packages/@autonomo/react-native
@@ -26,13 +24,13 @@ cd packages/@autonomo/react-native
 npm link
 
 # In your React Native project
-npm link @autonomo/react-native
+npm link @sebringj/autonomo-react-native
 ```
 
 ## Quick Start
 
 ```tsx
-import { useAutonomo, useTapHandler, useFillHandler } from '@autonomo/react-native';
+import { useAutonomo, useTapHandler, useFillHandler } from '@sebringj/autonomo-react-native';
 
 function App() {
   // Initialize Autonomo connection 
@@ -53,4 +51,4 @@ function App() {
 
 ## Status
 
-This package is currently distributed via GitHub/source (not npm). It can be used in production if pinned to a commit SHA.
+This package is published on npm. For production stability, pin a specific version.
