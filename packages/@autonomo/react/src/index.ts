@@ -4,7 +4,7 @@
  * React hooks and components for Autonomo integration.
  */
 
-import { useEffect, useRef, useCallback, useState } from 'react';
+import { createElement, useEffect, useRef, useCallback, useState, type CSSProperties } from 'react';
 import {
   registry,
   state,
@@ -245,6 +245,10 @@ interface UseAutonomoConfig {
 interface AutonomoConnection {
   /** Whether connected to the Autonomo server */
   connected: boolean;
+  /** Current connection status */
+  status: 'connecting' | 'connected' | 'disconnected' | 'error';
+  /** Last connection error (if any) */
+  error: string | null;
   /** Bridge ID assigned by server */
   bridgeId: string | null;
   /** Send current state to server */
@@ -260,11 +264,11 @@ interface AutonomoConnection {
  * @example
  * ```tsx
  * function App() {
- *   const { connected } = useAutonomo({ name: 'my-app' });
+ *   const { connected, status } = useAutonomo({ name: 'my-app' });
  *   
  *   return (
  *     <div>
- *       {connected && <span>🟢 AI Connected</span>}
+ *       <AutonomoDevBadge connected={connected} error={status === 'error'} />
  *       <MyApp />
  *     </div>
  *   );
@@ -275,6 +279,8 @@ export function useAutonomo(config: UseAutonomoConfig): AutonomoConnection {
   const { name, platform = 'web', serverUrl = 'ws://localhost:9876', devOnly = true, debug = false } = config;
   
   const [connected, setConnected] = useState(false);
+  const [status, setStatus] = useState<'connecting' | 'connected' | 'disconnected' | 'error'>('disconnected');
+  const [error, setError] = useState<string | null>(null);
   const [bridgeId, setBridgeId] = useState<string | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -443,6 +449,8 @@ export function useAutonomo(config: UseAutonomoConfig): AutonomoConnection {
     
     const connect = () => {
       if (debug) console.log('[Autonomo] Connecting to', serverUrl);
+      setStatus('connecting');
+      setError(null);
       
       ws = new WebSocket(serverUrl);
       wsRef.current = ws;
@@ -467,6 +475,8 @@ export function useAutonomo(config: UseAutonomoConfig): AutonomoConnection {
             case 'registered':
               setBridgeId(msg.bridgeId);
               setConnected(true);
+              setStatus('connected');
+              setError(null);
               if (debug) console.log('[Autonomo] Registered as', msg.bridgeId);
               // Send initial state
               reportState();
@@ -493,13 +503,17 @@ export function useAutonomo(config: UseAutonomoConfig): AutonomoConnection {
       ws.onclose = () => {
         if (debug) console.log('[Autonomo] Disconnected');
         setConnected(false);
+        setStatus('disconnected');
         setBridgeId(null);
         
         // Reconnect after delay
         reconnectTimeoutRef.current = setTimeout(connect, 2000);
       };
       
-      ws.onerror = (err) => {
+      ws.onerror = (err: Event) => {
+        const message = (err as unknown as { message?: string })?.message || 'WebSocket connection error';
+        setError(message);
+        setStatus('error');
         if (debug) console.error('[Autonomo] WebSocket error:', err);
       };
     };
@@ -525,5 +539,142 @@ export function useAutonomo(config: UseAutonomoConfig): AutonomoConnection {
     return () => unsubscribe();
   }, [reportState]);
   
-  return { connected, bridgeId, reportState };
+  return { connected, status, error, bridgeId, reportState };
+}
+
+export type AutonomoBadgePlacement = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+
+export interface AutonomoBadgeProps {
+  connected: boolean;
+  error?: boolean;
+  devOnly?: boolean;
+  placement?: AutonomoBadgePlacement;
+  offset?: number;
+  size?: number;
+  logoUrl?: string;
+  style?: CSSProperties;
+}
+
+const AUTONOMO_BADGE_KEYFRAMES_ID = 'autonomo-dev-badge-keyframes';
+
+function isProductionMode(): boolean {
+  // deno-lint-ignore no-explicit-any
+  const nodeEnv = typeof globalThis !== 'undefined' && (globalThis as any).process?.env?.NODE_ENV;
+  return nodeEnv === 'production';
+}
+
+function ensureBadgeKeyframes(): void {
+  if (typeof document === 'undefined') return;
+  if (document.getElementById(AUTONOMO_BADGE_KEYFRAMES_ID)) return;
+
+  const style = document.createElement('style');
+  style.id = AUTONOMO_BADGE_KEYFRAMES_ID;
+  style.textContent = `
+@keyframes autonomoBadgePulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
+}
+`;
+  document.head.appendChild(style);
+}
+
+function getPlacementStyle(placement: AutonomoBadgePlacement, offset: number): CSSProperties {
+  switch (placement) {
+    case 'top-left':
+      return { top: offset, left: offset };
+    case 'bottom-left':
+      return { bottom: offset, left: offset };
+    case 'bottom-right':
+      return { bottom: offset, right: offset };
+    default:
+      return { top: offset, right: offset };
+  }
+}
+
+/**
+ * Tiny branded floating status badge for development only.
+ *
+ * - Gray border: disconnected
+ * - Green border + ✓ pulse: connected
+ * - Red border + × pulse: error
+ */
+export function AutonomoDevBadge({
+  connected,
+  error = false,
+  devOnly = true,
+  placement = 'bottom-right',
+  offset = 10,
+  size = 30,
+  logoUrl = 'https://raw.githubusercontent.com/sebringj/autonomo/main/logo.png',
+  style,
+}: AutonomoBadgeProps): ReturnType<typeof createElement> | null {
+  useEffect(() => {
+    ensureBadgeKeyframes();
+  }, []);
+
+  if (devOnly && isProductionMode()) {
+    return null;
+  }
+
+  const mode = error ? 'error' : connected ? 'connected' : 'disconnected';
+  const borderColor = mode === 'connected' ? '#16a34a' : mode === 'error' ? '#dc2626' : '#6b7280';
+  const dotBackground = mode === 'connected' ? '#16a34a' : mode === 'error' ? '#dc2626' : '#9ca3af';
+  const statusGlyph = mode === 'connected' ? '✓' : mode === 'error' ? '×' : '•';
+
+  const badgeStyle: CSSProperties = {
+    position: 'fixed',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: size,
+    height: size,
+    borderRadius: 999,
+    border: `1.5px solid ${borderColor}`,
+    background: 'rgba(0,0,0,0.68)',
+    backdropFilter: 'blur(4px)',
+    zIndex: 9999,
+    boxSizing: 'border-box',
+    ...getPlacementStyle(placement, offset),
+    ...style,
+  };
+
+  const logoStyle: CSSProperties = {
+    width: Math.max(10, Math.round(size * 0.56)),
+    height: Math.max(10, Math.round(size * 0.56)),
+    objectFit: 'contain',
+    display: 'block',
+    opacity: mode === 'disconnected' ? 0.8 : 1,
+    filter: mode === 'disconnected' ? 'grayscale(0.5)' : 'none',
+    pointerEvents: 'none',
+  };
+
+  const dotSize = Math.max(9, Math.round(size * 0.4));
+  const dotStyle: CSSProperties = {
+    position: 'absolute',
+    right: -3,
+    bottom: -3,
+    width: dotSize,
+    height: dotSize,
+    borderRadius: 999,
+    border: '1px solid rgba(0,0,0,0.7)',
+    background: dotBackground,
+    color: '#ffffff',
+    fontSize: Math.max(8, Math.round(size * 0.28)),
+    lineHeight: `${dotSize - 2}px`,
+    textAlign: 'center',
+    fontWeight: 700,
+    animation: mode === 'disconnected' ? undefined : 'autonomoBadgePulse 1.2s ease-in-out infinite',
+    pointerEvents: 'none',
+  };
+
+  return createElement(
+    'div',
+    {
+      style: badgeStyle,
+      'aria-hidden': true,
+      title: `Autonomo ${mode}`,
+    },
+    createElement('img', { src: logoUrl, alt: '', style: logoStyle }),
+    createElement('span', { style: dotStyle }, statusGlyph)
+  );
 }
