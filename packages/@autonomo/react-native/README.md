@@ -1,12 +1,24 @@
 # @autonomo/react-native
 
-> ⚠️ **Testing Only** - This package is not yet published to npm. It is included for testing and development purposes only.
+> ⚠️ **GitHub/Source Package** - This package is not published to npm yet.
 
 React Native integration for [Autonomo](https://github.com/sebringj/autonomo) - AI-powered application testing.
 
 ## Installation
 
-For local development/testing, link the package from this monorepo:
+Install directly from GitHub:
+
+```bash
+npm install github:sebringj/autonomo#packages/@autonomo/react-native
+```
+
+For production, pin to a specific commit SHA for reproducible builds:
+
+```bash
+npm install github:sebringj/autonomo#<commit-sha>:packages/@autonomo/react-native
+```
+
+For local development, you can also link from this monorepo:
 
 ```bash
 # From the autonomo repo root
@@ -41,4 +53,4 @@ function App() {
 
 ## Status
 
-This package is provided for local testing only. For React Native apps in production, check for updates to the npm published version.
+This package is currently distributed via GitHub/source (not npm). It can be used in production if pinned to a commit SHA.
