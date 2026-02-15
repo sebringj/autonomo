@@ -348,7 +348,7 @@ autonomo.init({ name: 'my-app', devOnly: false })
 |----------|---------|--------|
 | **React** | `@sebringj/autonomo-react` | ✅ Production-ready |
 | **Core (JS/TS)** | `@sebringj/autonomo-core` | ✅ Production-ready |
-| **React Native** | `@autonomo/react-native` | 🧪 Testing-only (GitHub/source) |
+| **React Native** | `@sebringj/autonomo-react-native` | ✅ Published on npm |
 | **Angular** | `@autonomo/angular` | 🧪 Testing-only (GitHub/source) |
 | **Deno Fresh** | See [docs](./docs/DENO_FRESH_INTEGRATION.md) | ✅ Production-ready |
 | **Swift/iOS** | `autonomo-swift` | 🧪 Testing/source package |
@@ -358,7 +358,7 @@ autonomo.init({ name: 'my-app', devOnly: false })
 | **Kotlin/Android** | `autonomo-kotlin` | 🧪 Testing/source package |
 | **C#/.NET** | `Autonomo.CSharp` | 🧪 Testing/source package |
 
-> **Note:** WebSocket is the primary architecture across packages. Only `@sebringj/autonomo-core` and `@sebringj/autonomo-react` are currently published packages; other platform SDKs are currently GitHub/source testing packages.
+> **Note:** WebSocket is the primary architecture across packages. Published npm packages are `@sebringj/autonomo-core`, `@sebringj/autonomo-react`, and `@sebringj/autonomo-react-native`. Other platform SDKs are currently GitHub/source testing packages.
 
 ## Architecture: Metadata-Based, Not HTML-Based
 

@@ -76,13 +76,13 @@ VITE_AUTONOMO_PORT=9876
 ### For React Native / Expo
 
 ```bash
-npm install github:sebringj/autonomo#packages/@autonomo/react-native
+npm install @sebringj/autonomo-react-native
 ```
 
 Add to your app root:
 
 ```tsx
-import { useAutonomo } from '@autonomo/react-native';
+import { useAutonomo } from '@sebringj/autonomo-react-native';
 
 export default function App() {
   const { connected } = useAutonomo({ 
