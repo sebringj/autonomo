@@ -220,55 +220,14 @@
       <script>
         (function() {
           var v = document.getElementById('hero-video');
-          var speed = 1;
-          var dir = -1;
-          var lastTs = 0;
-          var reverseRaf = 0;
-          var seeking = false;
-
-          function tick(ts) {
-            if (!lastTs) lastTs = ts;
-            var dt = (ts - lastTs) / 1000;
-            lastTs = ts;
-
-            if (!v.duration || seeking) {
-              reverseRaf = requestAnimationFrame(tick);
-              return;
-            }
-
-            var next = v.currentTime + dir * speed * dt;
-            if (next <= 0) {
-              v.currentTime = 0;
-              reverseRaf = 0;
-              lastTs = 0;
-              startForward();
-              return;
-            }
-
-            seeking = true;
-            v.currentTime = next;
-
-            reverseRaf = requestAnimationFrame(tick);
-          }
-
-          function startForward() {
-            v.playbackRate = speed;
-            var p = v.play();
-            if (p && typeof p.catch === 'function') p.catch(function() {});
-          }
-
-          function startReverse() {
-            v.pause();
-            dir = -1;
-            lastTs = 0;
-            if (!reverseRaf) reverseRaf = requestAnimationFrame(tick);
-          }
+          var speed = 0.5;
 
           v.addEventListener('loadedmetadata', function() {
             v.style.opacity = '1';
-            v.addEventListener('seeked', function() { seeking = false; });
-            v.addEventListener('ended', startReverse);
-            startForward();
+            v.loop = true;
+            v.playbackRate = speed;
+            var p = v.play();
+            if (p && typeof p.catch === 'function') p.catch(function() {});
           });
         })();
       </script>
