@@ -342,6 +342,35 @@ useAutonomo({ name: 'my-app', devOnly: false })
 autonomo.init({ name: 'my-app', devOnly: false })
 ```
 
+### Official Dev Badge (React)
+
+The React package includes a tiny official floating badge for local development branding and status:
+
+- Gray border = not active
+- Green border + ✓ pulse = active
+- Red border + × pulse = error
+
+```tsx
+import { useAutonomo, AutonomoDevBadge } from '@sebringj/autonomo-react';
+
+function App() {
+  const { connected, status } = useAutonomo({ name: 'my-app' });
+
+  return (
+    <>
+      <AutonomoDevBadge
+        connected={connected}
+        error={status === 'error'}
+        placement="bottom-right" // top-left | top-right | bottom-left | bottom-right
+      />
+      <MyApp />
+    </>
+  );
+}
+```
+
+`AutonomoDevBadge` is dev-only by default (`devOnly: true`) and supports placement overrides with `placement`, `offset`, and `style`.
+
 ## Platform Support
 
 | Platform | Package | Status |

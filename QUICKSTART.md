@@ -50,20 +50,25 @@ npm install @sebringj/autonomo-react
 Add to your app root (e.g., `App.tsx`, `layout.tsx`, or `_app.tsx`):
 
 ```tsx
-import { useAutonomo } from '@sebringj/autonomo-react';
+import { useAutonomo, AutonomoDevBadge } from '@sebringj/autonomo-react';
 
 export default function App({ children }) {
   // Connect to Autonomo WebSocket server
-  const { connected } = useAutonomo({ 
+  const { connected, status } = useAutonomo({ 
     name: 'my-app', 
     devOnly: true  // Only runs in development
   });
   
   return (
-    <div>
-      {connected && <span style={{ position: 'fixed', bottom: 8, right: 8 }}>🟢</span>}
+    <>
+      <AutonomoDevBadge
+        connected={connected}
+        error={status === 'error'}
+        placement="bottom-right"
+        size={30}
+      />
       {children}
-    </div>
+    </>
   );
 }
 ```
