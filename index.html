@@ -220,23 +220,37 @@
       <script>
         (function() {
           var v = document.getElementById('hero-video');
-          var speed = 1.00;
-          var pos = 0;
+          var speed = 1;
           var dir = 1;
-          var seeking = false;
+          var lastTs = 0;
+
+          function tick(ts) {
+            if (!lastTs) lastTs = ts;
+            var dt = (ts - lastTs) / 1000;
+            lastTs = ts;
+
+            if (v.duration) {
+              var end = Math.max(0, v.duration - 0.05);
+              var next = v.currentTime + dir * speed * dt;
+
+              if (next >= end) {
+                next = end;
+                dir = -1;
+              } else if (next <= 0) {
+                next = 0;
+                dir = 1;
+              }
+
+              v.currentTime = next;
+            }
+
+            requestAnimationFrame(tick);
+          }
+
           v.addEventListener('loadedmetadata', function() {
             v.style.opacity = '1';
             v.pause();
-            v.addEventListener('seeked', function() { seeking = false; });
-            setInterval(function() {
-              if (seeking) return;
-              pos += dir * speed * (1 / 30);
-              var end = v.duration - 0.1;
-              if (pos >= end) { pos = end; dir = -1; }
-              if (pos <= 0) { pos = 0; dir = 1; }
-              seeking = true;
-              v.currentTime = pos;
-            }, 33);
+            requestAnimationFrame(tick);
           });
         })();
       </script>
