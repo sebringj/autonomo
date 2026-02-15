@@ -221,13 +221,22 @@
         (function() {
           var v = document.getElementById('hero-video');
           var speed = 0.5;
+          var loopStart = 1;
+          var loopEnd = 7;
 
           v.addEventListener('loadedmetadata', function() {
             v.style.opacity = '1';
-            v.loop = true;
+            v.loop = false;
             v.playbackRate = speed;
+            v.currentTime = loopStart;
             var p = v.play();
             if (p && typeof p.catch === 'function') p.catch(function() {});
+          });
+
+          v.addEventListener('timeupdate', function() {
+            if (v.currentTime >= loopEnd) {
+              v.currentTime = loopStart;
+            }
           });
         })();
       </script>
