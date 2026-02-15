@@ -1,25 +1,25 @@
 /**
- * @sebringj/autonomo-react-native
+ * @autonomo/react-native
  * 
  * React Native integration for Autonomo with Expo support.
  * 
  * This package provides:
- * - All hooks from @sebringj/autonomo-react
+ * - All hooks from @autonomo/react
  * - WebSocket MCP client for connecting to Autonomo server
  * - Expo-compatible host detection for simulators/emulators
  */
 
 // Re-export all React hooks (includes useInstance)
-export * from '@sebringj/autonomo-react';
+export * from '@autonomo/react';
 
 export {
   handleRequest,
   createFetchHandler,
-} from '@sebringj/autonomo-core';
+} from '@autonomo/core';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { AppState as RNAppState, Platform } from 'react-native';
-import { handleRequest, getInstance, initInstance, type InstanceInfo } from '@sebringj/autonomo-core';
+import { handleRequest, getInstance, initInstance, type InstanceInfo } from '@autonomo/core';
 
 // Try to import expo-constants (optional peer dependency)
 let ExpoConstants: { expoConfig?: { hostUri?: string }; manifest?: { debuggerHost?: string } } | null = null;

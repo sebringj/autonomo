@@ -1,8 +1,8 @@
 """
-Transport - HTTP server utilities (optional)
+Transport - HTTP server for AI communication
 
-WebSocket is the primary communication mode for Autonomo.
-These HTTP helpers are kept for custom integrations and backward compatibility.
+Provides a simple HTTP API that the MCP server can call.
+This runs inside the application being tested.
 """
 
 from dataclasses import dataclass
