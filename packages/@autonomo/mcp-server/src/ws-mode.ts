@@ -124,7 +124,7 @@ export async function startWSModeServer(config: WSModeConfig = {}): Promise<void
     },
     {
       name: 'autonomo_send_command',
-      description: 'Send a command to an application. Built-in: navigate (screen), press (button), fillIn/fill (input), submit (enter key). Custom: use action="custom" with target=customActionName (see state.customActions).',
+      description: 'Send a command to an application. Built-in: navigate (screen), press (button), fillIn/fill (input), select (dropdown/picker), submit (enter key). Custom: use action="custom" with target=customActionName (see state.customActions).',
       inputSchema: {
         type: 'object',
         properties: {
@@ -134,7 +134,7 @@ export async function startWSModeServer(config: WSModeConfig = {}): Promise<void
           },
           action: {
             type: 'string',
-            enum: ['navigate', 'press', 'fillIn', 'fill', 'submit', 'custom'],
+            enum: ['navigate', 'press', 'fillIn', 'fill', 'select', 'submit', 'custom'],
             description: 'Action type. For custom actions from state.customActions, use "custom".',
           },
           target: {
@@ -143,7 +143,7 @@ export async function startWSModeServer(config: WSModeConfig = {}): Promise<void
           },
           value: {
             type: 'string',
-            description: 'Value for fillIn or custom action argument.',
+            description: 'Value for fillIn/select or custom action argument.',
           },
         },
         required: ['bridge', 'action'],
@@ -173,7 +173,7 @@ export async function startWSModeServer(config: WSModeConfig = {}): Promise<void
     },
     {
       name: 'autonomo_run_scenario',
-      description: 'Execute a multi-step test scenario. Each step is an action like navigate, press, fillIn.',
+      description: 'Execute a multi-step test scenario. Each step is an action like navigate, press, fillIn, select.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -186,7 +186,7 @@ export async function startWSModeServer(config: WSModeConfig = {}): Promise<void
             items: {
               type: 'object',
               properties: {
-                action: { type: 'string', enum: ['navigate', 'press', 'fillIn', 'fill', 'submit', 'custom', 'waitFor', 'wait'] },
+                action: { type: 'string', enum: ['navigate', 'press', 'fillIn', 'fill', 'select', 'submit', 'custom', 'waitFor', 'wait'] },
                 target: { type: 'string' },
                 value: { type: 'string' },
                 condition: { type: 'string' },

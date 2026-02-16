@@ -66,9 +66,9 @@ export const ElementInfoSchema: SchemaDescriptor = {
         'Actions this element supports. Use these action names with send_command.',
       items: {
         type: 'string',
-        description: '"press" for buttons, "fillIn"/"submit" for inputs, "toggle" for switches',
+        description: '"press" for buttons, "fillIn"/"submit" for inputs, "select" for dropdowns/pickers, "toggle" for switches',
       },
-      examples: [['press'], ['fillIn', 'submit'], ['toggle']],
+      examples: [['press'], ['fillIn', 'submit'], ['select', 'fillIn'], ['toggle']],
     },
     disabled: {
       type: 'boolean',
@@ -354,7 +354,7 @@ export function generateElementSummary(): string {
   return `Elements include:
 • id: Element identifier (use in send_command target)
 • type: button, input, toggle, select, link, custom
-• actions: What actions are supported (press, fillIn, submit, toggle)
+• actions: What actions are supported (press, fillIn, select, submit, toggle)
 • disabled: Whether element is currently disabled
 • value: Current value (for inputs)
 • hint: Developer notes (may include test credentials)`;
@@ -407,6 +407,7 @@ Actions:
 • navigate: Go to a screen/route (target = screen name like "/home" or "/(tabs)/settings")
 • press: Tap a button or interactive element (target = element ID from get_state)
 • fillIn/fill: Enter text into an input (target = input element ID, value = text)
+• select: Choose an option in a dropdown/picker (target = select element ID, value = option value/label)
 • submit: Press enter/submit on an input (target = input element ID)
 • custom: Execute app-specific action (target = action name, value = optional parameter)
 

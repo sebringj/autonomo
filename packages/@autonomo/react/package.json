@@ -1,6 +1,6 @@
 {
   "name": "@sebringj/autonomo-react",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "React hooks and components for Autonomo integration",
   "type": "module",
   "main": "./dist/index.js",
@@ -20,7 +20,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@sebringj/autonomo-core": "^2.0.0"
+    "@sebringj/autonomo-core": "^2.0.1"
   },
   "peerDependencies": {
     "react": ">=18.0.0"

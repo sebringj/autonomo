@@ -1,6 +1,6 @@
 {
   "name": "@sebringj/autonomo-react-native",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "React Native integration for Autonomo with Expo support",
   "type": "module",
   "main": "./dist/index.js",
@@ -17,8 +17,8 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "@sebringj/autonomo-core": "^2.0.0",
-    "@sebringj/autonomo-react": "^2.0.2",
+    "@sebringj/autonomo-core": "^2.0.1",
+    "@sebringj/autonomo-react": "^2.0.3",
     "expo-constants": ">=14.0.0",
     "react": "^18.0.0",
     "react-native": "*"
@@ -29,8 +29,8 @@
     }
   },
   "devDependencies": {
-    "@sebringj/autonomo-core": "^2.0.0",
-    "@sebringj/autonomo-react": "^2.0.2",
+    "@sebringj/autonomo-core": "^2.0.1",
+    "@sebringj/autonomo-react": "^2.0.3",
     "@types/react": "^19.2.14",
     "react": "^19.2.4",
     "react-native": "^0.84.0",

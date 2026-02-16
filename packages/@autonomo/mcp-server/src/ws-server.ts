@@ -131,7 +131,7 @@ export interface BridgeInfo {
 }
 
 export interface Command {
-  action: 'navigate' | 'press' | 'fillIn' | 'fill' | 'submit' | 'custom' | 'wait';
+  action: 'navigate' | 'press' | 'fillIn' | 'fill' | 'select' | 'submit' | 'custom' | 'wait';
   target?: string;
   value?: string;
 }
@@ -411,25 +411,58 @@ export function createWSServer(port: number = DEFAULT_PORT): AutonomoWSServer {
         }
       }
       
-      const commandId = `cmd_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-      
-      // Set up timeout
-      const timeout = setTimeout(() => {
-        if (bridge.pendingCommand?.id === commandId) {
-          bridge.pendingCommand = undefined;
-          reject(new Error('Command timeout'));
+      const sendOnce = (cmd: Command): Promise<CommandResult> => {
+        return new Promise((resolveOnce, rejectOnce) => {
+          const commandId = `cmd_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+
+          const timeout = setTimeout(() => {
+            if (bridge.pendingCommand?.id === commandId) {
+              bridge.pendingCommand = undefined;
+              rejectOnce(new Error('Command timeout'));
+            }
+          }, COMMAND_TIMEOUT);
+
+          bridge.pendingCommand = { id: commandId, resolve: resolveOnce, reject: rejectOnce, timeout };
+
+          bridge.ws.send(JSON.stringify({
+            type: 'command',
+            id: commandId,
+            ...cmd,
+          }));
+        });
+      };
+
+      const isUnknownSelectAction = (result: CommandResult): boolean => {
+        if (!result.error) return false;
+        const normalized = result.error.toLowerCase();
+        return normalized.includes('unknown action: select') || normalized.includes('unknown command: select');
+      };
+
+      (async () => {
+        try {
+          const first = await sendOnce(finalCommand as Command);
+
+          if (command.action === 'select' && !first.success && isUnknownSelectAction(first)) {
+            const fallback = await sendOnce({
+              action: 'fillIn',
+              target: command.target,
+              value: command.value,
+            });
+
+            if (fallback.success) {
+              resolve({
+                ...fallback,
+                message: fallback.message || `Selected ${command.target} (fallback via fillIn)`,
+              });
+              return;
+            }
+          }
+
+          resolve(first);
+        } catch (err) {
+          reject(err as Error);
         }
-      }, COMMAND_TIMEOUT);
-      
-      // Store pending command
-      bridge.pendingCommand = { id: commandId, resolve, reject, timeout };
-      
-      // Send command to app
-      bridge.ws.send(JSON.stringify({
-        type: 'command',
-        id: commandId,
-        ...finalCommand,
-      }));
+      })();
     });
   };
   

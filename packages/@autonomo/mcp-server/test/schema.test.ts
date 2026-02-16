@@ -99,6 +99,7 @@ test('generateSendCommandDescription includes all actions', () => {
   assert(desc.includes('navigate:'), 'Should document navigate');
   assert(desc.includes('press:'), 'Should document press');
   assert(desc.includes('fillIn'), 'Should document fillIn');
+  assert(desc.includes('select:'), 'Should document select');
   assert(desc.includes('submit:'), 'Should document submit');
   assert(desc.includes('custom:'), 'Should document custom');
   assert(desc.includes('CRITICAL'), 'Should have critical warning');

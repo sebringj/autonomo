@@ -110,7 +110,7 @@ class ElementRegistry {
       case 'toggle':
         return ['press'];
       case 'select':
-        return ['fillIn'];
+        return ['select', 'fillIn'];
       case 'custom':
         return ['press', 'fillIn']; // Custom elements may support both
       default:

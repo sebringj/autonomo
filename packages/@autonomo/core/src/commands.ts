@@ -127,7 +127,7 @@ function getSupportedActions(handler: ElementHandler): string[] {
     case 'toggle':
       return ['press'];
     case 'select':
-      return ['fillIn'];
+      return ['select', 'fillIn'];
     case 'custom':
       return ['press', 'fillIn'];
     default:
@@ -368,7 +368,9 @@ export async function executeCommand(
       return press(target);
 
     case 'fill':
+    case 'fillin':
     case 'type':
+    case 'select':
       if (!target) {
         return {
           success: false,

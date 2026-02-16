@@ -10,16 +10,16 @@
  */
 
 // Re-export all React hooks (includes useInstance)
-export * from '@autonomo/react';
+export * from '@sebringj/autonomo-react';
 
 export {
   handleRequest,
   createFetchHandler,
-} from '@autonomo/core';
+} from '@sebringj/autonomo-core';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { AppState as RNAppState, Platform } from 'react-native';
-import { handleRequest, getInstance, initInstance, type InstanceInfo } from '@autonomo/core';
+import { handleRequest, getInstance, initInstance, type InstanceInfo } from '@sebringj/autonomo-core';
 
 // Try to import expo-constants (optional peer dependency)
 let ExpoConstants: { expoConfig?: { hostUri?: string }; manifest?: { debuggerHost?: string } } | null = null;
