@@ -1,6 +1,6 @@
 {
   "name": "autonomo",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "MCP server for Autonomo - enables AI tools to control applications",
   "type": "module",
   "main": "./dist/index.js",
