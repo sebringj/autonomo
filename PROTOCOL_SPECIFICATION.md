@@ -822,10 +822,10 @@ For apps already using the SDK approach:
 
 ```typescript
 // SDK (old)
-import { RemoteTestBridge } from '@autonomo/react-native';
+import { RemoteTestBridge } from 'autonomo-react-native';
 
 // Protocol (new) - SDK becomes thin wrapper
-import { RemoteTestBridge } from '@autonomo/react-native';
+import { RemoteTestBridge } from 'autonomo-react-native';
 // Internally, SDK just makes HTTP calls to Autonomo server
 ```
 

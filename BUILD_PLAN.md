@@ -27,7 +27,7 @@
 ```
 autonomo/
   packages/
-    @autonomo/core/           # Framework-agnostic core
+    autonomo-core/           # Framework-agnostic core
       src/
         registry.ts           # Element registration
         commands.ts           # Command processing
@@ -35,20 +35,20 @@ autonomo/
         transport.ts          # HTTP/WebSocket client
       package.json
     
-    @autonomo/mcp-server/     # MCP server binary
+    autonomo/     # MCP server binary
       src/
         server.ts             # MCP protocol handler
         tools.ts              # Tool definitions
         bridge-manager.ts     # Manages connected apps
       package.json
     
-    @autonomo/react/          # React integration
+    autonomo-react/          # React integration
       src/
         provider.tsx          # Context provider
         hooks.ts              # useTestable, useScreen
       package.json
     
-    @autonomo/react-native/   # React Native integration
+    autonomo-react-native/   # React Native integration
       src/
         provider.tsx
         hooks.ts
@@ -150,10 +150,10 @@ autonomo/
    - Framework guides
 
 2. **npm publish** (1 day)
-   - @autonomo/core
-   - @autonomo/mcp-server
-   - @autonomo/react
-   - @autonomo/react-native
+   - autonomo-core
+   - autonomo
+   - autonomo-react
+   - autonomo-react-native
    - autonomo (CLI)
 
 3. **Launch materials** (2 days)
@@ -173,7 +173,7 @@ autonomo/
 | Mon | Set up monorepo, extract registry.ts from LeagueHub |
 | Tue | Extract command processing, state collection |
 | Wed | Build transport layer (HTTP + WebSocket) |
-| Thu | Create @autonomo/core package, tests |
+| Thu | Create autonomo-core package, tests |
 | Fri | Start MCP server, implement protocol basics |
 
 ### Week 2: MCP + React Packages
@@ -182,8 +182,8 @@ autonomo/
 |-----|------|
 | Mon | Finish MCP server, tool definitions |
 | Tue | Test MCP server with Claude Desktop |
-| Wed | Create @autonomo/react package |
-| Thu | Create @autonomo/react-native package |
+| Wed | Create autonomo-react package |
+| Thu | Create autonomo-react-native package |
 | Fri | Replace LeagueHub bridge, verify everything works |
 
 ### Week 3: DX + Guides
@@ -270,10 +270,10 @@ Keep them tiny:
 
 | Package | Target Size |
 |---------|-------------|
-| @autonomo/core | < 10KB |
-| @autonomo/react | < 5KB |
-| @autonomo/react-native | < 5KB |
-| @autonomo/mcp-server | < 20KB |
+| autonomo-core | < 10KB |
+| autonomo-react | < 5KB |
+| autonomo-react-native | < 5KB |
+| autonomo | < 20KB |
 | autonomo_flutter | < 15KB |
 | autonomo-python | < 10KB |
 | autonomo-ruby | < 10KB |
@@ -366,7 +366,7 @@ If working part-time (10-15 hrs/week): 8-10 weeks
 
 ## Next Action
 
-Start with `packages/@autonomo/core/src/registry.ts`:
+Start with `packages/autonomo-core/src/registry.ts`:
 
 ```typescript
 // Extract from LeagueHub's RemoteTestBridge.tsx

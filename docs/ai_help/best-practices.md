@@ -314,7 +314,7 @@ const { setScreenContext } = useAutonomo({
 });
 
 // Or use the state manager directly
-import { state } from '@autonomo/core';
+import { state } from 'autonomo-core';
 state.setScreenContext('/login', 
   'Enter phone number and tap Send Code. Use fillOtp after receiving code.',
   [

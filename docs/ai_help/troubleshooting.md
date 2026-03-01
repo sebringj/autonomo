@@ -33,7 +33,7 @@
    → Check firewall, ports, CORS settings
 
 5. MCP server not running
-   → Start with: npx @autonomo/mcp-server
+   → Start with: npx autonomo
 ```
 
 ### 2. "Element not found: XYZ"
@@ -218,7 +218,7 @@ connectAutonomo({
 
 Run server with debug:
 ```bash
-DEBUG=autonomo:* npx @autonomo/mcp-server
+DEBUG=autonomo:* npx autonomo
 ```
 
 ### Network Inspection
@@ -242,7 +242,7 @@ When all else fails:
    - Kill app process
 
 4. Start MCP server fresh:
-   npx @autonomo/mcp-server
+   npx autonomo
 
 5. Start app fresh
 

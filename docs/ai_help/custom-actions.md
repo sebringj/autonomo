@@ -50,7 +50,7 @@ Benefits:
 ### React Native
 
 ```tsx
-import { useAutonomoCustomAction } from '@autonomo/react-native';
+import { useAutonomoCustomAction } from 'autonomo-react-native';
 
 function App() {
   useAutonomoCustomAction('devLogin', async (phone) => {
@@ -77,7 +77,7 @@ function App() {
 ### Web (React/Preact)
 
 ```tsx
-import { autonomoRegisterCustomAction } from '@autonomo/react';
+import { autonomoRegisterCustomAction } from 'autonomo-react';
 
 useEffect(() => {
   return autonomoRegisterCustomAction('devLogin', async (phone) => {
@@ -90,7 +90,7 @@ useEffect(() => {
 ### Direct Registration
 
 ```typescript
-import { autonomoRegisterCustomAction } from '@autonomo/core';
+import { autonomoRegisterCustomAction } from 'autonomo-core';
 
 // Simple action
 autonomoRegisterCustomAction('clearCache', () => {

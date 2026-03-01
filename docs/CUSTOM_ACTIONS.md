@@ -53,8 +53,8 @@ Custom actions are registered by your application components and exposed to the 
 ### JavaScript/TypeScript (React)
 
 ```typescript
-import { registerCustomAction } from '@autonomo/react';
-// or from '@autonomo/core'
+import { registerCustomAction } from 'autonomo-react';
+// or from 'autonomo-core'
 
 // In your component:
 useEffect(() => {
@@ -76,7 +76,7 @@ useEffect(() => {
 ### React Hook Version
 
 ```typescript
-import { useCustomAction } from '@autonomo/react';
+import { useCustomAction } from 'autonomo-react';
 
 function OtpInput() {
   const [digits, setDigits] = useState(['', '', '', '', '', '']);

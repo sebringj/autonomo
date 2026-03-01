@@ -21,7 +21,7 @@ The app must explicitly register elements using Autonomo's API.
 ### React / React Native
 
 ```tsx
-import { useAutonomoElement } from '@autonomo/react';
+import { useAutonomoElement } from 'autonomo-react';
 
 function LoginButton() {
   // This registers the element with Autonomo
@@ -36,7 +36,7 @@ function LoginButton() {
 ### Web (Preact/React)
 
 ```tsx
-import { autonomoRegister } from '@autonomo/react';
+import { autonomoRegister } from 'autonomo-react';
 
 function LoginForm() {
   useEffect(() => {
@@ -52,7 +52,7 @@ function LoginForm() {
 ### Direct Registration
 
 ```typescript
-import { autonomoRegister } from '@autonomo/core';
+import { autonomoRegister } from 'autonomo-core';
 
 // Register a tap element
 autonomoRegister('Dashboard.RefreshButton', 'tap', () => refreshData());

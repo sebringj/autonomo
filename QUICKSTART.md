@@ -15,7 +15,7 @@ Two parts:
 ## Step 1: Install MCP Server (Global)
 
 ```bash
-npm install -g github:sebringj/autonomo#packages/@autonomo/mcp-server
+npm install -g autonomo
 ```
 
 ## Step 2: Configure MCP in VS Code
@@ -44,13 +44,13 @@ For **Cursor** or **Windsurf**: Add the same server config to your MCP settings.
 ### For React / Next.js / Remix
 
 ```bash
-npm install @sebringj/autonomo-react
+npm install autonomo-react
 ```
 
 Add to your app root (e.g., `App.tsx`, `layout.tsx`, or `_app.tsx`):
 
 ```tsx
-import { useAutonomo, AutonomoDevBadge } from '@sebringj/autonomo-react';
+import { useAutonomo, AutonomoDevBadge } from 'autonomo-react';
 
 export default function App({ children }) {
   // Connect to Autonomo WebSocket server
@@ -81,13 +81,13 @@ VITE_AUTONOMO_PORT=9876
 ### For React Native / Expo
 
 ```bash
-npm install @sebringj/autonomo-react-native
+npm install autonomo-react-native
 ```
 
 Add to your app root:
 
 ```tsx
-import { useAutonomo } from '@sebringj/autonomo-react-native';
+import { useAutonomo } from 'autonomo-react-native';
 
 export default function App() {
   const { connected } = useAutonomo({ 
@@ -102,13 +102,13 @@ export default function App() {
 ### For Angular
 
 ```bash
-npm install github:sebringj/autonomo#packages/@autonomo/angular
+npm install autonomo-angular
 ```
 
 Add module to your AppModule:
 
 ```typescript
-import { AutonomoModule } from '@autonomo/angular';
+import { AutonomoModule } from 'autonomo-angular';
 
 @NgModule({
   imports: [
@@ -133,7 +133,7 @@ Mark elements with directives:
 Use hooks to register elements the AI can interact with:
 
 ```tsx
-import { useTapHandler, useFillHandler, useScreen } from '@autonomo/react';
+import { useTapHandler, useFillHandler, useScreen } from 'autonomo-react';
 import { useState } from 'react';
 
 function LoginScreen() {
@@ -197,7 +197,7 @@ Your AI sees the result of every action. No more guessing.
 # Verify installation
 which autonomo-mcp
 # If not found, reinstall:
-npm install -g github:sebringj/autonomo#packages/@autonomo/mcp-server
+npm install -g autonomo
 ```
 
 ### App Not Connecting
@@ -252,7 +252,7 @@ export default function Page() {
     "autonomo": {
       "type": "stdio",
       "command": "node",
-      "args": ["node_modules/@autonomo/mcp-server/dist/cli.js"]
+      "args": ["node_modules/autonomo/dist/cli.js"]
     }
   }
 }
@@ -270,7 +270,7 @@ For Swift, Flutter, Python, Ruby, Kotlin, C#, or Angular — see the platform-sp
 - [Ruby](./packages/autonomo-ruby/README.md)
 - [Kotlin](./packages/autonomo-kotlin/README.md)
 - [C#/.NET](./packages/Autonomo.CSharp/README.md)
-- [Angular](./packages/@autonomo/angular/README.md)
+- [Angular](./packages/autonomo-angular/README.md)
 
 ---
 

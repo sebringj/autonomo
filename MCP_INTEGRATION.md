@@ -136,7 +136,7 @@ MCP (Model Context Protocol) is the standard for giving AI tools new capabilitie
 
 ```bash
 # Install from GitHub
-npm install -g github:sebringj/autonomo#packages/@autonomo/mcp-server
+npm install -g autonomo
 
 # Then run
 autonomo-mcp
@@ -496,7 +496,7 @@ AI: "While working on your new feature, I noticed the login
 ### 1. Install Autonomo MCP Server
 
 ```bash
-npm install -g github:sebringj/autonomo#packages/@autonomo/mcp-server
+npm install -g autonomo
 ```
 
 ### 2. Configure Your AI Tool
@@ -507,7 +507,7 @@ Add to your AI tool's MCP config (see examples above).
 
 ```javascript
 // React/Next.js
-import { AutonomoProvider } from '@autonomo/react';
+import { AutonomoProvider } from 'autonomo-react';
 
 function App() {
   return (

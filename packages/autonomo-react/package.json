@@ -1,0 +1,50 @@
+{
+  "name": "autonomo-react",
+  "version": "2.0.3",
+  "description": "React hooks and components for Autonomo integration",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "autonomo-core": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.14",
+    "react": "^19.2.4",
+    "typescript": "^5.9.3"
+  },
+  "keywords": [
+    "react",
+    "autonomo",
+    "ai",
+    "testing",
+    "mcp"
+  ],
+  "author": "Jason Sebring",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sebringj/autonomo.git",
+    "directory": "packages/autonomo-react"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

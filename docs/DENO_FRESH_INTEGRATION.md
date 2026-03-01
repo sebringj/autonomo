@@ -37,12 +37,12 @@ This means the Autonomo bridge must be included in actual **route components**, 
 ## Step 1: Install MCP Server
 
 ```bash
-npm install -g github:sebringj/autonomo#packages/@autonomo/mcp-server
+npm install -g autonomo
 ```
 
 Or install locally in your project:
 ```bash
-npm install github:sebringj/autonomo#packages/@autonomo/mcp-server
+npm install autonomo
 ```
 
 ## Step 2: Configure MCP in VS Code
@@ -55,7 +55,7 @@ Create `.vscode/mcp.json` in your project root:
     "autonomo": {
       "type": "stdio",
       "command": "node",
-      "args": ["node_modules/@autonomo/mcp-server/dist/cli.js"]
+      "args": ["node_modules/autonomo/dist/cli.js"]
     }
   }
 }

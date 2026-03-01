@@ -95,16 +95,16 @@ Your AI doesn't guess what happened. It **sees everything**. And if something br
 
 ```bash
 # React
-npm install @sebringj/autonomo-react
+npm install autonomo-react
 
 # Core (for vanilla JS/TS)
-npm install @sebringj/autonomo-core
+npm install autonomo-core
 ```
 
 ### MCP Server (Global)
 
 ```bash
-npm install -g github:sebringj/autonomo#packages/@autonomo/mcp-server
+npm install -g autonomo
 ```
 
 > See [QUICKSTART.md](./QUICKSTART.md) for complete setup instructions.
@@ -167,7 +167,7 @@ Install Autonomo for my C# app. Read https://github.com/sebringj/autonomo/blob/m
 
 **Angular:**
 ```
-Install Autonomo for my Angular app. Read https://github.com/sebringj/autonomo/blob/main/packages/@autonomo/angular/README.md
+Install Autonomo for my Angular app. Read https://github.com/sebringj/autonomo/blob/main/packages/autonomo-angular/README.md
 ```
 
 **Deno Fresh:**
@@ -351,7 +351,7 @@ The React package includes a tiny official floating badge for local development 
 - Red border + × pulse = error
 
 ```tsx
-import { useAutonomo, AutonomoDevBadge } from '@sebringj/autonomo-react';
+import { useAutonomo, AutonomoDevBadge } from 'autonomo-react';
 
 function App() {
   const { connected, status } = useAutonomo({ name: 'my-app' });
@@ -375,10 +375,10 @@ function App() {
 
 | Platform | Package | Status |
 |----------|---------|--------|
-| **React** | `@sebringj/autonomo-react` | ✅ Production-ready |
-| **Core (JS/TS)** | `@sebringj/autonomo-core` | ✅ Production-ready |
-| **React Native** | `@sebringj/autonomo-react-native` | ✅ Published on npm |
-| **Angular** | `@autonomo/angular` | 🧪 Testing-only (GitHub/source) |
+| **React** | `autonomo-react` | ✅ Production-ready |
+| **Core (JS/TS)** | `autonomo-core` | ✅ Production-ready |
+| **React Native** | `autonomo-react-native` | ✅ Published on npm |
+| **Angular** | `autonomo-angular` | 🧪 Testing-only (GitHub/source) |
 | **Deno Fresh** | See [docs](./docs/DENO_FRESH_INTEGRATION.md) | ✅ Production-ready |
 | **Swift/iOS** | `autonomo-swift` | 🧪 Testing/source package |
 | **Flutter** | `autonomo_flutter` | 🧪 Testing/source package |
@@ -387,7 +387,7 @@ function App() {
 | **Kotlin/Android** | `autonomo-kotlin` | 🧪 Testing/source package |
 | **C#/.NET** | `Autonomo.CSharp` | 🧪 Testing/source package |
 
-> **Note:** WebSocket is the primary architecture across packages. Published npm packages are `@sebringj/autonomo-core`, `@sebringj/autonomo-react`, and `@sebringj/autonomo-react-native`. Other platform SDKs are currently GitHub/source testing packages.
+> **Note:** WebSocket is the primary architecture across packages. Published npm packages are `autonomo-core`, `autonomo-react`, and `autonomo-react-native`. Other platform SDKs are currently GitHub/source testing packages.
 
 ## Architecture: Metadata-Based, Not HTML-Based
 
@@ -542,15 +542,15 @@ AI: "✅ Confirmed - I can see 12 elements registered.
 **npm:**
 ```bash
 # Core
-npm install @sebringj/autonomo-core
+npm install autonomo-core
 
 # React
-npm install @sebringj/autonomo-react
+npm install autonomo-react
 ```
 
 **MCP Server (global):**
 ```bash
-npm install -g github:sebringj/autonomo#packages/@autonomo/mcp-server
+npm install -g autonomo
 ```
 
 **Python:**
@@ -594,15 +594,15 @@ Apps connect automatically via WebSocket. No need for `--bridge` flags or HTTP e
 
 | Package | Platform | Install |
 |---------|----------|---------|
-| [@sebringj/autonomo-core](https://npmjs.com/package/@sebringj/autonomo-core) | **JavaScript / TypeScript** | `npm install @sebringj/autonomo-core` |
-| [@sebringj/autonomo-react](https://npmjs.com/package/@sebringj/autonomo-react) | React | `npm install @sebringj/autonomo-react` |
-| [@autonomo/mcp-server](./packages/@autonomo/mcp-server) | MCP Server | `npm install -g github:sebringj/autonomo#packages/@autonomo/mcp-server` |
+| [autonomo-core](https://npmjs.com/package/autonomo-core) | **JavaScript / TypeScript** | `npm install autonomo-core` |
+| [autonomo-react](https://npmjs.com/package/autonomo-react) | React | `npm install autonomo-react` |
+| [autonomo](./packages/autonomo) | MCP Server | `npm install -g autonomo` |
 | [autonomo_flutter](./packages/autonomo_flutter) | Flutter / Dart | See [Installation](#installation) |
 | [autonomo-python](./packages/autonomo-python) | Python | See [Installation](#installation) |
 | [autonomo-ruby](./packages/autonomo-ruby) | Ruby | See [Installation](#installation) |
 | [autonomo-swift](./packages/autonomo-swift) | Swift / iOS / macOS | See [Installation](#installation) |
 
-**Note:** `@sebringj/autonomo-core` is the base JS/TS package - use it for vanilla JavaScript, Node.js, web components, Electron, or any framework without a dedicated package. The React package is a thin wrapper around core.
+**Note:** `autonomo-core` is the base JS/TS package - use it for vanilla JavaScript, Node.js, web components, Electron, or any framework without a dedicated package. The React package is a thin wrapper around core.
 
 ## Documentation
 

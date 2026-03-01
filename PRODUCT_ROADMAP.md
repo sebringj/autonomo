@@ -151,10 +151,10 @@ Create drop-in packages for common frameworks:
 
 ```bash
 # React Native / Expo
-npm install github:sebringj/autonomo#packages/@autonomo/react-native
+npm install autonomo-react-native
 
 # React / Next.js  
-npm install github:sebringj/autonomo#packages/@autonomo/react
+npm install autonomo-react
 
 # Vue (TODO)
 # npm install github:sebringj/autonomo#packages/@autonomo/vue

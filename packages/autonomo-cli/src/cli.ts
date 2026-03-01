@@ -6,7 +6,7 @@
  *   autonomo serve   Start the MCP server (WebSocket mode)
  */
 
-import { startWSModeServer } from '@autonomo/mcp-server';
+import { startWSModeServer } from 'autonomo';
 
 const args = process.argv.slice(2);
 const command = args[0];

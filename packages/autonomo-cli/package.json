@@ -13,7 +13,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@autonomo/mcp-server": "workspace:*"
+    "autonomo": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^25.2.3",

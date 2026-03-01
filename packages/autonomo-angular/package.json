@@ -1,0 +1,49 @@
+{
+  "name": "autonomo-angular",
+  "version": "1.0.0",
+  "description": "Angular service and directives for Autonomo integration",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "peerDependencies": {
+    "@angular/common": ">=16.0.0",
+    "@angular/core": ">=16.0.0",
+    "autonomo-core": "workspace:*",
+    "rxjs": ">=7.0.0"
+  },
+  "devDependencies": {
+    "@angular/common": "^21.1.4",
+    "@angular/core": "^21.1.4",
+    "@types/jest": "^30.0.0",
+    "jest": "^30.2.0",
+    "rxjs": "^7.8.2",
+    "ts-jest": "^29.4.6",
+    "typescript": "^5.9.3"
+  },
+  "keywords": [
+    "angular",
+    "autonomo",
+    "ai",
+    "testing"
+  ],
+  "author": "",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sebringj/autonomo.git",
+    "directory": "packages/autonomo-angular"
+  }
+}
