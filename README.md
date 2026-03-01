@@ -127,12 +127,12 @@ Copy-paste the prompt for your platform:
 
 **React / Next.js / Remix:**
 ```
-Install Autonomo for my React app. Read https://github.com/sebringj/autonomo/blob/main/QUICKSTART.md
+Install Autonomo for my React app. Read https://www.npmjs.com/package/autonomo-react
 ```
 
 **React Native / Expo:**
 ```
-Install Autonomo for my React Native app. Read https://github.com/sebringj/autonomo/blob/main/QUICKSTART.md
+Install Autonomo for my React Native app. Read https://www.npmjs.com/package/autonomo-react-native
 ```
 
 **Swift / iOS:**
@@ -167,7 +167,7 @@ Install Autonomo for my C# app. Read https://github.com/sebringj/autonomo/blob/m
 
 **Angular:**
 ```
-Install Autonomo for my Angular app. Read https://github.com/sebringj/autonomo/blob/main/packages/autonomo-angular/README.md
+Install Autonomo for my Angular app. Read https://www.npmjs.com/package/autonomo-angular
 ```
 
 **Deno Fresh:**
@@ -596,7 +596,7 @@ Apps connect automatically via WebSocket. No need for `--bridge` flags or HTTP e
 |---------|----------|---------|
 | [autonomo-core](https://npmjs.com/package/autonomo-core) | **JavaScript / TypeScript** | `npm install autonomo-core` |
 | [autonomo-react](https://npmjs.com/package/autonomo-react) | React | `npm install autonomo-react` |
-| [autonomo](./packages/autonomo) | MCP Server | `npm install -g autonomo` |
+| [autonomo](https://www.npmjs.com/package/autonomo) | MCP Server | `npm install -g autonomo` |
 | [autonomo_flutter](./packages/autonomo_flutter) | Flutter / Dart | See [Installation](#installation) |
 | [autonomo-python](./packages/autonomo-python) | Python | See [Installation](#installation) |
 | [autonomo-ruby](./packages/autonomo-ruby) | Ruby | See [Installation](#installation) |

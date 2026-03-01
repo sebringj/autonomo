@@ -270,7 +270,7 @@ For Swift, Flutter, Python, Ruby, Kotlin, C#, or Angular — see the platform-sp
 - [Ruby](./packages/autonomo-ruby/README.md)
 - [Kotlin](./packages/autonomo-kotlin/README.md)
 - [C#/.NET](./packages/Autonomo.CSharp/README.md)
-- [Angular](./packages/autonomo-angular/README.md)
+- [Angular](https://www.npmjs.com/package/autonomo-angular)
 
 ---
 
