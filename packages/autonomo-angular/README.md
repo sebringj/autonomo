@@ -1,20 +1,11 @@
 # autonomo-angular
 
-> ⚠️ **Testing Only** - This package is not yet published to npm. It is included for testing and development purposes only.
-
 Angular integration for [Autonomo](https://github.com/sebringj/autonomo) - AI-powered application testing.
 
 ## Installation
 
-For local development/testing, link the package from this monorepo:
-
 ```bash
-# From the autonomo repo root
-cd packages/autonomo-angular
-npm link
-
-# In your Angular project
-npm link autonomo-angular
+npm install autonomo-angular
 ```
 
 ## Quick Start
@@ -130,7 +121,8 @@ Add to `.vscode/mcp.json`:
 {
   "servers": {
     "autonomo": {
-      "command": "autonomo-mcp",
+      "command": "npx",
+      "args": ["-y", "autonomo"],
       "env": {
         "AUTONOMO_PORT": "9876"
       }
@@ -141,7 +133,7 @@ Add to `.vscode/mcp.json`:
 
 ## Directives
 
-### `autonomoTap`
+### \`autonomoTap\`
 
 Registers a tappable/clickable element:
 
@@ -156,7 +148,7 @@ Registers a tappable/clickable element:
 </button>
 ```
 
-### `autonomoFill`
+### \`autonomoFill\`
 
 Registers a fillable input:
 
@@ -169,7 +161,7 @@ Registers a fillable input:
 />
 ```
 
-### `autonomoToggle`
+### \`autonomoToggle\`
 
 Registers a toggle (checkbox, switch, radio):
 
@@ -181,7 +173,7 @@ Registers a toggle (checkbox, switch, radio):
 />
 ```
 
-### `autonomoScreen`
+### \`autonomoScreen\`
 
 Sets the current screen/page name:
 

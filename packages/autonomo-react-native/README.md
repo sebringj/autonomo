@@ -4,27 +4,8 @@ React Native integration for [Autonomo](https://github.com/sebringj/autonomo) - 
 
 ## Installation
 
-Install from npm:
-
 ```bash
 npm install autonomo-react-native
-```
-
-Optional GitHub install (if you need unreleased commits):
-
-```bash
-npm install autonomo-react-native
-```
-
-For local development, you can also link from this monorepo:
-
-```bash
-# From the autonomo repo root
-cd packages/autonomo-react-native
-npm link
-
-# In your React Native project
-npm link autonomo-react-native
 ```
 
 ## Quick Start

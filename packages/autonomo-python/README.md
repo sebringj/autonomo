@@ -53,7 +53,7 @@ Add to `.vscode/mcp.json`:
     "servers": {
         "autonomo": {
             "command": "npx",
-            "args": ["-y", "github:sebringj/autonomo/packages/autonomo"],
+            "args": ["-y", "autonomo"],
             "env": {
                 "AUTONOMO_PORT": "9876"
             }

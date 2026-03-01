@@ -1,7 +1,5 @@
 # autonomo
 
-> ⚠️ **GitHub Deployment Only** - This package is deployed directly from GitHub for VS Code MCP integration. It is not published to npm.
-
 MCP (Model Context Protocol) server for [Autonomo](https://github.com/sebringj/autonomo) - AI-powered application testing.
 
 ## Installation
@@ -15,7 +13,7 @@ Add to your `.vscode/mcp.json`:
   "servers": {
     "autonomo": {
       "command": "npx",
-      "args": ["-y", "github:sebringj/autonomo/packages/autonomo"],
+      "args": ["-y", "autonomo"],
       "env": {
         "AUTONOMO_PORT": "9876"
       }
